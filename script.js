@@ -12,8 +12,29 @@ const observer = new IntersectionObserver((entries) => {
     });
 }, observerOptions);
 
+// Track if candy rain has been triggered
+let candyRainTriggered = false;
+
+// Observer for candy rain trigger
+const candyRainObserver = new IntersectionObserver((entries) => {
+    entries.forEach(entry => {
+        if (entry.isIntersecting && !candyRainTriggered) {
+            candyRainTriggered = true;
+            createChocolateRain();
+        }
+    });
+}, {
+    threshold: 0.3
+});
+
 // Observe elements on page load
 document.addEventListener('DOMContentLoaded', () => {
+
+    // Observe collection section for candy rain trigger
+    const collectionSection = document.querySelector('.collection');
+    if (collectionSection) {
+        candyRainObserver.observe(collectionSection);
+    }
 
     // Observe section titles
     const sectionTitle = document.querySelector('.section-title');
@@ -102,18 +123,13 @@ document.addEventListener('DOMContentLoaded', () => {
 // Smooth reveal on page load
 window.addEventListener('load', () => {
     document.body.style.opacity = '1';
-
-    // Start candy rain automatically after page loads
-    setTimeout(() => {
-        createChocolateRain();
-    }, 1000);
 });
 
 // Add initial opacity for smooth load
 document.body.style.opacity = '0';
 document.body.style.transition = 'opacity 0.5s ease';
 
-// R key to trigger candy rain
+// R key to trigger candy rain (can be used multiple times)
 document.addEventListener('keydown', (e) => {
     if (e.key === 'r' || e.key === 'R') {
         createChocolateRain();
