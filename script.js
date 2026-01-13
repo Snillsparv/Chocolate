@@ -15,25 +15,26 @@ const observer = new IntersectionObserver((entries) => {
 // Track if candy rain has been triggered
 let candyRainTriggered = false;
 
-// Observer for candy rain trigger
+// Observer for candy rain trigger - triggers when hero section leaves viewport
 const candyRainObserver = new IntersectionObserver((entries) => {
     entries.forEach(entry => {
-        if (entry.isIntersecting && !candyRainTriggered) {
+        // Trigger when hero is no longer intersecting (scrolled past)
+        if (!entry.isIntersecting && !candyRainTriggered) {
             candyRainTriggered = true;
             createChocolateRain();
         }
     });
 }, {
-    threshold: 0.3
+    threshold: 0
 });
 
 // Observe elements on page load
 document.addEventListener('DOMContentLoaded', () => {
 
-    // Observe collection section for candy rain trigger
-    const collectionSection = document.querySelector('.collection');
-    if (collectionSection) {
-        candyRainObserver.observe(collectionSection);
+    // Observe hero section - candy rain triggers when scrolled past
+    const heroSection = document.querySelector('.hero');
+    if (heroSection) {
+        candyRainObserver.observe(heroSection);
     }
 
     // Observe section titles
