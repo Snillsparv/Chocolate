@@ -12,8 +12,46 @@ const observer = new IntersectionObserver((entries) => {
     });
 }, observerOptions);
 
+// Create additional chocolate drip effects
+function createExtraDrips() {
+    const hero = document.querySelector('.hero');
+    if (!hero) return;
+
+    // Create multiple drip elements for more visible effect
+    const dripPositions = [
+        { left: '10%', delay: 0.5, height: '350px' },
+        { left: '35%', delay: 0.8, height: '400px' },
+        { left: '65%', delay: 1.1, height: '380px' },
+        { left: '85%', delay: 0.7, height: '360px' }
+    ];
+
+    dripPositions.forEach((pos, index) => {
+        const drip = document.createElement('div');
+        drip.className = 'extra-drip';
+        drip.style.cssText = `
+            position: absolute;
+            top: 0;
+            left: ${pos.left};
+            width: clamp(40px, 8vw, 70px);
+            height: ${pos.height};
+            background: linear-gradient(180deg,
+                rgba(61, 40, 23, 0.9) 0%,
+                rgba(61, 40, 23, 0.7) 50%,
+                rgba(61, 40, 23, 0) 100%);
+            border-radius: 0 0 50% 50%;
+            opacity: 0;
+            animation: dripDrop 3.5s ease-out ${pos.delay}s forwards;
+            z-index: 1;
+        `;
+        hero.appendChild(drip);
+    });
+}
+
 // Observe elements on page load
 document.addEventListener('DOMContentLoaded', () => {
+    // Create extra chocolate drips for more dramatic effect
+    createExtraDrips();
+
     // Observe section titles
     const sectionTitle = document.querySelector('.section-title');
     if (sectionTitle) {
