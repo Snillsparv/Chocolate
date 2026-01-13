@@ -59,79 +59,6 @@ body {
     z-index: 0;
 }
 
-.chocolate-drip {
-    position: absolute;
-    top: 0;
-    left: 0;
-    right: 0;
-    height: 400px;
-    background: linear-gradient(180deg,
-        rgba(26, 15, 10, 1) 0%,
-        rgba(26, 15, 10, 0.9) 30%,
-        rgba(26, 15, 10, 0.6) 60%,
-        rgba(26, 15, 10, 0) 100%);
-    animation: drip 3s ease-out forwards;
-    opacity: 0;
-    filter: blur(2px);
-    z-index: 1;
-}
-
-.chocolate-drip::before,
-.chocolate-drip::after {
-    content: '';
-    position: absolute;
-    top: 0;
-    width: 100px;
-    height: 500px;
-    background: linear-gradient(180deg,
-        rgba(61, 40, 23, 1) 0%,
-        rgba(61, 40, 23, 0.8) 40%,
-        rgba(61, 40, 23, 0) 100%);
-    border-radius: 0 0 50% 50%;
-    animation: dripDrop 3.5s ease-out forwards;
-    opacity: 0;
-}
-
-.chocolate-drip::before {
-    left: 20%;
-    animation-delay: 0.3s;
-}
-
-.chocolate-drip::after {
-    right: 25%;
-    left: auto;
-    animation-delay: 0.6s;
-    height: 450px;
-}
-
-@keyframes drip {
-    0% {
-        opacity: 0;
-        transform: translateY(-100%);
-    }
-    50% {
-        opacity: 1;
-    }
-    100% {
-        opacity: 1;
-        transform: translateY(0);
-    }
-}
-
-@keyframes dripDrop {
-    0% {
-        opacity: 0;
-        transform: translateY(-100%) scaleY(0.5);
-    }
-    40% {
-        opacity: 0.9;
-    }
-    100% {
-        opacity: 0.9;
-        transform: translateY(0) scaleY(1);
-    }
-}
-
 .hero-content {
     text-align: center;
     z-index: 2;
@@ -428,25 +355,6 @@ body {
         background-image: url('bg_mobil_1920.webp');
         background-size: contain;
         background-position: center top;
-    }
-
-    .chocolate-drip {
-        height: 350px;
-        filter: blur(1px);
-    }
-
-    .chocolate-drip::before,
-    .chocolate-drip::after {
-        width: 80px;
-        height: 400px;
-    }
-
-    .chocolate-drip::before {
-        left: 15%;
-    }
-
-    .chocolate-drip::after {
-        right: 15%;
     }
 
     .collection-grid {
