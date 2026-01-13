@@ -1,168 +1,165 @@
-// Smooth scrolling for navigation links
-document.querySelectorAll('a[href^="#"]').forEach(anchor => {
-    anchor.addEventListener('click', function (e) {
-        e.preventDefault();
-        const target = document.querySelector(this.getAttribute('href'));
-        if (target) {
-            const navHeight = document.querySelector('.navbar').offsetHeight;
-            const targetPosition = target.offsetTop - navHeight;
-
-            window.scrollTo({
-                top: targetPosition,
-                behavior: 'smooth'
-            });
-        }
-    });
-});
-
-// Navbar background on scroll
-const navbar = document.querySelector('.navbar');
-let lastScroll = 0;
-
-window.addEventListener('scroll', () => {
-    const currentScroll = window.pageYOffset;
-
-    if (currentScroll > 100) {
-        navbar.style.background = 'rgba(255, 255, 255, 0.98)';
-        navbar.style.boxShadow = '0 2px 25px rgba(0, 0, 0, 0.15)';
-    } else {
-        navbar.style.background = 'rgba(255, 255, 255, 0.95)';
-        navbar.style.boxShadow = '0 2px 20px rgba(0, 0, 0, 0.1)';
-    }
-
-    lastScroll = currentScroll;
-});
-
-// Contact form handling
-const contactForm = document.querySelector('.contact-form');
-if (contactForm) {
-    contactForm.addEventListener('submit', function(e) {
-        e.preventDefault();
-
-        // Get form values
-        const formData = new FormData(this);
-
-        // Show success message (in a real application, this would send data to a server)
-        showNotification('Tack för ditt meddelande! Vi återkommer så snart som möjligt.', 'success');
-
-        // Reset form
-        this.reset();
-    });
-}
-
-// Add to cart functionality
-const cartButtons = document.querySelectorAll('.product-card .btn-small');
-cartButtons.forEach(button => {
-    button.addEventListener('click', function(e) {
-        e.preventDefault();
-        const productCard = this.closest('.product-card');
-        const productName = productCard.querySelector('h3').textContent;
-
-        // Add animation
-        this.textContent = 'Tillagd!';
-        this.style.background = '#4CAF50';
-        this.style.color = 'white';
-
-        // Show notification
-        showNotification(`${productName} har lagts till i varukorgen!`, 'success');
-
-        // Reset button after 2 seconds
-        setTimeout(() => {
-            this.textContent = 'Lägg i varukorg';
-            this.style.background = '';
-            this.style.color = '';
-        }, 2000);
-    });
-});
-
-// Notification system
-function showNotification(message, type = 'info') {
-    // Remove existing notification if any
-    const existingNotification = document.querySelector('.notification');
-    if (existingNotification) {
-        existingNotification.remove();
-    }
-
-    // Create notification element
-    const notification = document.createElement('div');
-    notification.className = `notification notification-${type}`;
-    notification.textContent = message;
-
-    // Style the notification
-    notification.style.cssText = `
-        position: fixed;
-        top: 100px;
-        right: 20px;
-        padding: 1rem 2rem;
-        background: ${type === 'success' ? '#4CAF50' : '#2196F3'};
-        color: white;
-        border-radius: 8px;
-        box-shadow: 0 5px 20px rgba(0, 0, 0, 0.2);
-        z-index: 10000;
-        animation: slideInRight 0.3s ease;
-        max-width: 350px;
-    `;
-
-    document.body.appendChild(notification);
-
-    // Remove after 4 seconds
-    setTimeout(() => {
-        notification.style.animation = 'slideOutRight 0.3s ease';
-        setTimeout(() => notification.remove(), 300);
-    }, 4000);
-}
-
-// Add animation styles
-const style = document.createElement('style');
-style.textContent = `
-    @keyframes slideInRight {
-        from {
-            transform: translateX(400px);
-            opacity: 0;
-        }
-        to {
-            transform: translateX(0);
-            opacity: 1;
-        }
-    }
-
-    @keyframes slideOutRight {
-        from {
-            transform: translateX(0);
-            opacity: 1;
-        }
-        to {
-            transform: translateX(400px);
-            opacity: 0;
-        }
-    }
-`;
-document.head.appendChild(style);
-
-// Intersection Observer for scroll animations
+// Scroll Animation Observer
 const observerOptions = {
-    threshold: 0.1,
+    threshold: 0.2,
     rootMargin: '0px 0px -100px 0px'
 };
 
 const observer = new IntersectionObserver((entries) => {
     entries.forEach(entry => {
         if (entry.isIntersecting) {
-            entry.target.style.animation = 'fadeInUp 0.8s ease forwards';
-            observer.unobserve(entry.target);
+            entry.target.classList.add('visible');
         }
     });
 }, observerOptions);
 
-// Observe elements for animation
+// Observe elements on page load
 document.addEventListener('DOMContentLoaded', () => {
-    const animateElements = document.querySelectorAll('.product-card, .feature, .contact-info, .contact-form');
-    animateElements.forEach(el => {
-        el.style.opacity = '0';
-        observer.observe(el);
+    // Observe section titles
+    const sectionTitle = document.querySelector('.section-title');
+    if (sectionTitle) {
+        observer.observe(sectionTitle);
+    }
+
+    // Observe chocolate cards with staggered delay
+    const chocolateCards = document.querySelectorAll('.chocolate-card');
+    chocolateCards.forEach((card, index) => {
+        observer.observe(card);
+        // Add staggered animation delay
+        card.style.animationDelay = `${index * 0.2}s`;
     });
+
+    // Observe philosophy section
+    const philosophyContent = document.querySelector('.philosophy-content');
+    if (philosophyContent) {
+        observer.observe(philosophyContent);
+    }
+
+    // Smooth scroll for scroll indicator
+    const scrollIndicator = document.querySelector('.scroll-indicator');
+    if (scrollIndicator) {
+        scrollIndicator.addEventListener('click', () => {
+            const collection = document.querySelector('.collection');
+            if (collection) {
+                collection.scrollIntoView({ behavior: 'smooth' });
+            }
+        });
+    }
+
+    // Add hover effect enhancement for cards
+    chocolateCards.forEach(card => {
+        card.addEventListener('mouseenter', function(e) {
+            this.style.transition = 'all 0.6s cubic-bezier(0.23, 1, 0.32, 1)';
+        });
+
+        card.addEventListener('mousemove', function(e) {
+            const rect = this.getBoundingClientRect();
+            const x = e.clientX - rect.left;
+            const y = e.clientY - rect.top;
+
+            const centerX = rect.width / 2;
+            const centerY = rect.height / 2;
+
+            const rotateX = (y - centerY) / 20;
+            const rotateY = (centerX - x) / 20;
+
+            this.style.transform = `translateY(-10px) perspective(1000px) rotateX(${rotateX}deg) rotateY(${rotateY}deg) scale(1.02)`;
+        });
+
+        card.addEventListener('mouseleave', function() {
+            this.style.transform = 'translateY(0) perspective(1000px) rotateX(0) rotateY(0) scale(1)';
+        });
+    });
+
+    // Parallax effect for hero
+    window.addEventListener('scroll', () => {
+        const scrolled = window.pageYOffset;
+        const hero = document.querySelector('.hero');
+        const heroContent = document.querySelector('.hero-content');
+
+        if (hero && heroContent) {
+            heroContent.style.transform = `translateY(${scrolled * 0.5}px)`;
+            heroContent.style.opacity = 1 - (scrolled / 700);
+        }
+    });
+
+    // Add subtle floating animation to scroll indicator
+    const indicator = document.querySelector('.scroll-indicator');
+    if (indicator) {
+        let floatDirection = 1;
+        setInterval(() => {
+            floatDirection *= -1;
+        }, 2000);
+    }
+
+    // Console art
+    console.log('%c        ', 'font-size: 1px; padding: 50px 100px; background: linear-gradient(135deg, #1a0f0a 0%, #3d2817 100%); border: 2px solid #d4af37;');
+    console.log('%c🍫 ARTISAN CHOKLAD 🍫', 'font-size: 24px; font-weight: bold; color: #d4af37; text-shadow: 0 0 10px rgba(212, 175, 55, 0.5);');
+    console.log('%cHandgjord lyxchoklad med passion', 'font-size: 14px; color: #f4e4c1; font-style: italic;');
+    console.log('%c        ', 'font-size: 1px; padding: 25px 100px; background: linear-gradient(135deg, #1a0f0a 0%, #3d2817 100%); border: 2px solid #d4af37; border-top: none;');
 });
 
-// Console welcome message
-console.log('%c🍫 Välkommen till Artisan Choklad! 🍫', 'font-size: 20px; font-weight: bold; color: #6b4423;');
-console.log('%cHandgjord choklad med passion sedan 2015', 'font-size: 14px; color: #8b5a3c;');
+// Smooth reveal on page load
+window.addEventListener('load', () => {
+    document.body.style.opacity = '1';
+});
+
+// Add initial opacity for smooth load
+document.body.style.opacity = '0';
+document.body.style.transition = 'opacity 0.5s ease';
+
+// Easter egg: Konami code for chocolate rain effect
+let konamiCode = [];
+const konamiPattern = ['ArrowUp', 'ArrowUp', 'ArrowDown', 'ArrowDown', 'ArrowLeft', 'ArrowRight', 'ArrowLeft', 'ArrowRight', 'b', 'a'];
+
+document.addEventListener('keydown', (e) => {
+    konamiCode.push(e.key);
+    konamiCode = konamiCode.slice(-10);
+
+    if (JSON.stringify(konamiCode) === JSON.stringify(konamiPattern)) {
+        createChocolateRain();
+    }
+});
+
+function createChocolateRain() {
+    const chocolates = ['🍫', '🍬', '🍭', '🧁', '🍰'];
+
+    for (let i = 0; i < 50; i++) {
+        setTimeout(() => {
+            const chocolate = document.createElement('div');
+            chocolate.textContent = chocolates[Math.floor(Math.random() * chocolates.length)];
+            chocolate.style.cssText = `
+                position: fixed;
+                top: -50px;
+                left: ${Math.random() * 100}vw;
+                font-size: ${Math.random() * 30 + 20}px;
+                z-index: 9999;
+                pointer-events: none;
+                animation: fall ${Math.random() * 3 + 2}s linear forwards;
+            `;
+
+            document.body.appendChild(chocolate);
+
+            setTimeout(() => chocolate.remove(), 5000);
+        }, i * 100);
+    }
+
+    // Add animation if not exists
+    if (!document.getElementById('chocolate-rain-style')) {
+        const style = document.createElement('style');
+        style.id = 'chocolate-rain-style';
+        style.textContent = `
+            @keyframes fall {
+                to {
+                    transform: translateY(100vh) rotate(360deg);
+                    opacity: 0;
+                }
+            }
+        `;
+        document.head.appendChild(style);
+    }
+}
+
+// Add loading effect
+window.addEventListener('beforeunload', () => {
+    document.body.style.opacity = '0';
+});
