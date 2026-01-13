@@ -20,13 +20,37 @@ html {
 
 body {
     font-family: 'Montserrat', sans-serif;
-    background: linear-gradient(180deg,
-        var(--chocolate-dark) 0%,
-        var(--chocolate-mid) 50%,
-        var(--chocolate-warm) 100%);
+    background-image: url('bg_pc_2560.webp');
+    background-attachment: fixed;
+    background-size: cover;
+    background-position: center;
+    background-repeat: no-repeat;
     color: var(--cream);
     overflow-x: hidden;
     min-height: 100vh;
+    position: relative;
+}
+
+/* Dark overlay to ensure text readability */
+body::before {
+    content: '';
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: linear-gradient(180deg,
+        rgba(26, 15, 10, 0.7) 0%,
+        rgba(45, 24, 16, 0.6) 50%,
+        rgba(61, 40, 23, 0.7) 100%);
+    pointer-events: none;
+    z-index: 0;
+}
+
+/* Ensure content is above overlay */
+body > * {
+    position: relative;
+    z-index: 1;
 }
 
 /* Hero Section */
@@ -402,6 +426,12 @@ body {
 
 /* Responsive */
 @media (max-width: 768px) {
+    /* Mobile background image */
+    body {
+        background-image: url('bg_mobil_1920.webp');
+        background-attachment: scroll; /* Better performance on mobile */
+    }
+
     .chocolate-drip {
         height: 350px;
         filter: blur(1px);
