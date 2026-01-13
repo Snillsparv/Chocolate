@@ -111,6 +111,7 @@ body {
     margin-bottom: 2rem;
     opacity: 0;
     animation: fadeInUp 1.5s ease-out 1.5s forwards;
+    text-transform: uppercase;
 }
 
 .hero-description {
