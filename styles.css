@@ -443,16 +443,16 @@ body {
 /* Cursor Effect */
 @media (hover: hover) {
     body {
-        cursor: url('golden_cursor.png') 0 0, auto;
+        cursor: url('cursor-gold.svg') 2 2, auto;
     }
 
     .chocolate-card:hover {
-        cursor: url('golden_cursor.png') 0 0, pointer;
+        cursor: url('cursor-gold.svg') 2 2, pointer;
     }
 
     a:hover,
     button:hover,
     .scroll-indicator:hover {
-        cursor: url('golden_cursor.png') 0 0, pointer;
+        cursor: url('cursor-gold.svg') 2 2, pointer;
     }
 }
