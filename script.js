@@ -163,17 +163,7 @@ document.addEventListener('DOMContentLoaded', () => {
         });
     });
 
-    // Parallax effect for hero
-    window.addEventListener('scroll', () => {
-        const scrolled = window.pageYOffset;
-        const hero = document.querySelector('.hero');
-        const heroContent = document.querySelector('.hero-content');
-
-        if (hero && heroContent) {
-            heroContent.style.transform = `translateY(${scrolled * 0.5}px)`;
-            heroContent.style.opacity = 1 - (scrolled / 700);
-        }
-    });
+    // Parallax removed - was causing auto-scroll issues
 
     // Add subtle floating animation to scroll indicator
     const indicator = document.querySelector('.scroll-indicator');
@@ -346,139 +336,9 @@ if (!document.getElementById('particle-animation-style')) {
     document.head.appendChild(style);
 }
 
-// 2. MOUSE TRAIL
-let mouseTrailTimeout;
-document.addEventListener('mousemove', (e) => {
-    // Create trail particle
-    const trail = document.createElement('div');
-    trail.className = 'mouse-trail';
-    const size = Math.random() * 6 + 3;
+// 2. MOUSE TRAIL - REMOVED
 
-    trail.style.cssText = `
-        position: fixed;
-        width: ${size}px;
-        height: ${size}px;
-        background: radial-gradient(circle, rgba(212, 175, 55, 0.6) 0%, rgba(244, 228, 193, 0.2) 100%);
-        border-radius: 50%;
-        left: ${e.clientX}px;
-        top: ${e.clientY}px;
-        pointer-events: none;
-        z-index: 9998;
-        animation: trailFade 1s ease-out forwards;
-        box-shadow: 0 0 ${size * 2}px rgba(212, 175, 55, 0.4);
-    `;
-
-    document.body.appendChild(trail);
-
-    setTimeout(() => trail.remove(), 1000);
-});
-
-// Add trail animation
-if (!document.getElementById('trail-animation-style')) {
-    const style = document.createElement('style');
-    style.id = 'trail-animation-style';
-    style.textContent = `
-        @keyframes trailFade {
-            0% {
-                transform: translate(-50%, -50%) scale(1);
-                opacity: 1;
-            }
-            100% {
-                transform: translate(-50%, -50%) scale(0);
-                opacity: 0;
-            }
-        }
-    `;
-    document.head.appendChild(style);
-}
-
-// 3. KONAMI CODE EASTER EGG (↑↑↓↓←→←→BA)
-let konamiCode = ['ArrowUp', 'ArrowUp', 'ArrowDown', 'ArrowDown', 'ArrowLeft', 'ArrowRight', 'ArrowLeft', 'ArrowRight', 'b', 'a'];
-let konamiIndex = 0;
-
-document.addEventListener('keydown', (e) => {
-    const key = e.key.toLowerCase();
-
-    if (key === konamiCode[konamiIndex] || e.key === konamiCode[konamiIndex]) {
-        konamiIndex++;
-
-        if (konamiIndex === konamiCode.length) {
-            activateKonamiMode();
-            konamiIndex = 0;
-        }
-    } else {
-        konamiIndex = 0;
-    }
-});
-
-function activateKonamiMode() {
-    // Create golden overlay
-    const overlay = document.createElement('div');
-    overlay.style.cssText = `
-        position: fixed;
-        top: 0;
-        left: 0;
-        width: 100%;
-        height: 100%;
-        background: radial-gradient(circle, rgba(212, 175, 55, 0.3) 0%, rgba(244, 228, 193, 0.1) 100%);
-        z-index: 10001;
-        pointer-events: none;
-        animation: konamiFade 3s ease-in-out;
-    `;
-    document.body.appendChild(overlay);
-
-    // Create message
-    const message = document.createElement('div');
-    message.textContent = '✨ GALNA I GENERATIONER! ✨';
-    message.style.cssText = `
-        position: fixed;
-        top: 50%;
-        left: 50%;
-        transform: translate(-50%, -50%);
-        font-family: 'Great Vibes', cursive;
-        font-size: 4rem;
-        color: var(--gold);
-        z-index: 10002;
-        pointer-events: none;
-        text-shadow: 0 0 40px rgba(212, 175, 55, 0.8);
-        animation: konamiPulse 3s ease-in-out;
-    `;
-    document.body.appendChild(message);
-
-    // Extreme chocolate rain!
-    for (let i = 0; i < 200; i++) {
-        setTimeout(() => createChocolateRain(), i * 50);
-    }
-
-    // Remove after 3 seconds
-    setTimeout(() => {
-        overlay.remove();
-        message.remove();
-    }, 3000);
-
-    // Add animations
-    if (!document.getElementById('konami-animation-style')) {
-        const style = document.createElement('style');
-        style.id = 'konami-animation-style';
-        style.textContent = `
-            @keyframes konamiFade {
-                0%, 100% { opacity: 0; }
-                50% { opacity: 1; }
-            }
-            @keyframes konamiPulse {
-                0%, 100% {
-                    opacity: 0;
-                    transform: translate(-50%, -50%) scale(0.5);
-                }
-                50% {
-                    opacity: 1;
-                    transform: translate(-50%, -50%) scale(1.2);
-                }
-            }
-        `;
-        document.head.appendChild(style);
-    }
-}
+// 3. KONAMI CODE - REMOVED
 
 // 4. SCROLL-TRIGGERED STORYLINE
 const storyElements = [
@@ -571,21 +431,26 @@ document.addEventListener('DOMContentLoaded', () => {
                 position: absolute;
                 left: ${x}px;
                 top: ${y}px;
-                width: 40px;
-                height: 40px;
-                background: radial-gradient(circle at 30% 30%, transparent 0%, transparent 40%, rgba(0, 0, 0, 0.3) 40%, rgba(0, 0, 0, 0.3) 45%, transparent 45%);
-                border-radius: 50%;
-                transform: translate(-50%, -50%);
+                width: 60px;
+                height: 60px;
+                background: radial-gradient(circle at 50% 50%,
+                    rgba(26, 15, 10, 0.6) 0%,
+                    rgba(26, 15, 10, 0.4) 30%,
+                    transparent 60%);
+                border-radius: 50% 40% 50% 40%;
+                transform: translate(-50%, -50%) rotate(${Math.random() * 360}deg);
                 pointer-events: none;
-                animation: bitemarkFade 2s ease-out forwards;
+                animation: bitemarkFade 2.5s ease-out forwards;
                 z-index: 100;
+                box-shadow: inset 0 0 15px rgba(0, 0, 0, 0.4), 0 2px 8px rgba(0, 0, 0, 0.3);
+                filter: blur(1px);
             `;
 
             // Ensure card has relative positioning
             this.style.position = 'relative';
             this.appendChild(bitemark);
 
-            setTimeout(() => bitemark.remove(), 2000);
+            setTimeout(() => bitemark.remove(), 2500);
         });
     });
 
@@ -596,16 +461,20 @@ document.addEventListener('DOMContentLoaded', () => {
         style.textContent = `
             @keyframes bitemarkFade {
                 0% {
-                    opacity: 1;
-                    transform: translate(-50%, -50%) scale(0);
+                    opacity: 0;
+                    transform: translate(-50%, -50%) scale(0.5);
                 }
-                50% {
+                20% {
+                    opacity: 1;
+                    transform: translate(-50%, -50%) scale(1);
+                }
+                80% {
                     opacity: 1;
                     transform: translate(-50%, -50%) scale(1);
                 }
                 100% {
                     opacity: 0;
-                    transform: translate(-50%, -50%) scale(1.5);
+                    transform: translate(-50%, -50%) scale(1.2);
                 }
             }
         `;
