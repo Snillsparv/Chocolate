@@ -1,26 +1,45 @@
 // Intro Video Handler
-const introVideoContainer = document.querySelector('.intro-video-container');
-const introVideo = document.querySelector('.intro-video');
+document.addEventListener('DOMContentLoaded', () => {
+    const introVideoContainer = document.querySelector('.intro-video-container');
+    const introVideo = document.querySelector('.intro-video');
 
-if (introVideo && introVideoContainer) {
-    // When video ends, fade out and remove
-    introVideo.addEventListener('ended', () => {
-        introVideoContainer.classList.add('fade-out');
-        setTimeout(() => {
-            introVideoContainer.remove();
-        }, 1000); // Remove after fade out animation
-    });
+    if (introVideo && introVideoContainer) {
+        // Try to play the video (needed for some browsers)
+        const playPromise = introVideo.play();
 
-    // Fallback: if video fails to load, remove after 2 seconds
-    introVideo.addEventListener('error', () => {
-        setTimeout(() => {
+        if (playPromise !== undefined) {
+            playPromise.catch(error => {
+                console.log("Autoplay prevented:", error);
+                // If autoplay fails, still fade out after a delay
+                setTimeout(() => {
+                    introVideoContainer.classList.add('fade-out');
+                    setTimeout(() => {
+                        introVideoContainer.remove();
+                    }, 1000);
+                }, 3000);
+            });
+        }
+
+        // When video ends, fade out and remove
+        introVideo.addEventListener('ended', () => {
             introVideoContainer.classList.add('fade-out');
             setTimeout(() => {
                 introVideoContainer.remove();
-            }, 1000);
-        }, 2000);
-    });
-}
+            }, 1000); // Remove after fade out animation
+        });
+
+        // Fallback: if video fails to load, remove after 2 seconds
+        introVideo.addEventListener('error', () => {
+            console.log("Video failed to load");
+            setTimeout(() => {
+                introVideoContainer.classList.add('fade-out');
+                setTimeout(() => {
+                    introVideoContainer.remove();
+                }, 1000);
+            }, 2000);
+        });
+    }
+});
 
 // Scroll Animation Observer
 const observerOptions = {
@@ -145,14 +164,19 @@ document.addEventListener('DOMContentLoaded', () => {
     console.log('%c        ', 'font-size: 1px; padding: 25px 100px; background: linear-gradient(135deg, #1a0f0a 0%, #3d2817 100%); border: 2px solid #d4af37; border-top: none;');
 });
 
-// Smooth reveal on page load
-window.addEventListener('load', () => {
-    document.body.style.opacity = '1';
-});
+// Start with body visible if there's an intro video, otherwise fade in
+if (!document.querySelector('.intro-video-container')) {
+    document.body.style.opacity = '0';
+    document.body.style.transition = 'opacity 0.5s ease';
 
-// Add initial opacity for smooth load
-document.body.style.opacity = '0';
-document.body.style.transition = 'opacity 0.5s ease';
+    // Smooth reveal on page load
+    window.addEventListener('load', () => {
+        document.body.style.opacity = '1';
+    });
+} else {
+    // If intro video exists, body should be visible immediately
+    document.body.style.opacity = '1';
+}
 
 // R key to trigger candy rain (can be used multiple times)
 document.addEventListener('keydown', (e) => {
