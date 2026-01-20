@@ -255,3 +255,367 @@ function createChocolateRain() {
 window.addEventListener('beforeunload', () => {
     document.body.style.opacity = '0';
 });
+
+// ====== SPECIAL EFFECTS ======
+
+// 1. GULDFLIMMER-PARTIKLAR
+function createGoldParticles() {
+    const particleContainer = document.createElement('div');
+    particleContainer.className = 'gold-particles-container';
+    particleContainer.style.cssText = `
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        pointer-events: none;
+        z-index: 1;
+    `;
+    document.body.appendChild(particleContainer);
+
+    // Create 30 floating particles
+    for (let i = 0; i < 30; i++) {
+        createParticle(particleContainer);
+    }
+
+    // Continuously create new particles
+    setInterval(() => {
+        if (document.querySelectorAll('.gold-particle').length < 30) {
+            createParticle(particleContainer);
+        }
+    }, 3000);
+}
+
+function createParticle(container) {
+    const particle = document.createElement('div');
+    particle.className = 'gold-particle';
+    const size = Math.random() * 4 + 2;
+    const startX = Math.random() * 100;
+    const startY = Math.random() * 100;
+    const duration = Math.random() * 10 + 15;
+    const delay = Math.random() * 5;
+
+    particle.style.cssText = `
+        position: absolute;
+        width: ${size}px;
+        height: ${size}px;
+        background: radial-gradient(circle, rgba(212, 175, 55, 0.8) 0%, rgba(244, 228, 193, 0.4) 100%);
+        border-radius: 50%;
+        left: ${startX}%;
+        top: ${startY}%;
+        animation: floatParticle ${duration}s ease-in-out ${delay}s infinite;
+        box-shadow: 0 0 ${size * 2}px rgba(212, 175, 55, 0.5);
+        filter: blur(0.5px);
+    `;
+
+    container.appendChild(particle);
+
+    // Remove and recreate after animation cycle
+    setTimeout(() => {
+        particle.remove();
+    }, (duration + delay) * 1000);
+}
+
+// Add particle animation
+if (!document.getElementById('particle-animation-style')) {
+    const style = document.createElement('style');
+    style.id = 'particle-animation-style';
+    style.textContent = `
+        @keyframes floatParticle {
+            0%, 100% {
+                transform: translate(0, 0) scale(1);
+                opacity: 0;
+            }
+            10% {
+                opacity: 1;
+            }
+            90% {
+                opacity: 1;
+            }
+            25% {
+                transform: translate(${Math.random() * 100 - 50}px, ${Math.random() * 100 - 50}px) scale(1.2);
+            }
+            50% {
+                transform: translate(${Math.random() * 100 - 50}px, ${Math.random() * 100 - 50}px) scale(0.8);
+            }
+            75% {
+                transform: translate(${Math.random() * 100 - 50}px, ${Math.random() * 100 - 50}px) scale(1.1);
+            }
+        }
+    `;
+    document.head.appendChild(style);
+}
+
+// 2. MOUSE TRAIL
+let mouseTrailTimeout;
+document.addEventListener('mousemove', (e) => {
+    // Create trail particle
+    const trail = document.createElement('div');
+    trail.className = 'mouse-trail';
+    const size = Math.random() * 6 + 3;
+
+    trail.style.cssText = `
+        position: fixed;
+        width: ${size}px;
+        height: ${size}px;
+        background: radial-gradient(circle, rgba(212, 175, 55, 0.6) 0%, rgba(244, 228, 193, 0.2) 100%);
+        border-radius: 50%;
+        left: ${e.clientX}px;
+        top: ${e.clientY}px;
+        pointer-events: none;
+        z-index: 9998;
+        animation: trailFade 1s ease-out forwards;
+        box-shadow: 0 0 ${size * 2}px rgba(212, 175, 55, 0.4);
+    `;
+
+    document.body.appendChild(trail);
+
+    setTimeout(() => trail.remove(), 1000);
+});
+
+// Add trail animation
+if (!document.getElementById('trail-animation-style')) {
+    const style = document.createElement('style');
+    style.id = 'trail-animation-style';
+    style.textContent = `
+        @keyframes trailFade {
+            0% {
+                transform: translate(-50%, -50%) scale(1);
+                opacity: 1;
+            }
+            100% {
+                transform: translate(-50%, -50%) scale(0);
+                opacity: 0;
+            }
+        }
+    `;
+    document.head.appendChild(style);
+}
+
+// 3. KONAMI CODE EASTER EGG (↑↑↓↓←→←→BA)
+let konamiCode = ['ArrowUp', 'ArrowUp', 'ArrowDown', 'ArrowDown', 'ArrowLeft', 'ArrowRight', 'ArrowLeft', 'ArrowRight', 'b', 'a'];
+let konamiIndex = 0;
+
+document.addEventListener('keydown', (e) => {
+    const key = e.key.toLowerCase();
+
+    if (key === konamiCode[konamiIndex] || e.key === konamiCode[konamiIndex]) {
+        konamiIndex++;
+
+        if (konamiIndex === konamiCode.length) {
+            activateKonamiMode();
+            konamiIndex = 0;
+        }
+    } else {
+        konamiIndex = 0;
+    }
+});
+
+function activateKonamiMode() {
+    // Create golden overlay
+    const overlay = document.createElement('div');
+    overlay.style.cssText = `
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background: radial-gradient(circle, rgba(212, 175, 55, 0.3) 0%, rgba(244, 228, 193, 0.1) 100%);
+        z-index: 10001;
+        pointer-events: none;
+        animation: konamiFade 3s ease-in-out;
+    `;
+    document.body.appendChild(overlay);
+
+    // Create message
+    const message = document.createElement('div');
+    message.textContent = '✨ GALNA I GENERATIONER! ✨';
+    message.style.cssText = `
+        position: fixed;
+        top: 50%;
+        left: 50%;
+        transform: translate(-50%, -50%);
+        font-family: 'Great Vibes', cursive;
+        font-size: 4rem;
+        color: var(--gold);
+        z-index: 10002;
+        pointer-events: none;
+        text-shadow: 0 0 40px rgba(212, 175, 55, 0.8);
+        animation: konamiPulse 3s ease-in-out;
+    `;
+    document.body.appendChild(message);
+
+    // Extreme chocolate rain!
+    for (let i = 0; i < 200; i++) {
+        setTimeout(() => createChocolateRain(), i * 50);
+    }
+
+    // Remove after 3 seconds
+    setTimeout(() => {
+        overlay.remove();
+        message.remove();
+    }, 3000);
+
+    // Add animations
+    if (!document.getElementById('konami-animation-style')) {
+        const style = document.createElement('style');
+        style.id = 'konami-animation-style';
+        style.textContent = `
+            @keyframes konamiFade {
+                0%, 100% { opacity: 0; }
+                50% { opacity: 1; }
+            }
+            @keyframes konamiPulse {
+                0%, 100% {
+                    opacity: 0;
+                    transform: translate(-50%, -50%) scale(0.5);
+                }
+                50% {
+                    opacity: 1;
+                    transform: translate(-50%, -50%) scale(1.2);
+                }
+            }
+        `;
+        document.head.appendChild(style);
+    }
+}
+
+// 4. SCROLL-TRIGGERED STORYLINE
+const storyElements = [
+    { selector: '.collection', text: 'Från kakaoböna till mästerwerk...' },
+    { selector: '.philosophy', text: 'Familjetradition sedan 2016' }
+];
+
+storyElements.forEach(story => {
+    const storyObserver = new IntersectionObserver((entries) => {
+        entries.forEach(entry => {
+            if (entry.isIntersecting && !entry.target.dataset.storyShown) {
+                entry.target.dataset.storyShown = 'true';
+                showStoryText(story.text, entry.target);
+            }
+        });
+    }, { threshold: 0.3 });
+
+    document.addEventListener('DOMContentLoaded', () => {
+        const element = document.querySelector(story.selector);
+        if (element) {
+            storyObserver.observe(element);
+        }
+    });
+});
+
+function showStoryText(text, targetElement) {
+    const storyText = document.createElement('div');
+    storyText.className = 'story-text';
+    storyText.textContent = text;
+    storyText.style.cssText = `
+        position: absolute;
+        top: -60px;
+        left: 50%;
+        transform: translateX(-50%);
+        font-family: 'Great Vibes', cursive;
+        font-size: 2rem;
+        color: var(--gold);
+        text-shadow: 0 0 20px rgba(212, 175, 55, 0.6);
+        opacity: 0;
+        animation: storyFadeIn 2s ease-out forwards;
+        z-index: 10;
+        white-space: nowrap;
+    `;
+
+    targetElement.style.position = 'relative';
+    targetElement.appendChild(storyText);
+
+    // Add animation
+    if (!document.getElementById('story-animation-style')) {
+        const style = document.createElement('style');
+        style.id = 'story-animation-style';
+        style.textContent = `
+            @keyframes storyFadeIn {
+                0% {
+                    opacity: 0;
+                    transform: translateX(-50%) translateY(20px);
+                }
+                50% {
+                    opacity: 1;
+                    transform: translateX(-50%) translateY(0);
+                }
+                100% {
+                    opacity: 0;
+                    transform: translateX(-50%) translateY(-20px);
+                }
+            }
+        `;
+        document.head.appendChild(style);
+    }
+
+    setTimeout(() => storyText.remove(), 2000);
+}
+
+// 5. BITEMARK ON PRODUCT CARD CLICK
+document.addEventListener('DOMContentLoaded', () => {
+    const chocolateCards = document.querySelectorAll('.chocolate-card');
+
+    chocolateCards.forEach(card => {
+        card.addEventListener('click', function(e) {
+            // Create bitemark
+            const bitemark = document.createElement('div');
+            bitemark.className = 'bitemark';
+
+            // Position relative to click
+            const rect = this.getBoundingClientRect();
+            const x = e.clientX - rect.left;
+            const y = e.clientY - rect.top;
+
+            bitemark.style.cssText = `
+                position: absolute;
+                left: ${x}px;
+                top: ${y}px;
+                width: 40px;
+                height: 40px;
+                background: radial-gradient(circle at 30% 30%, transparent 0%, transparent 40%, rgba(0, 0, 0, 0.3) 40%, rgba(0, 0, 0, 0.3) 45%, transparent 45%);
+                border-radius: 50%;
+                transform: translate(-50%, -50%);
+                pointer-events: none;
+                animation: bitemarkFade 2s ease-out forwards;
+                z-index: 100;
+            `;
+
+            // Ensure card has relative positioning
+            this.style.position = 'relative';
+            this.appendChild(bitemark);
+
+            setTimeout(() => bitemark.remove(), 2000);
+        });
+    });
+
+    // Add bitemark animation
+    if (!document.getElementById('bitemark-animation-style')) {
+        const style = document.createElement('style');
+        style.id = 'bitemark-animation-style';
+        style.textContent = `
+            @keyframes bitemarkFade {
+                0% {
+                    opacity: 1;
+                    transform: translate(-50%, -50%) scale(0);
+                }
+                50% {
+                    opacity: 1;
+                    transform: translate(-50%, -50%) scale(1);
+                }
+                100% {
+                    opacity: 0;
+                    transform: translate(-50%, -50%) scale(1.5);
+                }
+            }
+        `;
+        document.head.appendChild(style);
+    }
+});
+
+// Initialize gold particles on load
+window.addEventListener('load', () => {
+    setTimeout(() => {
+        createGoldParticles();
+    }, 2000); // Start after page has loaded
+});
