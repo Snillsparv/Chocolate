@@ -51,14 +51,19 @@ body {
 }
 
 .intro-video {
+    position: absolute;
+    top: 0;
+    left: 0;
     width: 100%;
     height: 100%;
     object-fit: cover;
+    object-position: center center;
 }
 
 /* Hero Section */
 .hero {
-    min-height: 100vh;
+    height: 100vh;
+    width: 100vw;
     display: flex;
     align-items: center;
     justify-content: center;
@@ -66,7 +71,7 @@ body {
     overflow: hidden;
     background-image: url('bg_med_text.webp');
     background-size: cover;
-    background-position: center;
+    background-position: center center;
     background-repeat: no-repeat;
 }
 
