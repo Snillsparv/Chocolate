@@ -1,3 +1,27 @@
+// Intro Video Handler
+const introVideoContainer = document.querySelector('.intro-video-container');
+const introVideo = document.querySelector('.intro-video');
+
+if (introVideo && introVideoContainer) {
+    // When video ends, fade out and remove
+    introVideo.addEventListener('ended', () => {
+        introVideoContainer.classList.add('fade-out');
+        setTimeout(() => {
+            introVideoContainer.remove();
+        }, 1000); // Remove after fade out animation
+    });
+
+    // Fallback: if video fails to load, remove after 2 seconds
+    introVideo.addEventListener('error', () => {
+        setTimeout(() => {
+            introVideoContainer.classList.add('fade-out');
+            setTimeout(() => {
+                introVideoContainer.remove();
+            }, 1000);
+        }, 2000);
+    });
+}
+
 // Scroll Animation Observer
 const observerOptions = {
     threshold: 0.2,
