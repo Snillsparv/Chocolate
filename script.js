@@ -488,3 +488,75 @@ window.addEventListener('load', () => {
         createGoldParticles();
     }, 2000); // Start after page has loaded
 });
+
+// ====== STORYTELLING ANIMATIONS ======
+
+// Observer for all storytelling elements
+const storyObserver = new IntersectionObserver((entries) => {
+    entries.forEach(entry => {
+        if (entry.isIntersecting) {
+            entry.target.classList.add('visible');
+        }
+    });
+}, { threshold: 0.2 });
+
+document.addEventListener('DOMContentLoaded', () => {
+    // ALTERNATIV 1: Timeline animations
+    const timelineItems = document.querySelectorAll('.timeline-item');
+    timelineItems.forEach((item, index) => {
+        item.style.transitionDelay = `${index * 0.2}s`;
+        storyObserver.observe(item);
+    });
+
+    // ALTERNATIV 2: Process steps animations
+    const processSteps = document.querySelectorAll('.process-step');
+    processSteps.forEach((step, index) => {
+        step.style.transitionDelay = `${index * 0.15}s`;
+        storyObserver.observe(step);
+    });
+
+    // Process progress bar
+    const progressBarObserver = new IntersectionObserver((entries) => {
+        entries.forEach(entry => {
+            if (entry.isIntersecting) {
+                const progressBar = entry.target.querySelector('.process-progress-bar');
+                if (progressBar) {
+                    setTimeout(() => {
+                        progressBar.classList.add('active');
+                    }, 500);
+                }
+            }
+        });
+    }, { threshold: 0.5 });
+
+    const processSection = document.querySelector('.process-section');
+    if (processSection) {
+        progressBarObserver.observe(processSection);
+    }
+
+    // ALTERNATIV 3: Parallax effects
+    const parallaxScenes = document.querySelectorAll('.parallax-scene');
+
+    parallaxScenes.forEach(scene => {
+        const parallaxText = scene.querySelector('.parallax-text');
+        if (parallaxText) {
+            storyObserver.observe(parallaxText);
+        }
+    });
+
+    // Parallax scroll effect
+    window.addEventListener('scroll', () => {
+        parallaxScenes.forEach(scene => {
+            const rect = scene.getBoundingClientRect();
+            const scrollPercent = (window.innerHeight - rect.top) / (window.innerHeight + rect.height);
+
+            if (scrollPercent > 0 && scrollPercent < 1) {
+                const bg = scene.querySelector('.parallax-bg');
+                if (bg) {
+                    const translateY = (scrollPercent - 0.5) * 100;
+                    bg.style.transform = `translateY(${translateY}px)`;
+                }
+            }
+        });
+    });
+});
