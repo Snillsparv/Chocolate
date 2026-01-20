@@ -1,42 +1,69 @@
-// Intro Video Handler
+// Loading Screen and Intro Video Handler
 document.addEventListener('DOMContentLoaded', () => {
+    const loadingScreen = document.querySelector('.loading-screen');
+    const loadingText = document.querySelector('.loading-text');
+    const pressKeyText = document.querySelector('.press-key-text');
     const introVideoContainer = document.querySelector('.intro-video-container');
     const introVideo = document.querySelector('.intro-video');
 
-    if (introVideo && introVideoContainer) {
-        // Try to play the video (needed for some browsers)
-        const playPromise = introVideo.play();
+    let videoReady = false;
+    let keyPressed = false;
 
-        if (playPromise !== undefined) {
-            playPromise.catch(error => {
-                console.log("Autoplay prevented:", error);
-                // If autoplay fails, still fade out after a delay
+    if (introVideo && introVideoContainer && loadingScreen) {
+        // Load video in background
+        introVideo.load();
+
+        // When video is ready to play
+        introVideo.addEventListener('canplay', () => {
+            videoReady = true;
+            loadingText.style.display = 'none';
+            pressKeyText.style.display = 'block';
+            document.querySelector('.loading-spinner').style.display = 'none';
+        });
+
+        // Listen for any key press
+        const startExperience = () => {
+            if (videoReady && !keyPressed) {
+                keyPressed = true;
+
+                // Fade out loading screen
+                loadingScreen.classList.add('fade-out');
                 setTimeout(() => {
-                    introVideoContainer.classList.add('fade-out');
-                    setTimeout(() => {
-                        introVideoContainer.remove();
-                    }, 1000);
-                }, 3000);
-            });
-        }
+                    loadingScreen.remove();
+                }, 800);
+
+                // Show and play video
+                introVideoContainer.style.display = 'flex';
+                setTimeout(() => {
+                    const playPromise = introVideo.play();
+
+                    if (playPromise !== undefined) {
+                        playPromise.catch(error => {
+                            console.log("Autoplay prevented:", error);
+                        });
+                    }
+                }, 100);
+            }
+        };
+
+        // Any key press starts the experience
+        document.addEventListener('keydown', startExperience, { once: true });
 
         // When video ends, fade out and remove
         introVideo.addEventListener('ended', () => {
             introVideoContainer.classList.add('fade-out');
             setTimeout(() => {
                 introVideoContainer.remove();
-            }, 1000); // Remove after fade out animation
+            }, 1000);
         });
 
-        // Fallback: if video fails to load, remove after 2 seconds
+        // Fallback: if video fails to load
         introVideo.addEventListener('error', () => {
             console.log("Video failed to load");
+            loadingScreen.classList.add('fade-out');
             setTimeout(() => {
-                introVideoContainer.classList.add('fade-out');
-                setTimeout(() => {
-                    introVideoContainer.remove();
-                }, 1000);
-            }, 2000);
+                loadingScreen.remove();
+            }, 800);
         });
     }
 });
