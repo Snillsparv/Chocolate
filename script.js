@@ -12,7 +12,6 @@ document.addEventListener('DOMContentLoaded', () => {
 
     // Rotating loading texts
     const loadingTexts = [
-        "Startar vattenbadet...",
         "Maler kakaobönor...",
         "Tempererar chokladen...",
         "Rostar hasselnötterna...",
