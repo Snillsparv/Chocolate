@@ -2,6 +2,7 @@
 document.addEventListener('DOMContentLoaded', () => {
     const loadingScreen = document.querySelector('.loading-screen');
     const loadingText = document.querySelector('.loading-text');
+    const keyholeContainer = document.querySelector('.keyhole-container');
     const keyholeImage = document.querySelector('.keyhole-image');
     const introVideoContainer = document.querySelector('.intro-video-container');
     const introVideo = document.querySelector('.intro-video');
@@ -17,7 +18,9 @@ document.addEventListener('DOMContentLoaded', () => {
         introVideo.addEventListener('canplay', () => {
             videoReady = true;
             loadingText.style.display = 'none';
-            keyholeImage.style.display = 'block';
+            if (keyholeContainer) {
+                keyholeContainer.style.display = 'flex';
+            }
             document.querySelector('.loading-spinner').style.display = 'none';
         });
 
