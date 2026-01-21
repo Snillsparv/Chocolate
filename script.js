@@ -2,12 +2,12 @@
 document.addEventListener('DOMContentLoaded', () => {
     const loadingScreen = document.querySelector('.loading-screen');
     const loadingText = document.querySelector('.loading-text');
-    const pressKeyText = document.querySelector('.press-key-text');
+    const keyholeImage = document.querySelector('.keyhole-image');
     const introVideoContainer = document.querySelector('.intro-video-container');
     const introVideo = document.querySelector('.intro-video');
 
     let videoReady = false;
-    let keyPressed = false;
+    let clicked = false;
 
     if (introVideo && introVideoContainer && loadingScreen) {
         // Load video in background
@@ -17,14 +17,14 @@ document.addEventListener('DOMContentLoaded', () => {
         introVideo.addEventListener('canplay', () => {
             videoReady = true;
             loadingText.style.display = 'none';
-            pressKeyText.style.display = 'block';
+            keyholeImage.style.display = 'block';
             document.querySelector('.loading-spinner').style.display = 'none';
         });
 
-        // Listen for any key press
+        // Listen for click on keyhole
         const startExperience = () => {
-            if (videoReady && !keyPressed) {
-                keyPressed = true;
+            if (videoReady && !clicked) {
+                clicked = true;
 
                 // Fade out loading screen
                 loadingScreen.classList.add('fade-out');
@@ -46,8 +46,10 @@ document.addEventListener('DOMContentLoaded', () => {
             }
         };
 
-        // Any key press starts the experience
-        document.addEventListener('keydown', startExperience, { once: true });
+        // Click on keyhole starts the experience
+        if (keyholeImage) {
+            keyholeImage.addEventListener('click', startExperience);
+        }
 
         // When video ends, fade out and remove
         introVideo.addEventListener('ended', () => {

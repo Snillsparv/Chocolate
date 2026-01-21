@@ -68,8 +68,7 @@ body {
     100% { transform: rotate(360deg); }
 }
 
-.loading-text,
-.press-key-text {
+.loading-text {
     font-family: 'Cormorant Garamond', serif;
     font-size: 1.5rem;
     font-weight: 300;
@@ -79,14 +78,26 @@ body {
     margin: 10px 0;
 }
 
-.press-key-text {
-    font-size: 1.8rem;
-    font-weight: 400;
+.keyhole-image {
+    max-width: 200px;
+    width: 100%;
+    height: auto;
+    margin-top: 2rem;
+    cursor: pointer;
+    opacity: 0.9;
+    transition: all 0.4s ease;
     animation: pulse 2s ease-in-out infinite;
+    filter: drop-shadow(0 0 20px rgba(212, 175, 55, 0.5));
+}
+
+.keyhole-image:hover {
+    opacity: 1;
+    transform: scale(1.1);
+    filter: drop-shadow(0 0 30px rgba(212, 175, 55, 0.8));
 }
 
 @keyframes pulse {
-    0%, 100% { opacity: 0.6; }
+    0%, 100% { opacity: 0.8; }
     50% { opacity: 1; }
 }
 
