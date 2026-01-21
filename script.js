@@ -60,6 +60,8 @@ document.addEventListener('DOMContentLoaded', () => {
 
                 // Show and play video
                 introVideoContainer.style.display = 'flex';
+                // Prevent scrolling during video
+                document.body.classList.add('video-playing');
                 setTimeout(() => {
                     const playPromise = introVideo.play();
 
@@ -80,6 +82,8 @@ document.addEventListener('DOMContentLoaded', () => {
         // When video ends, fade out and remove
         introVideo.addEventListener('ended', () => {
             introVideoContainer.classList.add('fade-out');
+            // Re-enable scrolling
+            document.body.classList.remove('video-playing');
             setTimeout(() => {
                 introVideoContainer.remove();
             }, 1000);

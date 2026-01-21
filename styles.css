@@ -146,6 +146,12 @@ body {
     pointer-events: none;
 }
 
+/* Prevent scrolling when video is playing */
+body.video-playing {
+    overflow: hidden;
+    height: 100vh;
+}
+
 .intro-video {
     position: absolute;
     top: 0;
