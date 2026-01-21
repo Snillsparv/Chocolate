@@ -10,6 +10,28 @@ document.addEventListener('DOMContentLoaded', () => {
     let videoReady = false;
     let clicked = false;
 
+    // Rotating loading texts
+    const loadingTexts = [
+        "Startar vattenbadet...",
+        "Maler kakaobönor...",
+        "Tempererar chokladen...",
+        "Rostar hasselnötterna...",
+        "Spinner kadayiftrådar...",
+        "Väljer de fetaste larverna...",
+        "Tillber Sparv-Kungen...",
+        "Flyger hejvilt fram och tillbaka..."
+    ];
+    let textIndex = 0;
+    let textRotationInterval;
+
+    if (loadingText) {
+        loadingText.textContent = loadingTexts[0];
+        textRotationInterval = setInterval(() => {
+            textIndex = (textIndex + 1) % loadingTexts.length;
+            loadingText.textContent = loadingTexts[textIndex];
+        }, 1500); // Change text every 1.5 seconds
+    }
+
     if (introVideo && introVideoContainer && loadingScreen) {
         // Load video in background
         introVideo.load();
@@ -17,6 +39,8 @@ document.addEventListener('DOMContentLoaded', () => {
         // When video is ready to play
         introVideo.addEventListener('canplay', () => {
             videoReady = true;
+            // Stop text rotation
+            clearInterval(textRotationInterval);
             loadingText.style.display = 'none';
             if (keyholeContainer) {
                 keyholeContainer.style.display = 'flex';
@@ -72,6 +96,7 @@ document.addEventListener('DOMContentLoaded', () => {
         // Fallback: if video fails to load
         introVideo.addEventListener('error', () => {
             console.log("Video failed to load");
+            clearInterval(textRotationInterval);
             loadingScreen.classList.add('fade-out');
             setTimeout(() => {
                 loadingScreen.remove();
