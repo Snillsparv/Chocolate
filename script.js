@@ -52,30 +52,23 @@ document.addEventListener('DOMContentLoaded', () => {
             if (videoReady && !clicked) {
                 clicked = true;
 
-                // First fade out keyhole
-                if (keyholeContainer) {
-                    keyholeContainer.classList.add('fade-out');
-                }
-
-                // After keyhole fades, fade out loading screen
+                // Fade out loading screen and start video immediately
+                loadingScreen.classList.add('fade-out');
                 setTimeout(() => {
-                    loadingScreen.classList.add('fade-out');
-                    setTimeout(() => {
-                        loadingScreen.remove();
-                    }, 800);
+                    loadingScreen.remove();
+                }, 800);
 
-                    // Show and play video
-                    introVideoContainer.style.display = 'flex';
-                    setTimeout(() => {
-                        const playPromise = introVideo.play();
+                // Show and play video
+                introVideoContainer.style.display = 'flex';
+                setTimeout(() => {
+                    const playPromise = introVideo.play();
 
-                        if (playPromise !== undefined) {
-                            playPromise.catch(error => {
-                                console.log("Autoplay prevented:", error);
-                            });
-                        }
-                    }, 100);
-                }, 600); // Wait for keyhole fade-out
+                    if (playPromise !== undefined) {
+                        playPromise.catch(error => {
+                            console.log("Autoplay prevented:", error);
+                        });
+                    }
+                }, 100);
             }
         };
 
