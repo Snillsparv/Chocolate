@@ -9,6 +9,25 @@ document.addEventListener('DOMContentLoaded', () => {
 
     let videoReady = false;
     let clicked = false;
+    let minimumLoadTimeReached = false;
+
+    // Minimum 5 seconds loading screen
+    setTimeout(() => {
+        minimumLoadTimeReached = true;
+        checkIfReadyToShow();
+    }, 5000);
+
+    function checkIfReadyToShow() {
+        if (videoReady && minimumLoadTimeReached) {
+            // Stop text rotation
+            clearInterval(textRotationInterval);
+            loadingText.style.display = 'none';
+            if (keyholeContainer) {
+                keyholeContainer.style.display = 'flex';
+            }
+            document.querySelector('.loading-spinner').style.display = 'none';
+        }
+    }
 
     // Rotating loading texts
     const loadingTexts = [
@@ -38,13 +57,7 @@ document.addEventListener('DOMContentLoaded', () => {
         // When video is ready to play
         introVideo.addEventListener('canplay', () => {
             videoReady = true;
-            // Stop text rotation
-            clearInterval(textRotationInterval);
-            loadingText.style.display = 'none';
-            if (keyholeContainer) {
-                keyholeContainer.style.display = 'flex';
-            }
-            document.querySelector('.loading-spinner').style.display = 'none';
+            checkIfReadyToShow();
         });
 
         // Listen for click on keyhole
@@ -82,8 +95,9 @@ document.addEventListener('DOMContentLoaded', () => {
         // When video ends, fade out and remove
         introVideo.addEventListener('ended', () => {
             introVideoContainer.classList.add('fade-out');
-            // Re-enable scrolling
+            // Re-enable scrolling and scroll to top
             document.body.classList.remove('video-playing');
+            window.scrollTo(0, 0);
             setTimeout(() => {
                 introVideoContainer.remove();
             }, 1000);
