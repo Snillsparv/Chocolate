@@ -784,65 +784,186 @@ body.video-playing {
     width: 100%;
 }
 
-/* ALTERNATIV 3: Parallax Storytelling */
-.parallax-story {
-    padding: 8rem 0 0 0;
-}
-
-.parallax-scene {
-    height: 100vh;
-    position: relative;
-    overflow: hidden;
+/* ALTERNATIV 3: Laterna Magica */
+.laterna-magica-section {
+    min-height: 100vh;
+    padding: 8rem 2rem;
     display: flex;
+    flex-direction: column;
     align-items: center;
     justify-content: center;
 }
 
-.parallax-bg {
+.laterna-magica {
+    max-width: 1000px;
+    width: 100%;
+    margin: 0 auto;
+}
+
+.projector-frame {
+    position: relative;
+    width: 100%;
+    aspect-ratio: 16/9;
+    background: linear-gradient(135deg,
+        rgba(26, 15, 10, 0.8) 0%,
+        rgba(61, 40, 23, 0.6) 100%);
+    border: 15px solid;
+    border-image: linear-gradient(135deg, var(--gold) 0%, var(--gold-light) 100%) 1;
+    box-shadow:
+        0 0 30px rgba(212, 175, 55, 0.3),
+        inset 0 0 50px rgba(0, 0, 0, 0.5);
+    cursor: pointer;
+    overflow: hidden;
+}
+
+/* Ornate corner decorations */
+.frame-corner {
+    position: absolute;
+    width: 40px;
+    height: 40px;
+    border: 3px solid var(--gold);
+}
+
+.frame-corner.top-left {
+    top: -3px;
+    left: -3px;
+    border-right: none;
+    border-bottom: none;
+}
+
+.frame-corner.top-right {
+    top: -3px;
+    right: -3px;
+    border-left: none;
+    border-bottom: none;
+}
+
+.frame-corner.bottom-left {
+    bottom: -3px;
+    left: -3px;
+    border-right: none;
+    border-top: none;
+}
+
+.frame-corner.bottom-right {
+    bottom: -3px;
+    right: -3px;
+    border-left: none;
+    border-top: none;
+}
+
+.slides-container {
+    position: relative;
+    width: 100%;
+    height: 100%;
+}
+
+.slide {
     position: absolute;
     top: 0;
     left: 0;
     width: 100%;
-    height: 120%;
-    background-size: cover;
-    background-position: center;
-    background-repeat: no-repeat;
-    filter: brightness(0.5);
-    transition: transform 0.5s ease-out;
-}
-
-.parallax-text {
-    position: relative;
-    z-index: 2;
-    text-align: center;
-    padding: 2rem;
-    max-width: 800px;
+    height: 100%;
     opacity: 0;
-    transform: translateY(50px);
-    transition: opacity 1s ease, transform 1s ease;
+    transform: translateX(100%);
+    transition: all 0.8s cubic-bezier(0.4, 0, 0.2, 1);
 }
 
-.parallax-text.visible {
+.slide.active {
     opacity: 1;
-    transform: translateY(0);
+    transform: translateX(0);
+    z-index: 2;
 }
 
-.parallax-text h3 {
+.slide.exiting {
+    opacity: 0;
+    transform: translateX(-100%);
+    z-index: 1;
+}
+
+.slide img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    object-position: center;
+}
+
+/* Vignette effect */
+.vignette {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: radial-gradient(ellipse at center,
+        transparent 0%,
+        transparent 40%,
+        rgba(0, 0, 0, 0.3) 70%,
+        rgba(0, 0, 0, 0.6) 100%);
+    pointer-events: none;
+}
+
+.slide-text {
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    padding: 2rem;
+    background: linear-gradient(to top,
+        rgba(26, 15, 10, 0.95) 0%,
+        rgba(26, 15, 10, 0.7) 50%,
+        transparent 100%);
+    z-index: 3;
+    text-align: center;
+}
+
+.slide-text h3 {
     font-family: 'Great Vibes', cursive;
-    font-size: clamp(3rem, 8vw, 6rem);
+    font-size: clamp(2rem, 5vw, 4rem);
     color: var(--gold);
-    margin-bottom: 2rem;
-    text-shadow:
-        0 0 40px rgba(212, 175, 55, 0.8),
-        2px 2px 8px rgba(0, 0, 0, 0.8);
+    margin-bottom: 1rem;
+    text-shadow: 0 0 20px rgba(212, 175, 55, 0.6);
 }
 
-.parallax-text p {
+.slide-text p {
     font-family: 'Cormorant Garamond', serif;
-    font-size: clamp(1.2rem, 3vw, 2rem);
+    font-size: clamp(1rem, 2.5vw, 1.5rem);
     color: var(--cream);
-    line-height: 1.8;
-    text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.8);
+    line-height: 1.6;
+}
+
+.click-hint {
+    position: absolute;
+    bottom: 1rem;
+    right: 1rem;
+    font-family: 'Montserrat', sans-serif;
+    font-size: 0.9rem;
+    color: var(--gold);
+    opacity: 0.7;
+    animation: pulse 2s ease-in-out infinite;
+    z-index: 4;
+}
+
+.slide-indicator {
+    display: flex;
+    justify-content: center;
+    gap: 1rem;
+    margin-top: 2rem;
+}
+
+.indicator-dot {
+    width: 12px;
+    height: 12px;
+    border-radius: 50%;
+    background: rgba(212, 175, 55, 0.3);
+    transition: all 0.3s ease;
+    cursor: pointer;
+}
+
+.indicator-dot.active {
+    background: var(--gold);
+    box-shadow: 0 0 15px rgba(212, 175, 55, 0.6);
+    transform: scale(1.3);
 }
 
 /* Footer */

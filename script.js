@@ -580,30 +580,97 @@ document.addEventListener('DOMContentLoaded', () => {
     if (processSection) {
         progressBarObserver.observe(processSection);
     }
+});
 
-    // ALTERNATIV 3: Parallax effects
-    const parallaxScenes = document.querySelectorAll('.parallax-scene');
+// ====== LATERNA MAGICA SLIDESHOW ======
+document.addEventListener('DOMContentLoaded', () => {
+    const projectorFrame = document.querySelector('.projector-frame');
+    const slides = document.querySelectorAll('.slide');
+    const indicatorDots = document.querySelectorAll('.indicator-dot');
+    const clickHint = document.querySelector('.click-hint');
 
-    parallaxScenes.forEach(scene => {
-        const parallaxText = scene.querySelector('.parallax-text');
-        if (parallaxText) {
-            storyObserver.observe(parallaxText);
+    if (!projectorFrame || slides.length === 0) return;
+
+    let currentSlideIndex = 0;
+    let isTransitioning = false;
+
+    // Function to go to specific slide
+    function goToSlide(index) {
+        if (isTransitioning || index === currentSlideIndex) return;
+
+        isTransitioning = true;
+
+        const currentSlide = slides[currentSlideIndex];
+        const nextSlide = slides[index];
+
+        // Add exiting class to current slide
+        currentSlide.classList.add('exiting');
+        currentSlide.classList.remove('active');
+
+        // Add active class to next slide
+        nextSlide.classList.add('active');
+        nextSlide.classList.remove('exiting');
+
+        // Update indicator dots
+        indicatorDots[currentSlideIndex].classList.remove('active');
+        indicatorDots[index].classList.add('active');
+
+        // Update current index
+        currentSlideIndex = index;
+
+        // Remove exiting class after transition
+        setTimeout(() => {
+            currentSlide.classList.remove('exiting');
+            isTransitioning = false;
+        }, 800);
+
+        // Hide click hint after first click
+        if (clickHint) {
+            clickHint.style.opacity = '0';
+            setTimeout(() => {
+                clickHint.style.display = 'none';
+            }, 300);
         }
+    }
+
+    // Function to advance to next slide
+    function nextSlide() {
+        const nextIndex = (currentSlideIndex + 1) % slides.length;
+        goToSlide(nextIndex);
+    }
+
+    // Click on projector frame to advance
+    projectorFrame.addEventListener('click', (e) => {
+        // Don't trigger if clicking on indicator dots
+        if (e.target.classList.contains('indicator-dot')) return;
+        nextSlide();
     });
 
-    // Parallax scroll effect
-    window.addEventListener('scroll', () => {
-        parallaxScenes.forEach(scene => {
-            const rect = scene.getBoundingClientRect();
-            const scrollPercent = (window.innerHeight - rect.top) / (window.innerHeight + rect.height);
-
-            if (scrollPercent > 0 && scrollPercent < 1) {
-                const bg = scene.querySelector('.parallax-bg');
-                if (bg) {
-                    const translateY = (scrollPercent - 0.5) * 100;
-                    bg.style.transform = `translateY(${translateY}px)`;
-                }
-            }
+    // Click on indicator dots to jump to specific slide
+    indicatorDots.forEach((dot, index) => {
+        dot.addEventListener('click', (e) => {
+            e.stopPropagation(); // Prevent triggering frame click
+            goToSlide(index);
         });
+    });
+
+    // Keyboard navigation (optional)
+    document.addEventListener('keydown', (e) => {
+        const laternaMagica = document.querySelector('.laterna-magica-section');
+        if (!laternaMagica) return;
+
+        const rect = laternaMagica.getBoundingClientRect();
+        const isVisible = rect.top < window.innerHeight && rect.bottom > 0;
+
+        if (isVisible) {
+            if (e.key === 'ArrowRight' || e.key === ' ') {
+                e.preventDefault();
+                nextSlide();
+            } else if (e.key === 'ArrowLeft') {
+                e.preventDefault();
+                const prevIndex = (currentSlideIndex - 1 + slides.length) % slides.length;
+                goToSlide(prevIndex);
+            }
+        }
     });
 });

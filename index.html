@@ -171,32 +171,58 @@
         </div>
     </section>
 
-    <!-- ALTERNATIV 3: FAMILJEHISTORIA - Parallax storytelling -->
-    <section class="parallax-story">
-        <h2 class="section-title">Alternativ 3: Familjehistoria</h2>
-        <p class="story-subtitle">(Parallax fullskärm med text-overlay)</p>
+    <!-- ALTERNATIV 3: LATERNA MAGICA - Klickbar bildvisning -->
+    <section class="laterna-magica-section">
+        <h2 class="section-title">Vår Historia</h2>
+        <p class="story-subtitle">(Klicka för nästa bild)</p>
 
-        <div class="parallax-scene scene-1">
-            <div class="parallax-bg" style="background-image: url('hist_1.webp');"></div>
-            <div class="parallax-text">
-                <h3>Det började med en dröm</h3>
-                <p>2016 tog familjen Sparfvén första steget mot att skapa Sveriges finaste hantverkschoklad</p>
+        <div class="laterna-magica">
+            <!-- Vintage projector frame -->
+            <div class="projector-frame">
+                <div class="frame-corner top-left"></div>
+                <div class="frame-corner top-right"></div>
+                <div class="frame-corner bottom-left"></div>
+                <div class="frame-corner bottom-right"></div>
+
+                <!-- Slides container -->
+                <div class="slides-container">
+                    <div class="slide active" data-slide="1">
+                        <img src="hist_1.webp" alt="Det började med en dröm">
+                        <div class="slide-text">
+                            <h3>Det började med en dröm</h3>
+                            <p>2016 tog familjen Sparfvén första steget mot att skapa Sveriges finaste hantverkschoklad</p>
+                        </div>
+                        <div class="vignette"></div>
+                    </div>
+
+                    <div class="slide" data-slide="2">
+                        <img src="hist_2.webp" alt="Galna i generationer">
+                        <div class="slide-text">
+                            <h3>Galna i generationer</h3>
+                            <p>Passion, dedikation och ett uns galenskap - det är vår hemlighet</p>
+                        </div>
+                        <div class="vignette"></div>
+                    </div>
+
+                    <div class="slide" data-slide="3">
+                        <img src="hist_3.webp" alt="Från Alingsås till världen">
+                        <div class="slide-text">
+                            <h3>Från Alingsås till världen</h3>
+                            <p>100% hjärta. 0% hjärna. Alltid handgjort.</p>
+                        </div>
+                        <div class="vignette"></div>
+                    </div>
+                </div>
+
+                <!-- Click indicator -->
+                <div class="click-hint">Klicka för nästa →</div>
             </div>
-        </div>
 
-        <div class="parallax-scene scene-2">
-            <div class="parallax-bg" style="background-image: url('hist_2.webp');"></div>
-            <div class="parallax-text">
-                <h3>Galna i generationer</h3>
-                <p>Passion, dedikation och ett uns galenskap - det är vår hemlighet</p>
-            </div>
-        </div>
-
-        <div class="parallax-scene scene-3">
-            <div class="parallax-bg" style="background-image: url('hist_3.webp');"></div>
-            <div class="parallax-text">
-                <h3>Från Alingsås till världen</h3>
-                <p>100% hjärta. 0% hjärna. Alltid handgjort.</p>
+            <!-- Slide indicator -->
+            <div class="slide-indicator">
+                <span class="indicator-dot active"></span>
+                <span class="indicator-dot"></span>
+                <span class="indicator-dot"></span>
             </div>
         </div>
     </section>
@@ -229,6 +255,6 @@
         </div>
     </footer>
 
-    <script src="script.js?v=18"></script>
+    <script src="script.js?v=19"></script>
 </body>
 </html>
