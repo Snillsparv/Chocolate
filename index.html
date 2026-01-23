@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Af Sparfvén — Lyxchoklad</title>
-    <link rel="stylesheet" href="styles.css?v=27">
+    <link rel="stylesheet" href="styles.css?v=28">
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@300;400;600;700&family=Montserrat:wght@200;300;400;600&family=Great+Vibes&display=swap" rel="stylesheet">
@@ -174,9 +174,12 @@
     <!-- ALTERNATIV 3: LATERNA MAGICA - Klickbar bildvisning -->
     <section class="laterna-magica-section">
         <h2 class="section-title">Vår Historia</h2>
-        <p class="story-subtitle">(Klicka för nästa bild)</p>
+        <p class="story-subtitle">(Använd pilarna för att bläddra)</p>
 
         <div class="laterna-magica">
+            <!-- Left arrow button -->
+            <button class="laterna-arrow laterna-arrow-left">‹</button>
+
             <!-- Vintage projector frame -->
             <div class="projector-frame">
                 <div class="frame-corner top-left"></div>
@@ -213,10 +216,10 @@
                         <div class="vignette"></div>
                     </div>
                 </div>
-
-                <!-- Click indicator -->
-                <div class="click-hint">Klicka för nästa →</div>
             </div>
+
+            <!-- Right arrow button -->
+            <button class="laterna-arrow laterna-arrow-right">›</button>
 
             <!-- Slide indicator -->
             <div class="slide-indicator">
@@ -255,6 +258,6 @@
         </div>
     </footer>
 
-    <script src="script.js?v=19"></script>
+    <script src="script.js?v=20"></script>
 </body>
 </html>

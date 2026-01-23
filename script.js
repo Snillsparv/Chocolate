@@ -65,6 +65,10 @@ document.addEventListener('DOMContentLoaded', () => {
             if (videoReady && !clicked) {
                 clicked = true;
 
+                // Prevent scrolling IMMEDIATELY
+                document.body.classList.add('video-playing');
+                window.scrollTo(0, 0);
+
                 // Fade out loading screen and start video immediately
                 loadingScreen.classList.add('fade-out');
                 setTimeout(() => {
@@ -73,8 +77,6 @@ document.addEventListener('DOMContentLoaded', () => {
 
                 // Show and play video
                 introVideoContainer.style.display = 'flex';
-                // Prevent scrolling during video
-                document.body.classList.add('video-playing');
                 setTimeout(() => {
                     const playPromise = introVideo.play();
 
@@ -94,13 +96,20 @@ document.addEventListener('DOMContentLoaded', () => {
 
         // When video ends, fade out and remove
         introVideo.addEventListener('ended', () => {
+            // Force scroll to top BEFORE removing video-playing class
+            window.scrollTo({ top: 0, behavior: 'instant' });
+
             introVideoContainer.classList.add('fade-out');
-            // Re-enable scrolling and scroll to top
-            document.body.classList.remove('video-playing');
-            window.scrollTo(0, 0);
+
             setTimeout(() => {
-                introVideoContainer.remove();
-            }, 1000);
+                // Re-enable scrolling and ensure we're at top
+                document.body.classList.remove('video-playing');
+                window.scrollTo({ top: 0, behavior: 'instant' });
+
+                setTimeout(() => {
+                    introVideoContainer.remove();
+                }, 100);
+            }, 900);
         });
 
         // Fallback: if video fails to load
@@ -584,12 +593,12 @@ document.addEventListener('DOMContentLoaded', () => {
 
 // ====== LATERNA MAGICA SLIDESHOW ======
 document.addEventListener('DOMContentLoaded', () => {
-    const projectorFrame = document.querySelector('.projector-frame');
     const slides = document.querySelectorAll('.slide');
     const indicatorDots = document.querySelectorAll('.indicator-dot');
-    const clickHint = document.querySelector('.click-hint');
+    const leftArrow = document.querySelector('.laterna-arrow-left');
+    const rightArrow = document.querySelector('.laterna-arrow-right');
 
-    if (!projectorFrame || slides.length === 0) return;
+    if (slides.length === 0) return;
 
     let currentSlideIndex = 0;
     let isTransitioning = false;
@@ -623,14 +632,6 @@ document.addEventListener('DOMContentLoaded', () => {
             currentSlide.classList.remove('exiting');
             isTransitioning = false;
         }, 800);
-
-        // Hide click hint after first click
-        if (clickHint) {
-            clickHint.style.opacity = '0';
-            setTimeout(() => {
-                clickHint.style.display = 'none';
-            }, 300);
-        }
     }
 
     // Function to advance to next slide
@@ -639,22 +640,29 @@ document.addEventListener('DOMContentLoaded', () => {
         goToSlide(nextIndex);
     }
 
-    // Click on projector frame to advance
-    projectorFrame.addEventListener('click', (e) => {
-        // Don't trigger if clicking on indicator dots
-        if (e.target.classList.contains('indicator-dot')) return;
-        nextSlide();
-    });
+    // Function to go to previous slide
+    function prevSlide() {
+        const prevIndex = (currentSlideIndex - 1 + slides.length) % slides.length;
+        goToSlide(prevIndex);
+    }
+
+    // Click on arrow buttons
+    if (leftArrow) {
+        leftArrow.addEventListener('click', prevSlide);
+    }
+
+    if (rightArrow) {
+        rightArrow.addEventListener('click', nextSlide);
+    }
 
     // Click on indicator dots to jump to specific slide
     indicatorDots.forEach((dot, index) => {
-        dot.addEventListener('click', (e) => {
-            e.stopPropagation(); // Prevent triggering frame click
+        dot.addEventListener('click', () => {
             goToSlide(index);
         });
     });
 
-    // Keyboard navigation (optional)
+    // Keyboard navigation
     document.addEventListener('keydown', (e) => {
         const laternaMagica = document.querySelector('.laterna-magica-section');
         if (!laternaMagica) return;
@@ -668,8 +676,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 nextSlide();
             } else if (e.key === 'ArrowLeft') {
                 e.preventDefault();
-                const prevIndex = (currentSlideIndex - 1 + slides.length) % slides.length;
-                goToSlide(prevIndex);
+                prevSlide();
             }
         }
     });
