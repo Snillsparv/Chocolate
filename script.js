@@ -237,19 +237,8 @@ document.addEventListener('DOMContentLoaded', () => {
     console.log('%c        ', 'font-size: 1px; padding: 25px 100px; background: linear-gradient(135deg, #1a0f0a 0%, #3d2817 100%); border: 2px solid #d4af37; border-top: none;');
 });
 
-// Start with body visible if there's an intro video, otherwise fade in
-if (!document.querySelector('.intro-video-container')) {
-    document.body.style.opacity = '0';
-    document.body.style.transition = 'opacity 0.5s ease';
-
-    // Smooth reveal on page load
-    window.addEventListener('load', () => {
-        document.body.style.opacity = '1';
-    });
-} else {
-    // If intro video exists, body should be visible immediately
-    document.body.style.opacity = '1';
-}
+// Ensure body is visible immediately when page loads
+document.body.style.opacity = '1';
 
 // R key to trigger candy rain (can be used multiple times)
 document.addEventListener('keydown', (e) => {
