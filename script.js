@@ -584,8 +584,7 @@ document.addEventListener('DOMContentLoaded', () => {
 document.addEventListener('DOMContentLoaded', () => {
     const slides = document.querySelectorAll('.slide');
     const indicatorDots = document.querySelectorAll('.indicator-dot');
-    const leftArrow = document.querySelector('.laterna-arrow-left');
-    const rightArrow = document.querySelector('.laterna-arrow-right');
+    const projectorFrame = document.querySelector('.projector-frame');
 
     if (slides.length === 0) return;
 
@@ -635,18 +634,19 @@ document.addEventListener('DOMContentLoaded', () => {
         goToSlide(prevIndex);
     }
 
-    // Click on arrow buttons
-    if (leftArrow) {
-        leftArrow.addEventListener('click', prevSlide);
-    }
-
-    if (rightArrow) {
-        rightArrow.addEventListener('click', nextSlide);
+    // Click on projector frame to advance
+    if (projectorFrame) {
+        projectorFrame.addEventListener('click', (e) => {
+            // Don't trigger if clicking on indicator dots
+            if (e.target.classList.contains('indicator-dot')) return;
+            nextSlide();
+        });
     }
 
     // Click on indicator dots to jump to specific slide
     indicatorDots.forEach((dot, index) => {
-        dot.addEventListener('click', () => {
+        dot.addEventListener('click', (e) => {
+            e.stopPropagation();
             goToSlide(index);
         });
     });

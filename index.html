@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Af Sparfvén — Lyxchoklad</title>
-    <link rel="stylesheet" href="styles.css?v=29">
+    <link rel="stylesheet" href="styles.css?v=30">
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@300;400;600;700&family=Montserrat:wght@200;300;400;600&family=Great+Vibes&display=swap" rel="stylesheet">
@@ -32,6 +32,48 @@
     <!-- Main Hero -->
     <section class="hero">
         <div class="scroll-indicator">↓</div>
+    </section>
+
+    <!-- Bildvisare - Laterna Magica -->
+    <section class="laterna-magica-section">
+        <div class="projector-frame">
+            <!-- Slides container -->
+            <div class="slides-container">
+                <div class="slide active" data-slide="1">
+                    <img src="hist_1.webp" alt="Det började med en dröm">
+                    <div class="slide-text">
+                        <h3>Det började med en dröm</h3>
+                        <p>2016 tog familjen Sparfvén första steget mot att skapa Sveriges finaste hantverkschoklad</p>
+                    </div>
+                    <div class="vignette"></div>
+                </div>
+
+                <div class="slide" data-slide="2">
+                    <img src="hist_2.webp" alt="Galna i generationer">
+                    <div class="slide-text">
+                        <h3>Galna i generationer</h3>
+                        <p>Passion, dedikation och ett uns galenskap - det är vår hemlighet</p>
+                    </div>
+                    <div class="vignette"></div>
+                </div>
+
+                <div class="slide" data-slide="3">
+                    <img src="hist_3.webp" alt="Från Alingsås till världen">
+                    <div class="slide-text">
+                        <h3>Från Alingsås till världen</h3>
+                        <p>100% hjärta. 0% hjärna. Alltid handgjort.</p>
+                    </div>
+                    <div class="vignette"></div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Slide indicator -->
+        <div class="slide-indicator">
+            <span class="indicator-dot active"></span>
+            <span class="indicator-dot"></span>
+            <span class="indicator-dot"></span>
+        </div>
     </section>
 
     <!-- Collection Section -->
@@ -171,60 +213,6 @@
         </div>
     </section>
 
-    <!-- ALTERNATIV 3: LATERNA MAGICA - Klickbar bildvisning -->
-    <section class="laterna-magica-section">
-        <h2 class="section-title">Vår Historia</h2>
-        <p class="story-subtitle">(Använd pilarna för att bläddra)</p>
-
-        <div class="laterna-magica">
-            <!-- Left arrow button -->
-            <button class="laterna-arrow laterna-arrow-left">‹</button>
-
-            <!-- Bildvisare frame with transparent middle -->
-            <div class="projector-frame">
-                <!-- Slides container -->
-                <div class="slides-container">
-                    <div class="slide active" data-slide="1">
-                        <img src="hist_1.webp" alt="Det började med en dröm">
-                        <div class="slide-text">
-                            <h3>Det började med en dröm</h3>
-                            <p>2016 tog familjen Sparfvén första steget mot att skapa Sveriges finaste hantverkschoklad</p>
-                        </div>
-                        <div class="vignette"></div>
-                    </div>
-
-                    <div class="slide" data-slide="2">
-                        <img src="hist_2.webp" alt="Galna i generationer">
-                        <div class="slide-text">
-                            <h3>Galna i generationer</h3>
-                            <p>Passion, dedikation och ett uns galenskap - det är vår hemlighet</p>
-                        </div>
-                        <div class="vignette"></div>
-                    </div>
-
-                    <div class="slide" data-slide="3">
-                        <img src="hist_3.webp" alt="Från Alingsås till världen">
-                        <div class="slide-text">
-                            <h3>Från Alingsås till världen</h3>
-                            <p>100% hjärta. 0% hjärna. Alltid handgjort.</p>
-                        </div>
-                        <div class="vignette"></div>
-                    </div>
-                </div>
-            </div>
-
-            <!-- Right arrow button -->
-            <button class="laterna-arrow laterna-arrow-right">›</button>
-
-            <!-- Slide indicator -->
-            <div class="slide-indicator">
-                <span class="indicator-dot active"></span>
-                <span class="indicator-dot"></span>
-                <span class="indicator-dot"></span>
-            </div>
-        </div>
-    </section>
-
     <!-- Philosophy Section -->
     <section class="philosophy">
         <div class="philosophy-content">
@@ -253,6 +241,6 @@
         </div>
     </footer>
 
-    <script src="script.js?v=21"></script>
+    <script src="script.js?v=22"></script>
 </body>
 </html>
