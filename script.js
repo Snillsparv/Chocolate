@@ -758,7 +758,7 @@ function summonSparrow() {
     crazySound.play().catch(err => console.log('Audio play prevented:', err));
 
     // Set initial position at center BEFORE entrance animation
-    const size = window.innerWidth <= 768 ? 250 : 350;
+    const size = window.innerWidth <= 768 ? 300 : 450;
     const startX = (document.documentElement.clientWidth - size) / 2;
     const startY = (document.documentElement.clientHeight - size) / 2;
     container.style.left = `${startX}px`;
@@ -796,7 +796,7 @@ function summonSparrow() {
 }
 
 function startSparrowBouncing(container) {
-    const size = window.innerWidth <= 768 ? 250 : 350; // Bigger!
+    const size = window.innerWidth <= 768 ? 300 : 450; // Even bigger!
     // No margin - bounce right at the edge
     const margin = 0;
 
@@ -812,6 +812,9 @@ function startSparrowBouncing(container) {
     if (Math.abs(velocityX) < 1) velocityX = velocityX < 0 ? -1 : 1;
     if (Math.abs(velocityY) < 1) velocityY = velocityY < 0 ? -1 : 1;
 
+    // Chaotic rotation
+    let rotation = 0;
+    let rotationSpeed = (Math.random() - 0.5) * 4; // Random rotation speed
     let frameCount = 0;
 
     // Update container size
@@ -862,6 +865,7 @@ function startSparrowBouncing(container) {
         if (x < margin) {
             x = margin;
             velocityX = Math.abs(velocityX);
+            rotationSpeed = (Math.random() - 0.5) * 8; // Change rotation on bounce
             console.log('🔵 Bounced LEFT');
         }
 
@@ -869,6 +873,7 @@ function startSparrowBouncing(container) {
         if (x > maxX) {
             x = maxX;
             velocityX = -Math.abs(velocityX);
+            rotationSpeed = (Math.random() - 0.5) * 8; // Change rotation on bounce
             console.log('🔵 Bounced RIGHT');
         }
 
@@ -876,6 +881,7 @@ function startSparrowBouncing(container) {
         if (y < margin) {
             y = margin;
             velocityY = Math.abs(velocityY);
+            rotationSpeed = (Math.random() - 0.5) * 8; // Change rotation on bounce
             console.log('🔵 Bounced TOP');
         }
 
@@ -883,6 +889,7 @@ function startSparrowBouncing(container) {
         if (y > maxY) {
             y = maxY;
             velocityY = -Math.abs(velocityY);
+            rotationSpeed = (Math.random() - 0.5) * 8; // Change rotation on bounce
             console.log('🔵 Bounced BOTTOM');
         }
 
@@ -890,9 +897,13 @@ function startSparrowBouncing(container) {
         x = Math.max(margin, Math.min(x, maxX));
         y = Math.max(margin, Math.min(y, maxY));
 
-        // Apply position (no rotation - model-viewer handles rotation internally)
+        // Update chaotic rotation
+        rotation += rotationSpeed;
+
+        // Apply position and rotation
         container.style.left = `${x}px`;
         container.style.top = `${y}px`;
+        container.style.transform = `rotate(${rotation}deg)`;
 
         // Update debug info every 30 frames
         if (frameCount % 30 === 0 && debugDiv.style.display === 'block') {
@@ -919,7 +930,7 @@ function startSparrowBouncing(container) {
 
     // Handle window resize
     window.addEventListener('resize', () => {
-        const newSize = window.innerWidth <= 768 ? 250 : 350;
+        const newSize = window.innerWidth <= 768 ? 300 : 450;
         const newMargin = 0;
         container.style.width = `${newSize}px`;
         container.style.height = `${newSize}px`;
