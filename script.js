@@ -797,8 +797,8 @@ function summonSparrow() {
 
 function startSparrowBouncing(container) {
     const size = window.innerWidth <= 768 ? 400 : 650; // Even bigger to fill edges!
-    // No margin - bounce right at the edge
-    const margin = 0;
+    // Negative margin to compensate for empty space around model in GLB file
+    const margin = -50;
 
     // Get model-viewer element for 3D rotation
     const modelViewer = container.querySelector('#sparrow-model');
@@ -819,14 +819,36 @@ function startSparrowBouncing(container) {
     let yaw = 0;   // rotation around Y axis (left-right spin)
     let pitch = 0; // rotation around X axis (forward-backward tilt)
     let roll = 0;  // rotation around Z axis (barrel roll)
-    const yawSpeed = 0.8;    // constant speed
-    const pitchSpeed = 0.5;  // constant speed
-    const rollSpeed = 0.3;   // constant speed
+    let baseYawSpeed = 0.8;    // constant speed
+    let basePitchSpeed = 0.5;  // constant speed
+    let baseRollSpeed = 0.3;   // constant speed
+    let currentYawSpeed = baseYawSpeed;
+    let currentPitchSpeed = basePitchSpeed;
+    let currentRollSpeed = baseRollSpeed;
     let frameCount = 0;
 
     // Update container size
     container.style.width = `${size}px`;
     container.style.height = `${size}px`;
+
+    // Enable clicking on Sparvkungen for extra spin
+    container.style.pointerEvents = 'auto';
+    container.style.cursor = 'pointer';
+
+    container.addEventListener('click', () => {
+        // Boost rotation speed for 1 second
+        currentYawSpeed = baseYawSpeed * 5;
+        currentPitchSpeed = basePitchSpeed * 5;
+        currentRollSpeed = baseRollSpeed * 5;
+
+        setTimeout(() => {
+            currentYawSpeed = baseYawSpeed;
+            currentPitchSpeed = basePitchSpeed;
+            currentRollSpeed = baseRollSpeed;
+        }, 1000);
+
+        console.log('🌀 Extra spin!');
+    });
 
     // Create debug overlay
     const debugDiv = document.createElement('div');
@@ -900,10 +922,10 @@ function startSparrowBouncing(container) {
         x = Math.max(margin, Math.min(x, maxX));
         y = Math.max(margin, Math.min(y, maxY));
 
-        // Update chaotic 3D rotation
-        yaw += yawSpeed;
-        pitch += pitchSpeed;
-        roll += rollSpeed;
+        // Update 3D rotation (uses current speed which can be boosted on click)
+        yaw += currentYawSpeed;
+        pitch += currentPitchSpeed;
+        roll += currentRollSpeed;
 
         // Apply position
         container.style.left = `${x}px`;
@@ -940,7 +962,7 @@ function startSparrowBouncing(container) {
     // Handle window resize
     window.addEventListener('resize', () => {
         const newSize = window.innerWidth <= 768 ? 400 : 650;
-        const newMargin = 0;
+        const newMargin = -50; // Negative margin to compensate for model padding
         container.style.width = `${newSize}px`;
         container.style.height = `${newSize}px`;
 
