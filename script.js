@@ -34,9 +34,8 @@ document.addEventListener('DOMContentLoaded', () => {
         "Maler kakaobönor...",
         "Tempererar chokladen...",
         "Rostar hasselnötterna...",
-        "Spinner kadayiftrådar...",
+        "Tillber Sparvkungen...",
         "Väljer de fetaste larverna...",
-        "Tillber Sparv-Kungen...",
         "Flyger hejvilt fram och tillbaka..."
     ];
     let textIndex = 0;
