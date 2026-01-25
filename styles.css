@@ -111,7 +111,7 @@ body {
 
 .keyhole-text {
     font-family: 'Cormorant Garamond', serif;
-    font-size: 1.2rem;
+    font-size: 1.5rem;
     font-weight: 300;
     color: var(--chocolate-dark);
     letter-spacing: 0.2em;
@@ -321,6 +321,19 @@ body.video-playing {
     50% {
         transform: translateX(-50%) translateY(15px);
     }
+}
+
+/* Chocolate Section Title */
+.chocolate-section-title {
+    font-family: 'Cormorant Garamond', serif;
+    font-size: 3rem;
+    font-weight: 600;
+    letter-spacing: 0.3em;
+    color: var(--gold);
+    text-align: center;
+    margin: 4rem 0 2rem 0;
+    text-transform: uppercase;
+    text-shadow: 0 0 20px rgba(212, 175, 55, 0.3);
 }
 
 /* Interactive Chocolate Section */
