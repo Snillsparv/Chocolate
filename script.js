@@ -743,26 +743,58 @@ document.addEventListener('DOMContentLoaded', () => {
     const timelineSection = document.querySelector('.timeline-scroll-section');
     const timelineZones = document.querySelectorAll('.timeline-zone');
 
-    if (timelineSection && timelineZones.length > 0) {
-        timelineZones.forEach(zone => {
-            zone.addEventListener('click', (e) => {
-                const zoneRect = zone.getBoundingClientRect();
-                const sectionRect = timelineSection.getBoundingClientRect();
+    if (timelineSection) {
+        // Drag-to-scroll functionality
+        let isDragging = false;
+        let startX;
+        let scrollLeft;
 
-                // Calculate zone's position relative to the section's scroll container
-                const zoneLeftInSection = zone.offsetLeft;
+        timelineSection.addEventListener('mousedown', (e) => {
+            isDragging = true;
+            timelineSection.style.cursor = 'grabbing';
+            startX = e.pageX - timelineSection.offsetLeft;
+            scrollLeft = timelineSection.scrollLeft;
+        });
 
-                // Calculate scroll position to place zone slightly left of center
-                // Center of viewport - offset to place it left of center (35% from left)
-                const targetScrollPosition = zoneLeftInSection - (window.innerWidth * 0.35);
+        timelineSection.addEventListener('mouseleave', () => {
+            isDragging = false;
+            timelineSection.style.cursor = 'grab';
+        });
 
-                // Smooth scroll to position
-                timelineSection.scrollTo({
-                    left: targetScrollPosition,
-                    behavior: 'smooth'
+        timelineSection.addEventListener('mouseup', () => {
+            isDragging = false;
+            timelineSection.style.cursor = 'grab';
+        });
+
+        timelineSection.addEventListener('mousemove', (e) => {
+            if (!isDragging) return;
+            e.preventDefault();
+            const x = e.pageX - timelineSection.offsetLeft;
+            const walk = (x - startX) * 2; // Scroll speed multiplier
+            timelineSection.scrollLeft = scrollLeft - walk;
+        });
+
+        // Click zones for specific positions
+        if (timelineZones.length > 0) {
+            timelineZones.forEach(zone => {
+                zone.addEventListener('click', (e) => {
+                    e.stopPropagation(); // Prevent drag from interfering
+
+                    // Calculate zone's position relative to the section's scroll container
+                    const zoneLeftInSection = zone.offsetLeft;
+
+                    // Calculate scroll position to place zone slightly left of center
+                    // Center of viewport - offset to place it left of center (35% from left)
+                    const targetScrollPosition = zoneLeftInSection - (window.innerWidth * 0.35);
+
+                    // Smooth scroll to position
+                    timelineSection.scrollTo({
+                        left: targetScrollPosition,
+                        behavior: 'smooth'
+                    });
                 });
             });
-        });
+        }
     }
 });
 
