@@ -947,6 +947,25 @@ function startSparrowBouncing(container) {
     let dragVelocityX = 0;
     let dragVelocityY = 0;
 
+    // WASD keyboard controls
+    const keys = { w: false, a: false, s: false, d: false };
+    const keyboardAcceleration = 0.5; // How fast keyboard input affects velocity
+
+    document.addEventListener('keydown', (e) => {
+        const key = e.key.toLowerCase();
+        if (key === 'w' || key === 'a' || key === 's' || key === 'd') {
+            keys[key] = true;
+            e.preventDefault(); // Prevent page scrolling
+        }
+    });
+
+    document.addEventListener('keyup', (e) => {
+        const key = e.key.toLowerCase();
+        if (key === 'w' || key === 'a' || key === 's' || key === 'd') {
+            keys[key] = false;
+        }
+    });
+
     container.addEventListener('mousedown', (e) => {
         isDragging = true;
         wasDragged = false;
@@ -1061,9 +1080,18 @@ function startSparrowBouncing(container) {
 
         // Skip position updates if dragging
         if (!isDragging) {
-            // Gradually return velocity to base velocity
-            velocityX += (baseVelocityX - velocityX) * velocityDamping;
-            velocityY += (baseVelocityY - velocityY) * velocityDamping;
+            // Apply WASD keyboard controls
+            if (keys.w) velocityY -= keyboardAcceleration;
+            if (keys.s) velocityY += keyboardAcceleration;
+            if (keys.a) velocityX -= keyboardAcceleration;
+            if (keys.d) velocityX += keyboardAcceleration;
+
+            // Gradually return velocity to base velocity (slower when using keyboard)
+            const isUsingKeyboard = keys.w || keys.a || keys.s || keys.d;
+            if (!isUsingKeyboard) {
+                velocityX += (baseVelocityX - velocityX) * velocityDamping;
+                velocityY += (baseVelocityY - velocityY) * velocityDamping;
+            }
 
             // Update position
             x += velocityX;
