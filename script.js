@@ -784,17 +784,22 @@ function summonSparrow() {
 }
 
 function startSparrowBouncing(container) {
+    const size = window.innerWidth <= 768 ? 180 : 300;
+    const margin = 10;
+
     // Start from center of screen
-    let x = window.innerWidth / 2;
-    let y = window.innerHeight / 2;
+    let x = (window.innerWidth - size) / 2;
+    let y = (window.innerHeight - size) / 2;
 
-    // Random initial velocity (faster and more dynamic)
-    let velocityX = (Math.random() - 0.5) * 8;
-    let velocityY = (Math.random() - 0.5) * 8;
+    // Random initial velocity - moderate speed
+    let velocityX = (Math.random() - 0.5) * 6;
+    let velocityY = (Math.random() - 0.5) * 6;
+
+    // Make sure velocity is never too slow
+    if (Math.abs(velocityX) < 2) velocityX = velocityX < 0 ? -2 : 2;
+    if (Math.abs(velocityY) < 2) velocityY = velocityY < 0 ? -2 : 2;
+
     let rotation = 0;
-
-    const size = window.innerWidth <= 768 ? 180 : 300; // Larger size!
-    const margin = 20;
 
     // Update container size
     container.style.width = `${size}px`;
@@ -803,27 +808,41 @@ function startSparrowBouncing(container) {
     function animate() {
         if (!sparrowActive) return;
 
-        // Update position
+        // Update position BEFORE checking bounds
         x += velocityX;
         y += velocityY;
 
-        // Bounce off LEFT and RIGHT edges
-        if (x <= margin) {
+        // Get current screen dimensions
+        const maxX = window.innerWidth - size - margin;
+        const maxY = window.innerHeight - size - margin;
+
+        // Bounce off LEFT edge
+        if (x < margin) {
             x = margin;
-            velocityX = Math.abs(velocityX); // Always bounce right
-        } else if (x >= window.innerWidth - size - margin) {
-            x = window.innerWidth - size - margin;
-            velocityX = -Math.abs(velocityX); // Always bounce left
+            velocityX = Math.abs(velocityX); // Force positive (move right)
         }
 
-        // Bounce off TOP and BOTTOM edges
-        if (y <= margin) {
-            y = margin;
-            velocityY = Math.abs(velocityY); // Always bounce down
-        } else if (y >= window.innerHeight - size - margin) {
-            y = window.innerHeight - size - margin;
-            velocityY = -Math.abs(velocityY); // Always bounce up
+        // Bounce off RIGHT edge
+        if (x > maxX) {
+            x = maxX;
+            velocityX = -Math.abs(velocityX); // Force negative (move left)
         }
+
+        // Bounce off TOP edge
+        if (y < margin) {
+            y = margin;
+            velocityY = Math.abs(velocityY); // Force positive (move down)
+        }
+
+        // Bounce off BOTTOM edge
+        if (y > maxY) {
+            y = maxY;
+            velocityY = -Math.abs(velocityY); // Force negative (move up)
+        }
+
+        // Double-check: clamp position to always be visible
+        x = Math.max(margin, Math.min(x, maxX));
+        y = Math.max(margin, Math.min(y, maxY));
 
         // Gentle rotation
         rotation += 1;
@@ -831,8 +850,6 @@ function startSparrowBouncing(container) {
         // Apply position and rotation
         container.style.left = `${x}px`;
         container.style.top = `${y}px`;
-        container.style.right = 'auto';
-        container.style.bottom = 'auto';
         container.style.transform = `rotate(${rotation}deg)`;
 
         requestAnimationFrame(animate);
@@ -846,8 +863,10 @@ function startSparrowBouncing(container) {
         container.style.width = `${newSize}px`;
         container.style.height = `${newSize}px`;
 
-        // Keep within bounds after resize
-        x = Math.max(margin, Math.min(x, window.innerWidth - newSize - margin));
-        y = Math.max(margin, Math.min(y, window.innerHeight - newSize - margin));
+        // Recalculate position to keep within new bounds
+        const maxX = window.innerWidth - newSize - margin;
+        const maxY = window.innerHeight - newSize - margin;
+        x = Math.max(margin, Math.min(x, maxX));
+        y = Math.max(margin, Math.min(y, maxY));
     });
 }
