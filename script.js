@@ -134,16 +134,14 @@ document.addEventListener('DOMContentLoaded', () => {
                     // Wait for sound to finish, then start video
                     unlockSound.addEventListener('ended', () => {
                         if (!clicked) {  // Check again to avoid double-trigger
-                            clicked = true;
-                            startExperience();
+                            startExperience();  // This will set clicked = true internally
                         }
                     });
 
                     // Fallback: start after 2 seconds even if sound fails
                     setTimeout(() => {
                         if (!clicked && (!introVideoContainer || introVideoContainer.style.display === 'none')) {
-                            clicked = true;
-                            startExperience();
+                            startExperience();  // This will set clicked = true internally
                         }
                     }, 2500);
                 }
