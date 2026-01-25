@@ -1008,6 +1008,32 @@ body.video-playing {
     }
 }
 
+/* 3D Sparrow King Mascot */
+#sparrow-container {
+    position: fixed;
+    bottom: 2rem;
+    right: 2rem;
+    width: 200px;
+    height: 200px;
+    z-index: 9998;
+    pointer-events: none;
+    opacity: 0;
+    transition: opacity 1s ease;
+}
+
+#sparrow-container.visible {
+    opacity: 1;
+}
+
+@media (max-width: 768px) {
+    #sparrow-container {
+        width: 120px;
+        height: 120px;
+        bottom: 1rem;
+        right: 1rem;
+    }
+}
+
 /* Cursor Effect */
 @media (hover: hover) {
     body {

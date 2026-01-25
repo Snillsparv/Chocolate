@@ -4,12 +4,30 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Af Sparfvén — Lyxchoklad</title>
-    <link rel="stylesheet" href="styles.css?v=30">
+    <link rel="stylesheet" href="styles.css?v=31">
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@300;400;600;700&family=Montserrat:wght@200;300;400;600&family=Great+Vibes&display=swap" rel="stylesheet">
+
+    <!-- Model Viewer for 3D Model -->
+    <script type="module" src="https://unpkg.com/@google/model-viewer@3.3.0/dist/model-viewer.min.js"></script>
 </head>
 <body>
+    <!-- 3D Sparrow King Mascot -->
+    <div id="sparrow-container">
+        <model-viewer
+            id="sparrow-model"
+            src="sparvkungen.glb"
+            alt="Sparvkungen Mascot"
+            auto-rotate
+            rotation-per-second="30deg"
+            camera-orbit="0deg 75deg 2.5m"
+            style="width: 100%; height: 100%;"
+            exposure="1.2"
+            shadow-intensity="0.8">
+        </model-viewer>
+    </div>
+
     <!-- Loading Screen -->
     <div class="loading-screen">
         <div class="loading-content">
@@ -241,6 +259,6 @@
         </div>
     </footer>
 
-    <script src="script.js?v=22"></script>
+    <script src="script.js?v=23"></script>
 </body>
 </html>

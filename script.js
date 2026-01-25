@@ -532,6 +532,11 @@ window.addEventListener('load', () => {
     setTimeout(() => {
         createGoldParticles();
     }, 2000); // Start after page has loaded
+
+    // Initialize 3D Sparrow King after intro
+    setTimeout(() => {
+        init3DSparrow();
+    }, 5000);
 });
 
 // ====== STORYTELLING ANIMATIONS ======
@@ -670,3 +675,27 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     });
 });
+
+// ====== 3D SPARROW KING MASCOT ======
+function init3DSparrow() {
+    const container = document.getElementById('sparrow-container');
+    const sparrowModel = document.getElementById('sparrow-model');
+
+    if (!container || !sparrowModel) {
+        console.error('Sparrow container or model not found');
+        return;
+    }
+
+    // Show container with fade-in
+    container.classList.add('visible');
+    console.log('👑🐦 Sparvkungen är på väg!');
+
+    // Listen for model load events
+    sparrowModel.addEventListener('load', () => {
+        console.log('👑🐦 Sparvkungen has arrived!');
+    });
+
+    sparrowModel.addEventListener('error', (event) => {
+        console.error('Error loading Sparvkungen:', event);
+    });
+}
