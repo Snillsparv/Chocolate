@@ -739,6 +739,20 @@ document.addEventListener('DOMContentLoaded', () => {
         { id: 'chocolate-3', closedSrc: 'choklad_3_stängd.webp', openSrc: 'choklad_3_öppen.webp' }
     ];
 
+    // Smooth fade-in when section comes into view
+    const chocolateSection = document.querySelector('.chocolate-interactive-section');
+    if (chocolateSection) {
+        const observer = new IntersectionObserver((entries) => {
+            entries.forEach(entry => {
+                if (entry.isIntersecting) {
+                    entry.target.classList.add('visible');
+                }
+            });
+        }, { threshold: 0.2 });
+
+        observer.observe(chocolateSection);
+    }
+
     // Handle clicks on chocolate zones
     const zones = document.querySelectorAll('.chocolate-zone');
     zones.forEach(zone => {
@@ -844,6 +858,11 @@ function startSparrowBouncing(container) {
     // Make sure velocity is never too slow
     if (Math.abs(velocityX) < 1) velocityX = velocityX < 0 ? -1 : 1;
     if (Math.abs(velocityY) < 1) velocityY = velocityY < 0 ? -1 : 1;
+
+    // Store base velocity for gradual return
+    const baseVelocityX = velocityX;
+    const baseVelocityY = velocityY;
+    const velocityDamping = 0.03; // How fast velocity returns to base (0.03 = 3% per frame)
 
     // Constant 3D rotation - steady multi-axis spin
     let yaw = 0;   // rotation around Y axis (left-right spin)
@@ -993,6 +1012,10 @@ function startSparrowBouncing(container) {
 
         // Skip position updates if dragging
         if (!isDragging) {
+            // Gradually return velocity to base velocity
+            velocityX += (baseVelocityX - velocityX) * velocityDamping;
+            velocityY += (baseVelocityY - velocityY) * velocityDamping;
+
             // Update position
             x += velocityX;
             y += velocityY;

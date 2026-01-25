@@ -331,6 +331,14 @@ body.video-playing {
     display: flex;
     align-items: center;
     justify-content: center;
+    opacity: 0;
+    transform: translateY(50px);
+    transition: opacity 1.5s ease-out, transform 1.5s ease-out;
+}
+
+.chocolate-interactive-section.visible {
+    opacity: 1;
+    transform: translateY(0);
 }
 
 .chocolate-background {
