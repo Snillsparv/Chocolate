@@ -786,34 +786,62 @@ function summonSparrow() {
 function startSparrowBouncing(container) {
     const size = window.innerWidth <= 768 ? 180 : 300;
     // Larger margin to account for rotation making the bounds bigger
-    const margin = size * 0.2; // 20% of size as margin
+    const margin = size * 0.3; // Increase to 30% for better safety
 
     // Start from center of viewport
     let x = (document.documentElement.clientWidth - size) / 2;
     let y = (document.documentElement.clientHeight - size) / 2;
 
     // Random initial velocity - moderate speed
-    let velocityX = (Math.random() - 0.5) * 5;
-    let velocityY = (Math.random() - 0.5) * 5;
+    let velocityX = (Math.random() - 0.5) * 4; // Reduced from 5 to 4
+    let velocityY = (Math.random() - 0.5) * 4;
 
     // Make sure velocity is never too slow
-    if (Math.abs(velocityX) < 2) velocityX = velocityX < 0 ? -2 : 2;
-    if (Math.abs(velocityY) < 2) velocityY = velocityY < 0 ? -2 : 2;
+    if (Math.abs(velocityX) < 1.5) velocityX = velocityX < 0 ? -1.5 : 1.5;
+    if (Math.abs(velocityY) < 1.5) velocityY = velocityY < 0 ? -1.5 : 1.5;
 
     let rotation = 0;
+    let frameCount = 0;
 
     // Update container size
     container.style.width = `${size}px`;
     container.style.height = `${size}px`;
 
+    // Create debug overlay (optional - can be removed later)
+    const debugDiv = document.createElement('div');
+    debugDiv.id = 'sparrow-debug';
+    debugDiv.style.cssText = `
+        position: fixed;
+        top: 10px;
+        right: 10px;
+        background: rgba(0,0,0,0.8);
+        color: #0f0;
+        padding: 10px;
+        font-family: monospace;
+        font-size: 12px;
+        z-index: 99999;
+        border-radius: 5px;
+        display: none; /* Hidden by default, press D to show */
+    `;
+    document.body.appendChild(debugDiv);
+
+    // Press D to toggle debug info
+    document.addEventListener('keydown', (e) => {
+        if (e.key === 'd' || e.key === 'D') {
+            debugDiv.style.display = debugDiv.style.display === 'none' ? 'block' : 'none';
+        }
+    });
+
     function animate() {
         if (!sparrowActive) return;
+
+        frameCount++;
 
         // Update position
         x += velocityX;
         y += velocityY;
 
-        // Get current viewport dimensions (more accurate than window.inner*)
+        // Get current viewport dimensions
         const viewportWidth = document.documentElement.clientWidth;
         const viewportHeight = document.documentElement.clientHeight;
         const maxX = viewportWidth - size - margin;
@@ -823,24 +851,28 @@ function startSparrowBouncing(container) {
         if (x < margin) {
             x = margin;
             velocityX = Math.abs(velocityX);
+            console.log('🔵 Bounced LEFT');
         }
 
         // Bounce off RIGHT edge
         if (x > maxX) {
             x = maxX;
             velocityX = -Math.abs(velocityX);
+            console.log('🔵 Bounced RIGHT');
         }
 
         // Bounce off TOP edge
         if (y < margin) {
             y = margin;
             velocityY = Math.abs(velocityY);
+            console.log('🔵 Bounced TOP');
         }
 
         // Bounce off BOTTOM edge
         if (y > maxY) {
             y = maxY;
             velocityY = -Math.abs(velocityY);
+            console.log('🔵 Bounced BOTTOM');
         }
 
         // Safety clamp - absolutely ensure it stays within bounds
@@ -848,22 +880,41 @@ function startSparrowBouncing(container) {
         y = Math.max(margin, Math.min(y, maxY));
 
         // Gentle rotation
-        rotation += 0.8;
+        rotation += 0.5; // Reduced from 0.8
 
         // Apply position and rotation
         container.style.left = `${x}px`;
         container.style.top = `${y}px`;
         container.style.transform = `rotate(${rotation}deg)`;
 
+        // Update debug info every 30 frames
+        if (frameCount % 30 === 0 && debugDiv.style.display === 'block') {
+            debugDiv.innerHTML = `
+                Viewport: ${viewportWidth} x ${viewportHeight}<br>
+                Position: ${Math.round(x)}, ${Math.round(y)}<br>
+                Velocity: ${velocityX.toFixed(2)}, ${velocityY.toFixed(2)}<br>
+                Size: ${size}px<br>
+                Margin: ${margin}px<br>
+                MaxX: ${Math.round(maxX)}<br>
+                MaxY: ${Math.round(maxY)}<br>
+                Rotation: ${Math.round(rotation)}°
+            `;
+        }
+
         requestAnimationFrame(animate);
     }
 
     animate();
 
+    console.log('👑 Sparvkung physics initialized:');
+    console.log(`   Viewport: ${document.documentElement.clientWidth}x${document.documentElement.clientHeight}`);
+    console.log(`   Size: ${size}px, Margin: ${margin}px`);
+    console.log(`   Press D to toggle debug overlay`);
+
     // Handle window resize
     window.addEventListener('resize', () => {
         const newSize = window.innerWidth <= 768 ? 180 : 300;
-        const newMargin = newSize * 0.2;
+        const newMargin = newSize * 0.3;
         container.style.width = `${newSize}px`;
         container.style.height = `${newSize}px`;
 
@@ -874,5 +925,7 @@ function startSparrowBouncing(container) {
         const maxY = viewportHeight - newSize - newMargin;
         x = Math.max(newMargin, Math.min(x, maxX));
         y = Math.max(newMargin, Math.min(y, maxY));
+
+        console.log('🔄 Window resized, new bounds calculated');
     });
 }
