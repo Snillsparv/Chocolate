@@ -739,10 +739,15 @@ document.addEventListener('DOMContentLoaded', () => {
         { id: 'chocolate-3', closedSrc: 'choklad_3_stängd.webp', openSrc: 'choklad_3_öppen.webp' }
     ];
 
-    chocolates.forEach(choc => {
-        const element = document.getElementById(choc.id);
-        if (element) {
-            element.addEventListener('click', () => {
+    // Handle clicks on chocolate zones
+    const zones = document.querySelectorAll('.chocolate-zone');
+    zones.forEach(zone => {
+        zone.addEventListener('click', () => {
+            const chocolateId = zone.getAttribute('data-chocolate');
+            const element = document.getElementById(chocolateId);
+            const choc = chocolates.find(c => c.id === chocolateId);
+
+            if (element && choc) {
                 const currentState = element.getAttribute('data-state');
 
                 if (currentState === 'closed') {
@@ -752,8 +757,8 @@ document.addEventListener('DOMContentLoaded', () => {
                     element.src = choc.closedSrc;
                     element.setAttribute('data-state', 'closed');
                 }
-            });
-        }
+            }
+        });
     });
 });
 
@@ -856,23 +861,69 @@ function startSparrowBouncing(container) {
     container.style.width = `${size}px`;
     container.style.height = `${size}px`;
 
-    // Enable clicking on Sparvkungen for extra spin
+    // Enable clicking and dragging on Sparvkungen
     container.style.pointerEvents = 'auto';
-    container.style.cursor = 'pointer';
+    container.style.cursor = 'grab';
 
-    container.addEventListener('click', () => {
-        // Boost rotation speed for 1 second
-        currentYawSpeed = baseYawSpeed * 5;
-        currentPitchSpeed = basePitchSpeed * 5;
-        currentRollSpeed = baseRollSpeed * 5;
+    let isDragging = false;
+    let dragOffsetX = 0;
+    let dragOffsetY = 0;
+    let wasDragged = false;
 
-        setTimeout(() => {
-            currentYawSpeed = baseYawSpeed;
-            currentPitchSpeed = basePitchSpeed;
-            currentRollSpeed = baseRollSpeed;
-        }, 1000);
+    container.addEventListener('mousedown', (e) => {
+        isDragging = true;
+        wasDragged = false;
+        container.style.cursor = 'grabbing';
 
-        console.log('🌀 Extra spin!');
+        // Calculate offset from container's current position
+        const rect = container.getBoundingClientRect();
+        dragOffsetX = e.clientX - rect.left;
+        dragOffsetY = e.clientY - rect.top;
+
+        e.preventDefault();
+    });
+
+    document.addEventListener('mousemove', (e) => {
+        if (isDragging) {
+            wasDragged = true;
+            // Update position based on mouse
+            x = e.clientX - dragOffsetX;
+            y = e.clientY - dragOffsetY;
+
+            // Apply bounds
+            const viewportWidth = document.documentElement.clientWidth;
+            const viewportHeight = document.documentElement.clientHeight;
+            const maxX = viewportWidth - size - margin;
+            const maxY = viewportHeight - size - margin;
+
+            x = Math.max(margin, Math.min(x, maxX));
+            y = Math.max(margin, Math.min(y, maxY));
+
+            container.style.left = `${x}px`;
+            container.style.top = `${y}px`;
+        }
+    });
+
+    document.addEventListener('mouseup', () => {
+        if (isDragging) {
+            isDragging = false;
+            container.style.cursor = 'grab';
+
+            // If it was just a click (not dragged), trigger spin boost
+            if (!wasDragged) {
+                currentYawSpeed = baseYawSpeed * 5;
+                currentPitchSpeed = basePitchSpeed * 5;
+                currentRollSpeed = baseRollSpeed * 5;
+
+                setTimeout(() => {
+                    currentYawSpeed = baseYawSpeed;
+                    currentPitchSpeed = basePitchSpeed;
+                    currentRollSpeed = baseRollSpeed;
+                }, 1000);
+
+                console.log('🌀 Extra spin!');
+            }
+        }
     });
 
     // Create debug overlay
@@ -905,56 +956,59 @@ function startSparrowBouncing(container) {
 
         frameCount++;
 
-        // Update position
-        x += velocityX;
-        y += velocityY;
-
-        // Get current viewport dimensions
+        // Get current viewport dimensions (always needed for debug)
         const viewportWidth = document.documentElement.clientWidth;
         const viewportHeight = document.documentElement.clientHeight;
         const maxX = viewportWidth - size - margin;
         const maxY = viewportHeight - size - margin;
 
-        // Bounce off LEFT edge
-        if (x < margin) {
-            x = margin;
-            velocityX = Math.abs(velocityX);
-            console.log('🔵 Bounced LEFT');
+        // Skip position updates if dragging
+        if (!isDragging) {
+            // Update position
+            x += velocityX;
+            y += velocityY;
+
+            // Bounce off LEFT edge
+            if (x < margin) {
+                x = margin;
+                velocityX = Math.abs(velocityX);
+                console.log('🔵 Bounced LEFT');
+            }
+
+            // Bounce off RIGHT edge
+            if (x > maxX) {
+                x = maxX;
+                velocityX = -Math.abs(velocityX);
+                console.log('🔵 Bounced RIGHT');
+            }
+
+            // Bounce off TOP edge
+            if (y < margin) {
+                y = margin;
+                velocityY = Math.abs(velocityY);
+                console.log('🔵 Bounced TOP');
+            }
+
+            // Bounce off BOTTOM edge
+            if (y > maxY) {
+                y = maxY;
+                velocityY = -Math.abs(velocityY);
+                console.log('🔵 Bounced BOTTOM');
+            }
+
+            // Safety clamp
+            x = Math.max(margin, Math.min(x, maxX));
+            y = Math.max(margin, Math.min(y, maxY));
+
+            // Apply position
+            container.style.left = `${x}px`;
+            container.style.top = `${y}px`;
         }
 
-        // Bounce off RIGHT edge
-        if (x > maxX) {
-            x = maxX;
-            velocityX = -Math.abs(velocityX);
-            console.log('🔵 Bounced RIGHT');
-        }
-
-        // Bounce off TOP edge
-        if (y < margin) {
-            y = margin;
-            velocityY = Math.abs(velocityY);
-            console.log('🔵 Bounced TOP');
-        }
-
-        // Bounce off BOTTOM edge
-        if (y > maxY) {
-            y = maxY;
-            velocityY = -Math.abs(velocityY);
-            console.log('🔵 Bounced BOTTOM');
-        }
-
-        // Safety clamp
-        x = Math.max(margin, Math.min(x, maxX));
-        y = Math.max(margin, Math.min(y, maxY));
-
-        // Update 3D rotation (uses current speed which can be boosted on click)
+        // Update 3D rotation (always, even when dragging)
         yaw += currentYawSpeed;
         pitch += currentPitchSpeed;
         roll += currentRollSpeed;
-
-        // Apply position
-        container.style.left = `${x}px`;
-        container.style.top = `${y}px`;
 
         // Apply 3D rotation to the model itself using model-viewer's orientation
         if (modelViewer) {

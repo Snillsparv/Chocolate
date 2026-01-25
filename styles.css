@@ -345,12 +345,20 @@ body.video-playing {
     left: 0;
     width: 100%;
     height: auto;
-    cursor: pointer;
+    pointer-events: none;
     transition: opacity 0.3s ease;
 }
 
-.chocolate-piece:hover {
-    filter: brightness(1.1);
+.chocolate-zone {
+    position: absolute;
+    top: 0;
+    height: 100%;
+    cursor: pointer;
+    z-index: 10;
+}
+
+.chocolate-zone:hover {
+    background: rgba(212, 175, 55, 0.1);
 }
 
 /* Collection Section */
