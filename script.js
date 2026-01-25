@@ -800,6 +800,9 @@ function startSparrowBouncing(container) {
     // No margin - bounce right at the edge
     const margin = 0;
 
+    // Get model-viewer element for 3D rotation
+    const modelViewer = container.querySelector('#sparrow-model');
+
     // Start from center of viewport
     let x = (document.documentElement.clientWidth - size) / 2;
     let y = (document.documentElement.clientHeight - size) / 2;
@@ -812,13 +815,13 @@ function startSparrowBouncing(container) {
     if (Math.abs(velocityX) < 1) velocityX = velocityX < 0 ? -1 : 1;
     if (Math.abs(velocityY) < 1) velocityY = velocityY < 0 ? -1 : 1;
 
-    // Chaotic 3D rotation - slower but multi-axis
-    let rotationX = 0;
-    let rotationY = 0;
-    let rotationZ = 0;
-    let rotationSpeedX = (Math.random() - 0.5) * 2; // -1 to +1 deg/frame
-    let rotationSpeedY = (Math.random() - 0.5) * 2;
-    let rotationSpeedZ = (Math.random() - 0.5) * 2;
+    // Chaotic 3D rotation - using model-viewer's orientation
+    let yaw = 0;   // rotation around Y axis (left-right spin)
+    let pitch = 0; // rotation around X axis (forward-backward tilt)
+    let roll = 0;  // rotation around Z axis (barrel roll)
+    let yawSpeed = (Math.random() - 0.5) * 4;
+    let pitchSpeed = (Math.random() - 0.5) * 4;
+    let rollSpeed = (Math.random() - 0.5) * 4;
     let frameCount = 0;
 
     // Update container size
@@ -870,9 +873,9 @@ function startSparrowBouncing(container) {
             x = margin;
             velocityX = Math.abs(velocityX);
             // Change all rotation speeds on bounce
-            rotationSpeedX = (Math.random() - 0.5) * 3;
-            rotationSpeedY = (Math.random() - 0.5) * 3;
-            rotationSpeedZ = (Math.random() - 0.5) * 3;
+            yawSpeed = (Math.random() - 0.5) * 6;
+            pitchSpeed = (Math.random() - 0.5) * 6;
+            rollSpeed = (Math.random() - 0.5) * 6;
             console.log('🔵 Bounced LEFT');
         }
 
@@ -880,9 +883,9 @@ function startSparrowBouncing(container) {
         if (x > maxX) {
             x = maxX;
             velocityX = -Math.abs(velocityX);
-            rotationSpeedX = (Math.random() - 0.5) * 3;
-            rotationSpeedY = (Math.random() - 0.5) * 3;
-            rotationSpeedZ = (Math.random() - 0.5) * 3;
+            yawSpeed = (Math.random() - 0.5) * 6;
+            pitchSpeed = (Math.random() - 0.5) * 6;
+            rollSpeed = (Math.random() - 0.5) * 6;
             console.log('🔵 Bounced RIGHT');
         }
 
@@ -890,9 +893,9 @@ function startSparrowBouncing(container) {
         if (y < margin) {
             y = margin;
             velocityY = Math.abs(velocityY);
-            rotationSpeedX = (Math.random() - 0.5) * 3;
-            rotationSpeedY = (Math.random() - 0.5) * 3;
-            rotationSpeedZ = (Math.random() - 0.5) * 3;
+            yawSpeed = (Math.random() - 0.5) * 6;
+            pitchSpeed = (Math.random() - 0.5) * 6;
+            rollSpeed = (Math.random() - 0.5) * 6;
             console.log('🔵 Bounced TOP');
         }
 
@@ -900,9 +903,9 @@ function startSparrowBouncing(container) {
         if (y > maxY) {
             y = maxY;
             velocityY = -Math.abs(velocityY);
-            rotationSpeedX = (Math.random() - 0.5) * 3;
-            rotationSpeedY = (Math.random() - 0.5) * 3;
-            rotationSpeedZ = (Math.random() - 0.5) * 3;
+            yawSpeed = (Math.random() - 0.5) * 6;
+            pitchSpeed = (Math.random() - 0.5) * 6;
+            rollSpeed = (Math.random() - 0.5) * 6;
             console.log('🔵 Bounced BOTTOM');
         }
 
@@ -911,14 +914,18 @@ function startSparrowBouncing(container) {
         y = Math.max(margin, Math.min(y, maxY));
 
         // Update chaotic 3D rotation
-        rotationX += rotationSpeedX;
-        rotationY += rotationSpeedY;
-        rotationZ += rotationSpeedZ;
+        yaw += yawSpeed;
+        pitch += pitchSpeed;
+        roll += rollSpeed;
 
-        // Apply position and 3D rotation
+        // Apply position
         container.style.left = `${x}px`;
         container.style.top = `${y}px`;
-        container.style.transform = `rotateX(${rotationX}deg) rotateY(${rotationY}deg) rotateZ(${rotationZ}deg)`;
+
+        // Apply 3D rotation to the model itself using model-viewer's orientation
+        if (modelViewer) {
+            modelViewer.orientation = `${yaw}deg ${pitch}deg ${roll}deg`;
+        }
 
         // Update debug info every 30 frames
         if (frameCount % 30 === 0 && debugDiv.style.display === 'block') {

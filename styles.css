@@ -1016,7 +1016,6 @@ body.video-playing {
     z-index: 9998;
     pointer-events: none;
     opacity: 0;
-    transform-style: preserve-3d;
 }
 
 #sparrow-container.visible {
