@@ -731,6 +731,34 @@ document.addEventListener('DOMContentLoaded', () => {
     });
 });
 
+// ====== TIMELINE SCROLL SECTION ======
+document.addEventListener('DOMContentLoaded', () => {
+    const timelineSection = document.querySelector('.timeline-scroll-section');
+    const timelineZones = document.querySelectorAll('.timeline-zone');
+
+    if (timelineSection && timelineZones.length > 0) {
+        timelineZones.forEach(zone => {
+            zone.addEventListener('click', (e) => {
+                const zoneRect = zone.getBoundingClientRect();
+                const sectionRect = timelineSection.getBoundingClientRect();
+
+                // Calculate zone's position relative to the section's scroll container
+                const zoneLeftInSection = zone.offsetLeft;
+
+                // Calculate scroll position to place zone slightly left of center
+                // Center of viewport - offset to place it left of center (35% from left)
+                const targetScrollPosition = zoneLeftInSection - (window.innerWidth * 0.35);
+
+                // Smooth scroll to position
+                timelineSection.scrollTo({
+                    left: targetScrollPosition,
+                    behavior: 'smooth'
+                });
+            });
+        });
+    }
+});
+
 // ====== INTERACTIVE CHOCOLATE SECTION ======
 document.addEventListener('DOMContentLoaded', () => {
     const chocolates = [

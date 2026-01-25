@@ -399,6 +399,68 @@ body.video-playing {
     background: radial-gradient(circle at center, rgba(212, 175, 55, 0.15) 0%, transparent 60%);
 }
 
+/* Timeline Scroll Section */
+.timeline-scroll-section {
+    width: 100%;
+    height: auto;
+    overflow-x: auto;
+    overflow-y: hidden;
+    position: relative;
+    background: var(--chocolate-dark);
+    cursor: grab;
+    scroll-behavior: smooth;
+}
+
+.timeline-scroll-section:active {
+    cursor: grabbing;
+}
+
+/* Hide scrollbar but keep functionality */
+.timeline-scroll-section::-webkit-scrollbar {
+    height: 8px;
+}
+
+.timeline-scroll-section::-webkit-scrollbar-track {
+    background: rgba(0, 0, 0, 0.3);
+}
+
+.timeline-scroll-section::-webkit-scrollbar-thumb {
+    background: rgba(212, 175, 55, 0.5);
+    border-radius: 4px;
+}
+
+.timeline-scroll-section::-webkit-scrollbar-thumb:hover {
+    background: rgba(212, 175, 55, 0.7);
+}
+
+.timeline-container-scroll {
+    position: relative;
+    height: auto;
+    width: max-content;
+    min-width: 100%;
+}
+
+.timeline-background {
+    display: block;
+    height: 100vh;
+    width: auto;
+    max-height: 800px;
+}
+
+.timeline-zone {
+    position: absolute;
+    top: 0;
+    bottom: 0;
+    width: 200px;
+    cursor: pointer;
+    transition: background 0.3s ease;
+    z-index: 10;
+}
+
+.timeline-zone:hover {
+    background: radial-gradient(circle at center, rgba(212, 175, 55, 0.2) 0%, transparent 70%);
+}
+
 /* Collection Section */
 .collection {
     min-height: 100vh;
