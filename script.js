@@ -757,6 +757,13 @@ function summonSparrow() {
     crazySound.volume = 0.6;
     crazySound.play().catch(err => console.log('Audio play prevented:', err));
 
+    // Set initial position at center BEFORE entrance animation
+    const size = window.innerWidth <= 768 ? 250 : 350;
+    const startX = (document.documentElement.clientWidth - size) / 2;
+    const startY = (document.documentElement.clientHeight - size) / 2;
+    container.style.left = `${startX}px`;
+    container.style.top = `${startY}px`;
+
     // Show container with dramatic entrance
     container.style.transform = 'scale(0.3) rotate(-180deg)';
     container.style.transition = 'all 1s cubic-bezier(0.68, -0.55, 0.265, 1.55)';
@@ -805,7 +812,6 @@ function startSparrowBouncing(container) {
     if (Math.abs(velocityX) < 1) velocityX = velocityX < 0 ? -1 : 1;
     if (Math.abs(velocityY) < 1) velocityY = velocityY < 0 ? -1 : 1;
 
-    let rotation = 0;
     let frameCount = 0;
 
     // Update container size
@@ -884,27 +890,20 @@ function startSparrowBouncing(container) {
         x = Math.max(margin, Math.min(x, maxX));
         y = Math.max(margin, Math.min(y, maxY));
 
-        // Gentle rotation
-        rotation += 0.3;
-
-        // Apply position and rotation
+        // Apply position (no rotation - model-viewer handles rotation internally)
         container.style.left = `${x}px`;
         container.style.top = `${y}px`;
-        container.style.transform = `rotate(${rotation}deg)`;
 
         // Update debug info every 30 frames
         if (frameCount % 30 === 0 && debugDiv.style.display === 'block') {
-            const effectiveSize = Math.sqrt(2) * size; // Diagonal when rotated
             debugDiv.innerHTML = `
                 Viewport: ${viewportWidth} x ${viewportHeight}<br>
                 Position: ${Math.round(x)}, ${Math.round(y)}<br>
                 Velocity: ${velocityX.toFixed(2)}, ${velocityY.toFixed(2)}<br>
                 Size: ${size}px<br>
-                Effective (rotated): ${Math.round(effectiveSize)}px<br>
                 Margin: ${margin}px<br>
                 MaxX: ${Math.round(maxX)}<br>
-                MaxY: ${Math.round(maxY)}<br>
-                Rotation: ${Math.round(rotation)}°
+                MaxY: ${Math.round(maxY)}
             `;
         }
 
@@ -915,8 +914,7 @@ function startSparrowBouncing(container) {
 
     console.log('👑 Sparvkung physics initialized:');
     console.log(`   Viewport: ${document.documentElement.clientWidth}x${document.documentElement.clientHeight}`);
-    console.log(`   Size: ${size}px, Margin: ${margin}px (50%)`);
-    console.log(`   Effective size when rotated: ${Math.round(Math.sqrt(2) * size)}px`);
+    console.log(`   Size: ${size}px, Margin: ${margin}px`);
     console.log(`   Press D to toggle debug overlay`);
 
     // Handle window resize
