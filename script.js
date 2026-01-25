@@ -869,6 +869,10 @@ function startSparrowBouncing(container) {
     let dragOffsetX = 0;
     let dragOffsetY = 0;
     let wasDragged = false;
+    let lastDragX = x;
+    let lastDragY = y;
+    let dragVelocityX = 0;
+    let dragVelocityY = 0;
 
     container.addEventListener('mousedown', (e) => {
         isDragging = true;
@@ -880,12 +884,23 @@ function startSparrowBouncing(container) {
         dragOffsetX = e.clientX - rect.left;
         dragOffsetY = e.clientY - rect.top;
 
+        // Reset velocity tracking
+        lastDragX = x;
+        lastDragY = y;
+        dragVelocityX = 0;
+        dragVelocityY = 0;
+
         e.preventDefault();
     });
 
     document.addEventListener('mousemove', (e) => {
         if (isDragging) {
             wasDragged = true;
+
+            // Save previous position
+            const prevX = x;
+            const prevY = y;
+
             // Update position based on mouse
             x = e.clientX - dragOffsetX;
             y = e.clientY - dragOffsetY;
@@ -898,6 +913,10 @@ function startSparrowBouncing(container) {
 
             x = Math.max(margin, Math.min(x, maxX));
             y = Math.max(margin, Math.min(y, maxY));
+
+            // Calculate drag velocity
+            dragVelocityX = x - prevX;
+            dragVelocityY = y - prevY;
 
             container.style.left = `${x}px`;
             container.style.top = `${y}px`;
@@ -922,6 +941,16 @@ function startSparrowBouncing(container) {
                 }, 1000);
 
                 console.log('🌀 Extra spin!');
+            } else {
+                // Apply throw velocity from drag
+                velocityX = dragVelocityX * 0.8; // Dampen slightly
+                velocityY = dragVelocityY * 0.8;
+
+                // Ensure minimum velocity if too slow
+                if (Math.abs(velocityX) < 0.5) velocityX = velocityX < 0 ? -1 : 1;
+                if (Math.abs(velocityY) < 0.5) velocityY = velocityY < 0 ? -1 : 1;
+
+                console.log(`🎯 Thrown with velocity: ${velocityX.toFixed(2)}, ${velocityY.toFixed(2)}`);
             }
         }
     });
