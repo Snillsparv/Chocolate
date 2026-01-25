@@ -93,7 +93,7 @@ document.addEventListener('DOMContentLoaded', () => {
         if (keyholeImage) {
             keyholeImage.addEventListener('click', () => {
                 if (videoReady && !clicked) {
-                    clicked = true;
+                    // Don't set clicked yet - wait until we actually start the video
 
                     // Play unlock sound
                     const unlockSound = new Audio('unlock.mp3');
@@ -133,15 +133,19 @@ document.addEventListener('DOMContentLoaded', () => {
 
                     // Wait for sound to finish, then start video
                     unlockSound.addEventListener('ended', () => {
-                        startExperience();
+                        if (!clicked) {  // Check again to avoid double-trigger
+                            clicked = true;
+                            startExperience();
+                        }
                     });
 
                     // Fallback: start after 2 seconds even if sound fails
                     setTimeout(() => {
-                        if (!introVideoContainer || introVideoContainer.style.display === 'none') {
+                        if (!clicked && (!introVideoContainer || introVideoContainer.style.display === 'none')) {
+                            clicked = true;
                             startExperience();
                         }
-                    }, 2000);
+                    }, 2500);
                 }
             });
         }
