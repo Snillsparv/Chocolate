@@ -731,6 +731,32 @@ document.addEventListener('DOMContentLoaded', () => {
     });
 });
 
+// ====== INTERACTIVE CHOCOLATE SECTION ======
+document.addEventListener('DOMContentLoaded', () => {
+    const chocolates = [
+        { id: 'chocolate-1', closedSrc: 'choklad_1_stängd.webp', openSrc: 'choklad_1_öppen.webp' },
+        { id: 'chocolate-2', closedSrc: 'choklad_2_stängd.webp', openSrc: 'choklad_2_öppen.webp' },
+        { id: 'chocolate-3', closedSrc: 'choklad_3_stängd.webp', openSrc: 'choklad_3_öppen.webp' }
+    ];
+
+    chocolates.forEach(choc => {
+        const element = document.getElementById(choc.id);
+        if (element) {
+            element.addEventListener('click', () => {
+                const currentState = element.getAttribute('data-state');
+
+                if (currentState === 'closed') {
+                    element.src = choc.openSrc;
+                    element.setAttribute('data-state', 'open');
+                } else {
+                    element.src = choc.closedSrc;
+                    element.setAttribute('data-state', 'closed');
+                }
+            });
+        }
+    });
+});
+
 // ====== 3D SPARROW KING MASCOT ======
 let sparrowActive = false;
 

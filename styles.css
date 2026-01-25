@@ -323,6 +323,36 @@ body.video-playing {
     }
 }
 
+/* Interactive Chocolate Section */
+.chocolate-interactive-section {
+    position: relative;
+    width: 100%;
+    height: auto;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.chocolate-background {
+    width: 100%;
+    height: auto;
+    display: block;
+}
+
+.chocolate-piece {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: auto;
+    cursor: pointer;
+    transition: opacity 0.3s ease;
+}
+
+.chocolate-piece:hover {
+    filter: brightness(1.1);
+}
+
 /* Collection Section */
 .collection {
     min-height: 100vh;
