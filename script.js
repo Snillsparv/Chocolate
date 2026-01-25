@@ -784,21 +784,21 @@ function summonSparrow() {
 }
 
 function startSparrowBouncing(container) {
-    const size = window.innerWidth <= 768 ? 180 : 300;
-    // Larger margin to account for rotation making the bounds bigger
-    const margin = size * 0.3; // Increase to 30% for better safety
+    const size = window.innerWidth <= 768 ? 150 : 200; // Much smaller!
+    // Very large margin to compensate for rotation diagonal
+    const margin = size * 0.5; // 50% margin = 100px for 200px size
 
     // Start from center of viewport
     let x = (document.documentElement.clientWidth - size) / 2;
     let y = (document.documentElement.clientHeight - size) / 2;
 
-    // Random initial velocity - moderate speed
-    let velocityX = (Math.random() - 0.5) * 4; // Reduced from 5 to 4
-    let velocityY = (Math.random() - 0.5) * 4;
+    // Random initial velocity - slower
+    let velocityX = (Math.random() - 0.5) * 3;
+    let velocityY = (Math.random() - 0.5) * 3;
 
     // Make sure velocity is never too slow
-    if (Math.abs(velocityX) < 1.5) velocityX = velocityX < 0 ? -1.5 : 1.5;
-    if (Math.abs(velocityY) < 1.5) velocityY = velocityY < 0 ? -1.5 : 1.5;
+    if (Math.abs(velocityX) < 1) velocityX = velocityX < 0 ? -1 : 1;
+    if (Math.abs(velocityY) < 1) velocityY = velocityY < 0 ? -1 : 1;
 
     let rotation = 0;
     let frameCount = 0;
@@ -807,7 +807,7 @@ function startSparrowBouncing(container) {
     container.style.width = `${size}px`;
     container.style.height = `${size}px`;
 
-    // Create debug overlay (optional - can be removed later)
+    // Create debug overlay
     const debugDiv = document.createElement('div');
     debugDiv.id = 'sparrow-debug';
     debugDiv.style.cssText = `
@@ -821,7 +821,7 @@ function startSparrowBouncing(container) {
         font-size: 12px;
         z-index: 99999;
         border-radius: 5px;
-        display: none; /* Hidden by default, press D to show */
+        display: none;
     `;
     document.body.appendChild(debugDiv);
 
@@ -875,12 +875,12 @@ function startSparrowBouncing(container) {
             console.log('🔵 Bounced BOTTOM');
         }
 
-        // Safety clamp - absolutely ensure it stays within bounds
+        // Safety clamp
         x = Math.max(margin, Math.min(x, maxX));
         y = Math.max(margin, Math.min(y, maxY));
 
         // Gentle rotation
-        rotation += 0.5; // Reduced from 0.8
+        rotation += 0.3;
 
         // Apply position and rotation
         container.style.left = `${x}px`;
@@ -889,11 +889,13 @@ function startSparrowBouncing(container) {
 
         // Update debug info every 30 frames
         if (frameCount % 30 === 0 && debugDiv.style.display === 'block') {
+            const effectiveSize = Math.sqrt(2) * size; // Diagonal when rotated
             debugDiv.innerHTML = `
                 Viewport: ${viewportWidth} x ${viewportHeight}<br>
                 Position: ${Math.round(x)}, ${Math.round(y)}<br>
                 Velocity: ${velocityX.toFixed(2)}, ${velocityY.toFixed(2)}<br>
                 Size: ${size}px<br>
+                Effective (rotated): ${Math.round(effectiveSize)}px<br>
                 Margin: ${margin}px<br>
                 MaxX: ${Math.round(maxX)}<br>
                 MaxY: ${Math.round(maxY)}<br>
@@ -908,17 +910,17 @@ function startSparrowBouncing(container) {
 
     console.log('👑 Sparvkung physics initialized:');
     console.log(`   Viewport: ${document.documentElement.clientWidth}x${document.documentElement.clientHeight}`);
-    console.log(`   Size: ${size}px, Margin: ${margin}px`);
+    console.log(`   Size: ${size}px, Margin: ${margin}px (50%)`);
+    console.log(`   Effective size when rotated: ${Math.round(Math.sqrt(2) * size)}px`);
     console.log(`   Press D to toggle debug overlay`);
 
     // Handle window resize
     window.addEventListener('resize', () => {
-        const newSize = window.innerWidth <= 768 ? 180 : 300;
-        const newMargin = newSize * 0.3;
+        const newSize = window.innerWidth <= 768 ? 150 : 200;
+        const newMargin = newSize * 0.5;
         container.style.width = `${newSize}px`;
         container.style.height = `${newSize}px`;
 
-        // Recalculate position to keep within new bounds
         const viewportWidth = document.documentElement.clientWidth;
         const viewportHeight = document.documentElement.clientHeight;
         const maxX = viewportWidth - newSize - newMargin;
