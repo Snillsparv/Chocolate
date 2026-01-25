@@ -785,15 +785,16 @@ function summonSparrow() {
 
 function startSparrowBouncing(container) {
     const size = window.innerWidth <= 768 ? 180 : 300;
-    const margin = 10;
+    // Larger margin to account for rotation making the bounds bigger
+    const margin = size * 0.2; // 20% of size as margin
 
-    // Start from center of screen
-    let x = (window.innerWidth - size) / 2;
-    let y = (window.innerHeight - size) / 2;
+    // Start from center of viewport
+    let x = (document.documentElement.clientWidth - size) / 2;
+    let y = (document.documentElement.clientHeight - size) / 2;
 
     // Random initial velocity - moderate speed
-    let velocityX = (Math.random() - 0.5) * 6;
-    let velocityY = (Math.random() - 0.5) * 6;
+    let velocityX = (Math.random() - 0.5) * 5;
+    let velocityY = (Math.random() - 0.5) * 5;
 
     // Make sure velocity is never too slow
     if (Math.abs(velocityX) < 2) velocityX = velocityX < 0 ? -2 : 2;
@@ -808,44 +809,46 @@ function startSparrowBouncing(container) {
     function animate() {
         if (!sparrowActive) return;
 
-        // Update position BEFORE checking bounds
+        // Update position
         x += velocityX;
         y += velocityY;
 
-        // Get current screen dimensions
-        const maxX = window.innerWidth - size - margin;
-        const maxY = window.innerHeight - size - margin;
+        // Get current viewport dimensions (more accurate than window.inner*)
+        const viewportWidth = document.documentElement.clientWidth;
+        const viewportHeight = document.documentElement.clientHeight;
+        const maxX = viewportWidth - size - margin;
+        const maxY = viewportHeight - size - margin;
 
         // Bounce off LEFT edge
         if (x < margin) {
             x = margin;
-            velocityX = Math.abs(velocityX); // Force positive (move right)
+            velocityX = Math.abs(velocityX);
         }
 
         // Bounce off RIGHT edge
         if (x > maxX) {
             x = maxX;
-            velocityX = -Math.abs(velocityX); // Force negative (move left)
+            velocityX = -Math.abs(velocityX);
         }
 
         // Bounce off TOP edge
         if (y < margin) {
             y = margin;
-            velocityY = Math.abs(velocityY); // Force positive (move down)
+            velocityY = Math.abs(velocityY);
         }
 
         // Bounce off BOTTOM edge
         if (y > maxY) {
             y = maxY;
-            velocityY = -Math.abs(velocityY); // Force negative (move up)
+            velocityY = -Math.abs(velocityY);
         }
 
-        // Double-check: clamp position to always be visible
+        // Safety clamp - absolutely ensure it stays within bounds
         x = Math.max(margin, Math.min(x, maxX));
         y = Math.max(margin, Math.min(y, maxY));
 
         // Gentle rotation
-        rotation += 1;
+        rotation += 0.8;
 
         // Apply position and rotation
         container.style.left = `${x}px`;
@@ -860,13 +863,16 @@ function startSparrowBouncing(container) {
     // Handle window resize
     window.addEventListener('resize', () => {
         const newSize = window.innerWidth <= 768 ? 180 : 300;
+        const newMargin = newSize * 0.2;
         container.style.width = `${newSize}px`;
         container.style.height = `${newSize}px`;
 
         // Recalculate position to keep within new bounds
-        const maxX = window.innerWidth - newSize - margin;
-        const maxY = window.innerHeight - newSize - margin;
-        x = Math.max(margin, Math.min(x, maxX));
-        y = Math.max(margin, Math.min(y, maxY));
+        const viewportWidth = document.documentElement.clientWidth;
+        const viewportHeight = document.documentElement.clientHeight;
+        const maxX = viewportWidth - newSize - newMargin;
+        const maxY = viewportHeight - newSize - newMargin;
+        x = Math.max(newMargin, Math.min(x, maxX));
+        y = Math.max(newMargin, Math.min(y, maxY));
     });
 }
