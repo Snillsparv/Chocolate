@@ -177,17 +177,6 @@ body.video-playing {
     background-repeat: no-repeat;
 }
 
-.hero::after {
-    content: '';
-    position: absolute;
-    bottom: 0;
-    left: 0;
-    right: 0;
-    height: 150px;
-    background: linear-gradient(to bottom, transparent, var(--chocolate-dark));
-    pointer-events: none;
-}
-
 /* Animated text overlay */
 .hero-text-overlay {
     position: absolute;
@@ -342,7 +331,7 @@ body.video-playing {
     display: flex;
     align-items: center;
     justify-content: center;
-    margin-top: -100px; /* Pull up to overlap with hero gradient */
+    box-shadow: 0 -30px 60px rgba(0, 0, 0, 0.3);
 }
 
 .chocolate-background {
