@@ -150,10 +150,11 @@
     </div>
 
     <div id="instructions">
-        <strong>🖱️ Dra Sparvkungen runt med musen</strong><br>
+        <strong>🖱️ Dra Sparvkungen med musen ELLER tryck SPACE för att studsa</strong><br>
         Röda streckade linjer = marginalgränser<br>
         Grön text = inom gränserna<br>
-        Röd text = utanför gränserna
+        Röd text = utanför gränserna<br>
+        <span id="bounceStatus" style="color: #d4af37; font-weight: bold;">Klicka SPACE för att starta</span>
     </div>
 
     <script>
@@ -163,10 +164,17 @@
 
         let isDragging = false;
         let offsetX, offsetY;
+        let isBouncing = false;
+        let animationId = null;
 
         // Start position - center
         let x = (window.innerWidth - size) / 2;
         let y = (window.innerHeight - size) / 2;
+
+        // Bounce velocity
+        let velocityX = 0;
+        let velocityY = 0;
+        let rotation = 0;
 
         // Set initial position
         container.style.left = x + 'px';
@@ -193,9 +201,11 @@
 
         // Mouse events
         container.addEventListener('mousedown', (e) => {
-            isDragging = true;
-            offsetX = e.clientX - x;
-            offsetY = e.clientY - y;
+            if (!isBouncing) {
+                isDragging = true;
+                offsetX = e.clientX - x;
+                offsetY = e.clientY - y;
+            }
         });
 
         document.addEventListener('mousemove', (e) => {
@@ -213,6 +223,93 @@
         document.addEventListener('mouseup', () => {
             isDragging = false;
         });
+
+        // SPACE key to toggle bouncing
+        document.addEventListener('keydown', (e) => {
+            if (e.code === 'Space') {
+                e.preventDefault();
+                toggleBounce();
+            }
+        });
+
+        function toggleBounce() {
+            isBouncing = !isBouncing;
+            const bounceStatus = document.getElementById('bounceStatus');
+
+            if (isBouncing) {
+                // Start bouncing
+                bounceStatus.textContent = '🎾 STUDSLÄGE AKTIVT - Tryck SPACE för att stoppa';
+                bounceStatus.style.color = '#0f0';
+
+                // Initialize random velocity
+                velocityX = (Math.random() - 0.5) * 6; // -3 to +3
+                velocityY = (Math.random() - 0.5) * 6;
+
+                startBouncing();
+            } else {
+                // Stop bouncing
+                bounceStatus.textContent = 'Klicka SPACE för att starta studsning';
+                bounceStatus.style.color = '#d4af37';
+
+                if (animationId) {
+                    cancelAnimationFrame(animationId);
+                    animationId = null;
+                }
+            }
+        }
+
+        function startBouncing() {
+            if (!isBouncing) return;
+
+            const viewportWidth = document.documentElement.clientWidth;
+            const viewportHeight = document.documentElement.clientHeight;
+            const maxX = viewportWidth - size - margin;
+            const maxY = viewportHeight - size - margin;
+
+            // Update position
+            x += velocityX;
+            y += velocityY;
+
+            // Bounce off edges
+            if (x < margin) {
+                x = margin;
+                velocityX = Math.abs(velocityX);
+                console.log('BOUNCE LEFT: x=', x, 'velocityX=', velocityX);
+            }
+            if (x > maxX) {
+                x = maxX;
+                velocityX = -Math.abs(velocityX);
+                console.log('BOUNCE RIGHT: x=', x, 'velocityX=', velocityX);
+            }
+            if (y < margin) {
+                y = margin;
+                velocityY = Math.abs(velocityY);
+                console.log('BOUNCE TOP: y=', y, 'velocityY=', velocityY);
+            }
+            if (y > maxY) {
+                y = maxY;
+                velocityY = -Math.abs(velocityY);
+                console.log('BOUNCE BOTTOM: y=', y, 'velocityY=', velocityY);
+            }
+
+            // Safety clamp
+            x = Math.max(margin, Math.min(x, maxX));
+            y = Math.max(margin, Math.min(y, maxY));
+
+            // Update rotation
+            rotation += 0.5;
+
+            // Apply position and rotation
+            container.style.left = `${x}px`;
+            container.style.top = `${y}px`;
+            container.style.transform = `rotate(${rotation}deg)`;
+
+            // Update debug info
+            updateDebug();
+
+            // Continue animation
+            animationId = requestAnimationFrame(startBouncing);
+        }
 
         function updateDebug() {
             const viewportWidth = document.documentElement.clientWidth;
