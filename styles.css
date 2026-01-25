@@ -90,7 +90,7 @@ body {
 }
 
 .keyhole-image {
-    max-width: 350px;
+    max-width: 250px;
     width: 100%;
     height: auto;
     cursor: pointer;
@@ -175,6 +175,17 @@ body.video-playing {
     background-size: cover;
     background-position: center center;
     background-repeat: no-repeat;
+}
+
+.hero::after {
+    content: '';
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    height: 150px;
+    background: linear-gradient(to bottom, transparent, var(--chocolate-dark));
+    pointer-events: none;
 }
 
 /* Animated text overlay */
@@ -331,14 +342,7 @@ body.video-playing {
     display: flex;
     align-items: center;
     justify-content: center;
-    opacity: 0;
-    transform: translateY(50px);
-    transition: opacity 1.5s ease-out, transform 1.5s ease-out;
-}
-
-.chocolate-interactive-section.visible {
-    opacity: 1;
-    transform: translateY(0);
+    margin-top: -100px; /* Pull up to overlap with hero gradient */
 }
 
 .chocolate-background {
@@ -386,10 +390,11 @@ body.video-playing {
     height: 100%;
     cursor: pointer;
     z-index: 10;
+    transition: background 0.3s ease;
 }
 
 .chocolate-zone:hover {
-    background: rgba(212, 175, 55, 0.1);
+    background: radial-gradient(circle at center, rgba(212, 175, 55, 0.15) 0%, transparent 60%);
 }
 
 /* Collection Section */

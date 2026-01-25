@@ -739,20 +739,6 @@ document.addEventListener('DOMContentLoaded', () => {
         { id: 'chocolate-3', closedSrc: 'choklad_3_stängd.webp', openSrc: 'choklad_3_öppen.webp' }
     ];
 
-    // Smooth fade-in when section comes into view
-    const chocolateSection = document.querySelector('.chocolate-interactive-section');
-    if (chocolateSection) {
-        const observer = new IntersectionObserver((entries) => {
-            entries.forEach(entry => {
-                if (entry.isIntersecting) {
-                    entry.target.classList.add('visible');
-                }
-            });
-        }, { threshold: 0.2 });
-
-        observer.observe(chocolateSection);
-    }
-
     // Handle clicks on chocolate zones
     const zones = document.querySelectorAll('.chocolate-zone');
     zones.forEach(zone => {
@@ -874,6 +860,7 @@ function startSparrowBouncing(container) {
     let currentYawSpeed = baseYawSpeed;
     let currentPitchSpeed = basePitchSpeed;
     let currentRollSpeed = baseRollSpeed;
+    const rotationDamping = 0.05; // How fast rotation returns to base (5% per frame)
     let frameCount = 0;
 
     // Update container size
@@ -949,15 +936,10 @@ function startSparrowBouncing(container) {
 
             // If it was just a click (not dragged), trigger spin boost
             if (!wasDragged) {
+                // Boost rotation speed, will gradually return to base via damping
                 currentYawSpeed = baseYawSpeed * 5;
                 currentPitchSpeed = basePitchSpeed * 5;
                 currentRollSpeed = baseRollSpeed * 5;
-
-                setTimeout(() => {
-                    currentYawSpeed = baseYawSpeed;
-                    currentPitchSpeed = basePitchSpeed;
-                    currentRollSpeed = baseRollSpeed;
-                }, 1000);
 
                 console.log('🌀 Extra spin!');
             } else {
@@ -1056,6 +1038,11 @@ function startSparrowBouncing(container) {
             container.style.left = `${x}px`;
             container.style.top = `${y}px`;
         }
+
+        // Gradually return rotation speed to base speed
+        currentYawSpeed += (baseYawSpeed - currentYawSpeed) * rotationDamping;
+        currentPitchSpeed += (basePitchSpeed - currentPitchSpeed) * rotationDamping;
+        currentRollSpeed += (baseRollSpeed - currentRollSpeed) * rotationDamping;
 
         // Update 3D rotation (always, even when dragging)
         yaw += currentYawSpeed;
