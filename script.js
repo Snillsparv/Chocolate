@@ -767,9 +767,12 @@ function summonSparrow() {
         container.style.transform = 'scale(1) rotate(0deg)';
         container.style.opacity = '1'; // Use inline style to override
 
-        // Remove transition after entrance animation completes
+        // Remove transition BEFORE starting bouncing animation
         setTimeout(() => {
             container.style.transition = 'none';
+
+            // Start bouncing animation AFTER transition is removed
+            startSparrowBouncing(container);
         }, 1000); // Wait for 1s entrance animation to complete
     }, 100);
 
@@ -783,15 +786,12 @@ function summonSparrow() {
     sparrowModel.addEventListener('error', (event) => {
         console.error('Error loading Sparvkungen:', event);
     });
-
-    // Start bouncing animation
-    startSparrowBouncing(container);
 }
 
 function startSparrowBouncing(container) {
-    const size = window.innerWidth <= 768 ? 150 : 200; // Much smaller!
-    // Very large margin to compensate for rotation diagonal
-    const margin = size * 0.5; // 50% margin = 100px for 200px size
+    const size = window.innerWidth <= 768 ? 250 : 350; // Bigger!
+    // No margin - bounce right at the edge
+    const margin = 0;
 
     // Start from center of viewport
     let x = (document.documentElement.clientWidth - size) / 2;
@@ -921,8 +921,8 @@ function startSparrowBouncing(container) {
 
     // Handle window resize
     window.addEventListener('resize', () => {
-        const newSize = window.innerWidth <= 768 ? 150 : 200;
-        const newMargin = newSize * 0.5;
+        const newSize = window.innerWidth <= 768 ? 250 : 350;
+        const newMargin = 0;
         container.style.width = `${newSize}px`;
         container.style.height = `${newSize}px`;
 
