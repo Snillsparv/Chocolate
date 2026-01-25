@@ -85,6 +85,11 @@ document.addEventListener('DOMContentLoaded', () => {
                             console.log("Autoplay prevented:", error);
                         });
                     }
+
+                    // Play intro music SIMULTANEOUSLY with video
+                    const introMusic = new Audio('intro.mp3');
+                    introMusic.volume = 0.5;
+                    introMusic.play().catch(err => console.log('Audio play prevented:', err));
                 }, 100);
             }
         };
@@ -162,11 +167,6 @@ document.addEventListener('DOMContentLoaded', () => {
 
                 setTimeout(() => {
                     introVideoContainer.remove();
-
-                    // Play intro music when hero appears
-                    const introMusic = new Audio('intro.mp3');
-                    introMusic.volume = 0.5;
-                    introMusic.play().catch(err => console.log('Audio play prevented:', err));
                 }, 100);
             }, 900);
         });
@@ -758,13 +758,14 @@ function summonSparrow() {
     crazySound.play().catch(err => console.log('Audio play prevented:', err));
 
     // Show container with dramatic entrance
-    container.style.opacity = '0';
     container.style.transform = 'scale(0.3) rotate(-180deg)';
     container.style.transition = 'all 1s cubic-bezier(0.68, -0.55, 0.265, 1.55)';
+    container.style.opacity = '0';
 
     setTimeout(() => {
         container.classList.add('visible');
         container.style.transform = 'scale(1) rotate(0deg)';
+        container.style.opacity = '1'; // Use inline style to override
     }, 100);
 
     console.log('👑🐦 Sparvkungen har blivit kallad!');
