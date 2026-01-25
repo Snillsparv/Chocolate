@@ -579,139 +579,25 @@ document.addEventListener('DOMContentLoaded', () => {
 });
 
 // ====== 3D SPARROW KING MASCOT ======
-async function init3DSparrow() {
+function init3DSparrow() {
     const container = document.getElementById('sparrow-container');
-    if (!container) return;
+    const sparrowModel = document.getElementById('sparrow-model');
 
-    try {
-        // Dynamically import Three.js modules
-        const THREE = await import('three');
-        const { GLTFLoader } = await import('three/addons/loaders/GLTFLoader.js');
-
-        // Scene setup
-        const scene = new THREE.Scene();
-        const camera = new THREE.PerspectiveCamera(45, 1, 0.1, 1000);
-        camera.position.set(0, 0, 3);
-
-        const renderer = new THREE.WebGLRenderer({ alpha: true, antialias: true });
-        renderer.setSize(200, 200);
-        renderer.setPixelRatio(window.devicePixelRatio);
-        container.appendChild(renderer.domElement);
-
-        // Lighting - Golden spotlight theme
-        const ambientLight = new THREE.AmbientLight(0xffffff, 0.6);
-        scene.add(ambientLight);
-
-        const spotLight = new THREE.SpotLight(0xd4af37, 1.5);
-        spotLight.position.set(2, 3, 2);
-        scene.add(spotLight);
-
-        const fillLight = new THREE.DirectionalLight(0xf4e4c1, 0.8);
-        fillLight.position.set(-2, 1, -1);
-        scene.add(fillLight);
-
-        // Load the Sparrow King GLB model
-        const loader = new GLTFLoader();
-        let sparrowModel = null;
-        let mixer = null;
-
-        loader.load(
-            'sparvkungen.glb',
-            (gltf) => {
-                sparrowModel = gltf.scene;
-
-                // Center and scale the model
-                const box = new THREE.Box3().setFromObject(sparrowModel);
-                const center = box.getCenter(new THREE.Vector3());
-                const size = box.getSize(new THREE.Vector3());
-
-                const maxDim = Math.max(size.x, size.y, size.z);
-                const scale = 1.5 / maxDim;
-                sparrowModel.scale.setScalar(scale);
-
-                sparrowModel.position.sub(center.multiplyScalar(scale));
-
-                scene.add(sparrowModel);
-
-                // Setup animation mixer if model has animations
-                if (gltf.animations && gltf.animations.length) {
-                    mixer = new THREE.AnimationMixer(sparrowModel);
-                    gltf.animations.forEach((clip) => {
-                        mixer.clipAction(clip).play();
-                    });
-                }
-
-                // Show container with fade-in
-                container.classList.add('visible');
-
-                console.log('👑🐦 Sparvkungen has arrived!');
-            },
-            (progress) => {
-                // Loading progress
-                const percent = (progress.loaded / progress.total) * 100;
-                console.log(`Loading Sparvkungen: ${percent.toFixed(0)}%`);
-            },
-            (error) => {
-                console.error('Error loading Sparvkungen:', error);
-            }
-        );
-
-        // Animation variables
-        let time = 0;
-        const clock = new THREE.Clock();
-
-        // Mouse tracking for gentle following
-        let mouseX = 0;
-        let mouseY = 0;
-        let targetRotationX = 0;
-        let targetRotationY = 0;
-
-        document.addEventListener('mousemove', (e) => {
-            mouseX = (e.clientX / window.innerWidth) * 2 - 1;
-            mouseY = -(e.clientY / window.innerHeight) * 2 + 1;
-        });
-
-        // Animation loop
-        function animate() {
-            requestAnimationFrame(animate);
-
-            time += 0.01;
-            const delta = clock.getDelta();
-
-            if (sparrowModel) {
-                // Gentle floating animation
-                sparrowModel.position.y = Math.sin(time * 0.8) * 0.15;
-
-                // Gentle rotation following mouse
-                targetRotationY = mouseX * 0.3;
-                targetRotationX = mouseY * 0.2;
-
-                sparrowModel.rotation.y += (targetRotationY - sparrowModel.rotation.y) * 0.05;
-                sparrowModel.rotation.x += (targetRotationX - sparrowModel.rotation.x) * 0.05;
-
-                // Continuous slow spin
-                sparrowModel.rotation.y += 0.005;
-
-                // Update animations
-                if (mixer) {
-                    mixer.update(delta);
-                }
-            }
-
-            renderer.render(scene, camera);
-        }
-
-        animate();
-
-        // Handle window resize
-        window.addEventListener('resize', () => {
-            const size = window.innerWidth <= 768 ? 120 : 200;
-            camera.aspect = 1;
-            camera.updateProjectionMatrix();
-            renderer.setSize(size, size);
-        });
-
-    } catch (error) {
-        console.error('Failed to initialize 3D Sparrow:', error);
+    if (!container || !sparrowModel) {
+        console.error('Sparrow container or model not found');
+        return;
     }
+
+    // Show container with fade-in
+    container.classList.add('visible');
+    console.log('👑🐦 Sparvkungen är på väg!');
+
+    // Listen for model load events
+    sparrowModel.addEventListener('load', () => {
+        console.log('👑🐦 Sparvkungen has arrived!');
+    });
+
+    sparrowModel.addEventListener('error', (event) => {
+        console.error('Error loading Sparvkungen:', event);
+    });
 }
