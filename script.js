@@ -784,14 +784,21 @@ function summonSparrow() {
 }
 
 function startSparrowBouncing(container) {
+    // Start from center of screen
     let x = window.innerWidth / 2;
     let y = window.innerHeight / 2;
-    let velocityX = (Math.random() - 0.5) * 4;
-    let velocityY = (Math.random() - 0.5) * 4;
+
+    // Random initial velocity (faster and more dynamic)
+    let velocityX = (Math.random() - 0.5) * 8;
+    let velocityY = (Math.random() - 0.5) * 8;
     let rotation = 0;
 
-    const size = window.innerWidth <= 768 ? 120 : 200;
+    const size = window.innerWidth <= 768 ? 180 : 300; // Larger size!
     const margin = 20;
+
+    // Update container size
+    container.style.width = `${size}px`;
+    container.style.height = `${size}px`;
 
     function animate() {
         if (!sparrowActive) return;
@@ -800,21 +807,28 @@ function startSparrowBouncing(container) {
         x += velocityX;
         y += velocityY;
 
-        // Bounce off edges
-        if (x <= margin || x >= window.innerWidth - size - margin) {
-            velocityX *= -1;
-            x = Math.max(margin, Math.min(x, window.innerWidth - size - margin));
+        // Bounce off LEFT and RIGHT edges
+        if (x <= margin) {
+            x = margin;
+            velocityX = Math.abs(velocityX); // Always bounce right
+        } else if (x >= window.innerWidth - size - margin) {
+            x = window.innerWidth - size - margin;
+            velocityX = -Math.abs(velocityX); // Always bounce left
         }
 
-        if (y <= margin || y >= window.innerHeight - size - margin) {
-            velocityY *= -1;
-            y = Math.max(margin, Math.min(y, window.innerHeight - size - margin));
+        // Bounce off TOP and BOTTOM edges
+        if (y <= margin) {
+            y = margin;
+            velocityY = Math.abs(velocityY); // Always bounce down
+        } else if (y >= window.innerHeight - size - margin) {
+            y = window.innerHeight - size - margin;
+            velocityY = -Math.abs(velocityY); // Always bounce up
         }
 
         // Gentle rotation
-        rotation += 0.5;
+        rotation += 1;
 
-        // Apply position
+        // Apply position and rotation
         container.style.left = `${x}px`;
         container.style.top = `${y}px`;
         container.style.right = 'auto';
@@ -828,8 +842,12 @@ function startSparrowBouncing(container) {
 
     // Handle window resize
     window.addEventListener('resize', () => {
-        const newSize = window.innerWidth <= 768 ? 120 : 200;
+        const newSize = window.innerWidth <= 768 ? 180 : 300;
         container.style.width = `${newSize}px`;
         container.style.height = `${newSize}px`;
+
+        // Keep within bounds after resize
+        x = Math.max(margin, Math.min(x, window.innerWidth - newSize - margin));
+        y = Math.max(margin, Math.min(y, window.innerHeight - newSize - margin));
     });
 }
