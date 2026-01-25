@@ -1011,14 +1011,11 @@ body.video-playing {
 /* 3D Sparrow King Mascot */
 #sparrow-container {
     position: fixed;
-    bottom: 2rem;
-    right: 2rem;
     width: 200px;
     height: 200px;
     z-index: 9998;
     pointer-events: none;
     opacity: 0;
-    transition: opacity 1s ease;
 }
 
 #sparrow-container.visible {

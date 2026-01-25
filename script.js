@@ -91,7 +91,59 @@ document.addEventListener('DOMContentLoaded', () => {
 
         // Click on keyhole starts the experience
         if (keyholeImage) {
-            keyholeImage.addEventListener('click', startExperience);
+            keyholeImage.addEventListener('click', () => {
+                if (videoReady && !clicked) {
+                    clicked = true;
+
+                    // Play unlock sound
+                    const unlockSound = new Audio('unlock.mp3');
+                    unlockSound.volume = 0.7;
+                    unlockSound.play().catch(err => console.log('Audio play prevented:', err));
+
+                    // Dissolve biljett immediately
+                    if (keyholeContainer) {
+                        keyholeContainer.style.animation = 'dissolve 1.5s ease-out forwards';
+
+                        // Add dissolve animation if not exists
+                        if (!document.getElementById('dissolve-animation-style')) {
+                            const style = document.createElement('style');
+                            style.id = 'dissolve-animation-style';
+                            style.textContent = `
+                                @keyframes dissolve {
+                                    0% {
+                                        opacity: 1;
+                                        transform: scale(1);
+                                        filter: blur(0px);
+                                    }
+                                    50% {
+                                        opacity: 0.5;
+                                        transform: scale(1.1);
+                                        filter: blur(5px);
+                                    }
+                                    100% {
+                                        opacity: 0;
+                                        transform: scale(1.3);
+                                        filter: blur(10px);
+                                    }
+                                }
+                            `;
+                            document.head.appendChild(style);
+                        }
+                    }
+
+                    // Wait for sound to finish, then start video
+                    unlockSound.addEventListener('ended', () => {
+                        startExperience();
+                    });
+
+                    // Fallback: start after 2 seconds even if sound fails
+                    setTimeout(() => {
+                        if (!introVideoContainer || introVideoContainer.style.display === 'none') {
+                            startExperience();
+                        }
+                    }, 2000);
+                }
+            });
         }
 
         // When video ends, fade out and remove
@@ -108,6 +160,11 @@ document.addEventListener('DOMContentLoaded', () => {
 
                 setTimeout(() => {
                     introVideoContainer.remove();
+
+                    // Play intro music when hero appears
+                    const introMusic = new Audio('intro.mp3');
+                    introMusic.volume = 0.5;
+                    introMusic.play().catch(err => console.log('Audio play prevented:', err));
                 }, 100);
             }, 900);
         });
@@ -533,10 +590,7 @@ window.addEventListener('load', () => {
         createGoldParticles();
     }, 2000); // Start after page has loaded
 
-    // Initialize 3D Sparrow King after intro
-    setTimeout(() => {
-        init3DSparrow();
-    }, 5000);
+    // Don't auto-initialize Sparrow - wait for "S" key press
 });
 
 // ====== STORYTELLING ANIMATIONS ======
@@ -677,7 +731,17 @@ document.addEventListener('DOMContentLoaded', () => {
 });
 
 // ====== 3D SPARROW KING MASCOT ======
-function init3DSparrow() {
+let sparrowActive = false;
+
+// Listen for "S" key to summon Sparvkungen
+document.addEventListener('keydown', (e) => {
+    if ((e.key === 's' || e.key === 'S') && !sparrowActive) {
+        sparrowActive = true;
+        summonSparrow();
+    }
+});
+
+function summonSparrow() {
     const container = document.getElementById('sparrow-container');
     const sparrowModel = document.getElementById('sparrow-model');
 
@@ -686,16 +750,83 @@ function init3DSparrow() {
         return;
     }
 
-    // Show container with fade-in
-    container.classList.add('visible');
-    console.log('👑🐦 Sparvkungen är på väg!');
+    // Play crazy sound
+    const crazySound = new Audio('crazy.mp3');
+    crazySound.volume = 0.6;
+    crazySound.play().catch(err => console.log('Audio play prevented:', err));
+
+    // Show container with dramatic entrance
+    container.style.opacity = '0';
+    container.style.transform = 'scale(0.3) rotate(-180deg)';
+    container.style.transition = 'all 1s cubic-bezier(0.68, -0.55, 0.265, 1.55)';
+
+    setTimeout(() => {
+        container.classList.add('visible');
+        container.style.transform = 'scale(1) rotate(0deg)';
+    }, 100);
+
+    console.log('👑🐦 Sparvkungen har blivit kallad!');
 
     // Listen for model load events
     sparrowModel.addEventListener('load', () => {
-        console.log('👑🐦 Sparvkungen has arrived!');
+        console.log('👑🐦 Sparvkungen is here!');
     });
 
     sparrowModel.addEventListener('error', (event) => {
         console.error('Error loading Sparvkungen:', event);
+    });
+
+    // Start bouncing animation
+    startSparrowBouncing(container);
+}
+
+function startSparrowBouncing(container) {
+    let x = window.innerWidth / 2;
+    let y = window.innerHeight / 2;
+    let velocityX = (Math.random() - 0.5) * 4;
+    let velocityY = (Math.random() - 0.5) * 4;
+    let rotation = 0;
+
+    const size = window.innerWidth <= 768 ? 120 : 200;
+    const margin = 20;
+
+    function animate() {
+        if (!sparrowActive) return;
+
+        // Update position
+        x += velocityX;
+        y += velocityY;
+
+        // Bounce off edges
+        if (x <= margin || x >= window.innerWidth - size - margin) {
+            velocityX *= -1;
+            x = Math.max(margin, Math.min(x, window.innerWidth - size - margin));
+        }
+
+        if (y <= margin || y >= window.innerHeight - size - margin) {
+            velocityY *= -1;
+            y = Math.max(margin, Math.min(y, window.innerHeight - size - margin));
+        }
+
+        // Gentle rotation
+        rotation += 0.5;
+
+        // Apply position
+        container.style.left = `${x}px`;
+        container.style.top = `${y}px`;
+        container.style.right = 'auto';
+        container.style.bottom = 'auto';
+        container.style.transform = `rotate(${rotation}deg)`;
+
+        requestAnimationFrame(animate);
+    }
+
+    animate();
+
+    // Handle window resize
+    window.addEventListener('resize', () => {
+        const newSize = window.innerWidth <= 768 ? 120 : 200;
+        container.style.width = `${newSize}px`;
+        container.style.height = `${newSize}px`;
     });
 }
