@@ -735,7 +735,7 @@ document.addEventListener('DOMContentLoaded', () => {
 document.addEventListener('DOMContentLoaded', () => {
     const chocolates = [
         { id: 'chocolate-1', closedSrc: 'choklad_1_stängd.webp', openSrc: 'choklad_1_öppen.webp' },
-        { id: 'chocolate-2', closedSrc: 'choklad_2_stängd.webp', openSrc: 'choklad_2_öppen.webp' },
+        { id: 'chocolate-2', closedSrc: 'choklad_2_stängd.webp', openSrc: 'choklad_2_öppen_2.webp' },
         { id: 'chocolate-3', closedSrc: 'choklad_3_stängd.webp', openSrc: 'choklad_3_öppen.webp' }
     ];
 
