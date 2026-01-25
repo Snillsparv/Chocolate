@@ -758,7 +758,7 @@ function summonSparrow() {
     crazySound.play().catch(err => console.log('Audio play prevented:', err));
 
     // Set initial position at center BEFORE entrance animation
-    const size = window.innerWidth <= 768 ? 350 : 550;
+    const size = window.innerWidth <= 768 ? 400 : 650;
     const startX = (document.documentElement.clientWidth - size) / 2;
     const startY = (document.documentElement.clientHeight - size) / 2;
     container.style.left = `${startX}px`;
@@ -796,7 +796,7 @@ function summonSparrow() {
 }
 
 function startSparrowBouncing(container) {
-    const size = window.innerWidth <= 768 ? 350 : 550; // Even bigger!
+    const size = window.innerWidth <= 768 ? 400 : 650; // Even bigger to fill edges!
     // No margin - bounce right at the edge
     const margin = 0;
 
@@ -815,13 +815,13 @@ function startSparrowBouncing(container) {
     if (Math.abs(velocityX) < 1) velocityX = velocityX < 0 ? -1 : 1;
     if (Math.abs(velocityY) < 1) velocityY = velocityY < 0 ? -1 : 1;
 
-    // Chaotic 3D rotation - using model-viewer's orientation
+    // Constant 3D rotation - steady multi-axis spin
     let yaw = 0;   // rotation around Y axis (left-right spin)
     let pitch = 0; // rotation around X axis (forward-backward tilt)
     let roll = 0;  // rotation around Z axis (barrel roll)
-    let yawSpeed = (Math.random() - 0.5) * 4;
-    let pitchSpeed = (Math.random() - 0.5) * 4;
-    let rollSpeed = (Math.random() - 0.5) * 4;
+    const yawSpeed = 0.8;    // constant speed
+    const pitchSpeed = 0.5;  // constant speed
+    const rollSpeed = 0.3;   // constant speed
     let frameCount = 0;
 
     // Update container size
@@ -872,10 +872,6 @@ function startSparrowBouncing(container) {
         if (x < margin) {
             x = margin;
             velocityX = Math.abs(velocityX);
-            // Change all rotation speeds on bounce
-            yawSpeed = (Math.random() - 0.5) * 6;
-            pitchSpeed = (Math.random() - 0.5) * 6;
-            rollSpeed = (Math.random() - 0.5) * 6;
             console.log('🔵 Bounced LEFT');
         }
 
@@ -883,9 +879,6 @@ function startSparrowBouncing(container) {
         if (x > maxX) {
             x = maxX;
             velocityX = -Math.abs(velocityX);
-            yawSpeed = (Math.random() - 0.5) * 6;
-            pitchSpeed = (Math.random() - 0.5) * 6;
-            rollSpeed = (Math.random() - 0.5) * 6;
             console.log('🔵 Bounced RIGHT');
         }
 
@@ -893,9 +886,6 @@ function startSparrowBouncing(container) {
         if (y < margin) {
             y = margin;
             velocityY = Math.abs(velocityY);
-            yawSpeed = (Math.random() - 0.5) * 6;
-            pitchSpeed = (Math.random() - 0.5) * 6;
-            rollSpeed = (Math.random() - 0.5) * 6;
             console.log('🔵 Bounced TOP');
         }
 
@@ -903,9 +893,6 @@ function startSparrowBouncing(container) {
         if (y > maxY) {
             y = maxY;
             velocityY = -Math.abs(velocityY);
-            yawSpeed = (Math.random() - 0.5) * 6;
-            pitchSpeed = (Math.random() - 0.5) * 6;
-            rollSpeed = (Math.random() - 0.5) * 6;
             console.log('🔵 Bounced BOTTOM');
         }
 
@@ -952,7 +939,7 @@ function startSparrowBouncing(container) {
 
     // Handle window resize
     window.addEventListener('resize', () => {
-        const newSize = window.innerWidth <= 768 ? 350 : 550;
+        const newSize = window.innerWidth <= 768 ? 400 : 650;
         const newMargin = 0;
         container.style.width = `${newSize}px`;
         container.style.height = `${newSize}px`;
