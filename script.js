@@ -104,9 +104,9 @@ document.addEventListener('DOMContentLoaded', () => {
                     unlockSound.volume = 0.7;
                     unlockSound.play().catch(err => console.log('Audio play prevented:', err));
 
-                    // Dissolve biljett immediately
-                    if (keyholeContainer) {
-                        keyholeContainer.style.animation = 'dissolve 1.5s ease-out forwards';
+                    // Dissolve biljett immediately (only the image, not the text)
+                    if (keyholeImage) {
+                        keyholeImage.style.animation = 'dissolve 1.5s ease-out forwards';
 
                         // Add dissolve animation if not exists
                         if (!document.getElementById('dissolve-animation-style')) {
@@ -133,6 +133,13 @@ document.addEventListener('DOMContentLoaded', () => {
                             `;
                             document.head.appendChild(style);
                         }
+                    }
+
+                    // Fade out the text separately (no scale)
+                    const keyholeText = document.querySelector('.keyhole-text');
+                    if (keyholeText) {
+                        keyholeText.style.transition = 'opacity 1.5s ease-out';
+                        keyholeText.style.opacity = '0';
                     }
 
                     // Wait for sound to finish, then start video
