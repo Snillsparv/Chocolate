@@ -766,6 +766,11 @@ function summonSparrow() {
         container.classList.add('visible');
         container.style.transform = 'scale(1) rotate(0deg)';
         container.style.opacity = '1'; // Use inline style to override
+
+        // Remove transition after entrance animation completes
+        setTimeout(() => {
+            container.style.transition = 'none';
+        }, 1000); // Wait for 1s entrance animation to complete
     }, 100);
 
     console.log('👑🐦 Sparvkungen har blivit kallad!');
