@@ -1,14 +1,67 @@
 // Preload Page Handler
 document.addEventListener('DOMContentLoaded', () => {
     const preloadPage = document.querySelector('.preload-page');
+    const preloadLayers = document.querySelectorAll('.preload-layer');
 
-    if (preloadPage) {
-        // Click anywhere on preload page to continue
-        preloadPage.addEventListener('click', () => {
-            preloadPage.classList.add('fade-out');
-            setTimeout(() => {
-                preloadPage.remove();
-            }, 800);
+    if (preloadPage && preloadLayers.length > 0) {
+        // Store canvas data for each layer to detect non-transparent clicks
+        const layerCanvases = new Map();
+
+        // Load each image into a canvas for pixel detection
+        preloadLayers.forEach((layer) => {
+            const canvas = document.createElement('canvas');
+            const ctx = canvas.getContext('2d', { willReadFrequently: true });
+
+            layer.addEventListener('load', () => {
+                canvas.width = layer.naturalWidth;
+                canvas.height = layer.naturalHeight;
+                ctx.drawImage(layer, 0, 0);
+                layerCanvases.set(layer, { canvas, ctx });
+            });
+
+            // If already loaded
+            if (layer.complete && layer.naturalWidth > 0) {
+                canvas.width = layer.naturalWidth;
+                canvas.height = layer.naturalHeight;
+                ctx.drawImage(layer, 0, 0);
+                layerCanvases.set(layer, { canvas, ctx });
+            }
+        });
+
+        // Check if click is on non-transparent pixel
+        function isClickOnVisiblePixel(layer, clickX, clickY) {
+            const data = layerCanvases.get(layer);
+            if (!data) return false;
+
+            const rect = layer.getBoundingClientRect();
+            const scaleX = layer.naturalWidth / rect.width;
+            const scaleY = layer.naturalHeight / rect.height;
+
+            const x = Math.floor((clickX - rect.left) * scaleX);
+            const y = Math.floor((clickY - rect.top) * scaleY);
+
+            if (x < 0 || x >= data.canvas.width || y < 0 || y >= data.canvas.height) {
+                return false;
+            }
+
+            const pixel = data.ctx.getImageData(x, y, 1, 1).data;
+            return pixel[3] > 50; // Alpha threshold
+        }
+
+        // Handle clicks on preload page
+        preloadPage.addEventListener('click', (e) => {
+            let clickedOnLayer = false;
+
+            // Check layers in reverse order (top to bottom)
+            for (let i = preloadLayers.length - 1; i >= 0; i--) {
+                const layer = preloadLayers[i];
+                if (isClickOnVisiblePixel(layer, e.clientX, e.clientY)) {
+                    // Toggle glow on this layer
+                    layer.classList.toggle('glow');
+                    clickedOnLayer = true;
+                    break;
+                }
+            }
         });
     }
 });
