@@ -68,14 +68,21 @@
     <!-- Timeline Section -->
     <section class="timeline-scroll-section">
         <div class="timeline-container-scroll">
-            <img src="tidslinje_1.webp" alt="Tidslinje" class="timeline-background">
+            <img src="tid_bg.webp" alt="Tidslinje bakgrund" class="timeline-background">
 
-            <!-- Clickable zones along the timeline -->
-            <div class="timeline-zone" data-position="0" style="left: 10%;"></div>
-            <div class="timeline-zone" data-position="1" style="left: 30%;"></div>
-            <div class="timeline-zone" data-position="2" style="left: 50%;"></div>
-            <div class="timeline-zone" data-position="3" style="left: 70%;"></div>
-            <div class="timeline-zone" data-position="4" style="left: 90%;"></div>
+            <!-- Timeline pieces (transparent overlays) -->
+            <img src="tid_1.webp" alt="Tidslinje del 1" class="timeline-piece" id="tid-1" data-title="2016 - Början" data-text="Familjen Sparfvén startade sin chokladresa med en dröm och passion.">
+            <img src="tid_2.webp" alt="Tidslinje del 2" class="timeline-piece" id="tid-2" data-title="2017 - Expansion" data-text="Vi utökade vårt sortiment med unika smaker från hela världen.">
+            <img src="tid_3.webp" alt="Tidslinje del 3" class="timeline-piece" id="tid-3" data-title="2018 - Innovation" data-text="Nya tillverkningsmetoder och hantverkstekniker introducerades.">
+            <img src="tid_4.webp" alt="Tidslinje del 4" class="timeline-piece" id="tid-4" data-title="2020 - Utmaningar" data-text="Trots pandemi fortsatte vi att skapa chokladmagi.">
+            <img src="tid_5.webp" alt="Tidslinje del 5" class="timeline-piece" id="tid-5" data-title="2024 - Idag" data-text="Idag är vi stolta över att leverera Sveriges finaste hantverkschoklad.">
+        </div>
+
+        <!-- Info box that appears on click -->
+        <div class="timeline-info-box" id="timeline-info-box">
+            <button class="timeline-info-close" id="timeline-info-close">×</button>
+            <h3 class="timeline-info-title" id="timeline-info-title">Titel</h3>
+            <p class="timeline-info-text" id="timeline-info-text">Info text kommer här...</p>
         </div>
     </section>
 
