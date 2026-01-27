@@ -403,48 +403,20 @@ body.video-playing {
 .timeline-scroll-section {
     width: 100%;
     height: auto;
-    overflow-x: auto;
-    overflow-y: hidden;
     position: relative;
     background: var(--chocolate-dark);
-    cursor: grab;
-    scroll-behavior: smooth;
-}
-
-.timeline-scroll-section:active {
-    cursor: grabbing;
-}
-
-/* Hide scrollbar but keep functionality */
-.timeline-scroll-section::-webkit-scrollbar {
-    height: 8px;
-}
-
-.timeline-scroll-section::-webkit-scrollbar-track {
-    background: rgba(0, 0, 0, 0.3);
-}
-
-.timeline-scroll-section::-webkit-scrollbar-thumb {
-    background: rgba(212, 175, 55, 0.5);
-    border-radius: 4px;
-}
-
-.timeline-scroll-section::-webkit-scrollbar-thumb:hover {
-    background: rgba(212, 175, 55, 0.7);
 }
 
 .timeline-container-scroll {
     position: relative;
+    width: 100%;
     height: auto;
-    width: max-content;
-    min-width: 100%;
 }
 
 .timeline-background {
     display: block;
-    height: 100vh;
-    width: auto;
-    max-height: 800px;
+    width: 100%;
+    height: auto;
 }
 
 .timeline-piece {
@@ -454,12 +426,17 @@ body.video-playing {
     width: 100%;
     height: 100%;
     cursor: pointer;
-    transition: opacity 0.3s ease, filter 0.3s ease;
+    transition: all 0.3s ease;
     z-index: 10;
+    opacity: 1;
 }
 
 .timeline-piece:hover {
-    filter: brightness(1.2) drop-shadow(0 0 20px rgba(212, 175, 55, 0.6));
+    filter: brightness(1.3) drop-shadow(0 0 30px rgba(212, 175, 55, 0.8));
+}
+
+.timeline-piece.active {
+    filter: brightness(1.5) drop-shadow(0 0 40px rgba(212, 175, 55, 1));
 }
 
 /* Timeline Info Box */

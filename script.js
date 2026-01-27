@@ -740,105 +740,57 @@ document.addEventListener('DOMContentLoaded', () => {
 
 // ====== TIMELINE SCROLL SECTION ======
 document.addEventListener('DOMContentLoaded', () => {
-    const timelineSection = document.querySelector('.timeline-scroll-section');
     const timelinePieces = document.querySelectorAll('.timeline-piece');
     const infoBox = document.getElementById('timeline-info-box');
     const infoTitle = document.getElementById('timeline-info-title');
     const infoText = document.getElementById('timeline-info-text');
     const infoClose = document.getElementById('timeline-info-close');
 
-    if (timelineSection) {
-        // Drag-to-scroll functionality
-        let isDragging = false;
-        let startX;
-        let scrollLeft;
-        let hasDragged = false;
+    // Click timeline pieces to show info
+    if (timelinePieces.length > 0) {
+        timelinePieces.forEach((piece) => {
+            piece.addEventListener('click', (e) => {
+                e.stopPropagation();
 
-        timelineSection.addEventListener('mousedown', (e) => {
-            // Don't start drag if clicking on a timeline piece
-            if (e.target.classList.contains('timeline-piece')) return;
+                // Remove active class from all pieces
+                timelinePieces.forEach(p => p.classList.remove('active'));
 
-            isDragging = true;
-            hasDragged = false;
-            timelineSection.style.cursor = 'grabbing';
-            startX = e.pageX - timelineSection.offsetLeft;
-            scrollLeft = timelineSection.scrollLeft;
-        });
+                // Add active class to clicked piece
+                piece.classList.add('active');
 
-        timelineSection.addEventListener('mouseleave', () => {
-            isDragging = false;
-            timelineSection.style.cursor = 'grab';
-        });
+                // Get info from data attributes
+                const title = piece.getAttribute('data-title');
+                const text = piece.getAttribute('data-text');
 
-        timelineSection.addEventListener('mouseup', () => {
-            isDragging = false;
-            timelineSection.style.cursor = 'grab';
-        });
+                // Update info box
+                infoTitle.textContent = title;
+                infoText.textContent = text;
 
-        timelineSection.addEventListener('mousemove', (e) => {
-            if (!isDragging) return;
-            e.preventDefault();
-            hasDragged = true;
-            const x = e.pageX - timelineSection.offsetLeft;
-            const walk = (x - startX) * 2; // Scroll speed multiplier
-            timelineSection.scrollLeft = scrollLeft - walk;
-        });
-
-        // Click timeline pieces to show info
-        if (timelinePieces.length > 0) {
-            timelinePieces.forEach((piece, index) => {
-                piece.addEventListener('click', (e) => {
-                    if (hasDragged) {
-                        hasDragged = false;
-                        return;
-                    }
-
-                    e.stopPropagation();
-
-                    // Get info from data attributes
-                    const title = piece.getAttribute('data-title');
-                    const text = piece.getAttribute('data-text');
-
-                    // Update info box
-                    infoTitle.textContent = title;
-                    infoText.textContent = text;
-
-                    // Show info box
-                    infoBox.classList.add('visible');
-
-                    // Calculate scroll position - use the piece's center
-                    const pieceRect = piece.getBoundingClientRect();
-                    const sectionRect = timelineSection.getBoundingClientRect();
-                    const pieceCenter = piece.offsetLeft + (pieceRect.width / 2);
-
-                    // Scroll so piece center is 35% from left
-                    const targetScrollPosition = pieceCenter - (window.innerWidth * 0.35);
-
-                    // Smooth scroll to position
-                    timelineSection.scrollTo({
-                        left: targetScrollPosition,
-                        behavior: 'smooth'
-                    });
-                });
+                // Show info box
+                infoBox.classList.add('visible');
             });
-        }
-
-        // Close info box
-        if (infoClose) {
-            infoClose.addEventListener('click', () => {
-                infoBox.classList.remove('visible');
-            });
-        }
-
-        // Close info box when clicking outside
-        document.addEventListener('click', (e) => {
-            if (infoBox.classList.contains('visible') &&
-                !infoBox.contains(e.target) &&
-                !e.target.classList.contains('timeline-piece')) {
-                infoBox.classList.remove('visible');
-            }
         });
     }
+
+    // Close info box
+    if (infoClose) {
+        infoClose.addEventListener('click', () => {
+            infoBox.classList.remove('visible');
+            // Remove active class from all pieces
+            timelinePieces.forEach(p => p.classList.remove('active'));
+        });
+    }
+
+    // Close info box when clicking outside
+    document.addEventListener('click', (e) => {
+        if (infoBox.classList.contains('visible') &&
+            !infoBox.contains(e.target) &&
+            !e.target.classList.contains('timeline-piece')) {
+            infoBox.classList.remove('visible');
+            // Remove active class from all pieces
+            timelinePieces.forEach(p => p.classList.remove('active'));
+        }
+    });
 });
 
 // ====== INTERACTIVE CHOCOLATE SECTION ======
