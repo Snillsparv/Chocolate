@@ -404,21 +404,18 @@ body.video-playing {
     width: 100%;
     position: relative;
     background: var(--chocolate-dark);
-    padding: 0;
-    margin: 0;
 }
 
 .timeline-container {
     position: relative;
     width: 100%;
-    display: block;
+    line-height: 0;
 }
 
 .timeline-background {
     display: block;
     width: 100%;
     height: auto;
-    position: relative;
 }
 
 .timeline-piece {
@@ -426,8 +423,7 @@ body.video-playing {
     top: 0;
     left: 0;
     width: 100%;
-    height: 100%;
-    object-fit: fill;
+    height: auto;
     cursor: pointer;
     transition: filter 0.3s ease;
     pointer-events: auto;
