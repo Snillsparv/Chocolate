@@ -9,6 +9,45 @@ document.addEventListener('DOMContentLoaded', () => {
 
     let videoReady = false;
     let clicked = false;
+    let minimumLoadTimeReached = false;
+
+    // Minimum 5 seconds loading screen
+    setTimeout(() => {
+        minimumLoadTimeReached = true;
+        checkIfReadyToShow();
+    }, 5000);
+
+    function checkIfReadyToShow() {
+        if (videoReady && minimumLoadTimeReached) {
+            // Stop text rotation
+            clearInterval(textRotationInterval);
+            loadingText.style.display = 'none';
+            if (keyholeContainer) {
+                keyholeContainer.style.display = 'flex';
+            }
+            document.querySelector('.loading-spinner').style.display = 'none';
+        }
+    }
+
+    // Rotating loading texts
+    const loadingTexts = [
+        "Maler kakaobönor...",
+        "Tempererar chokladen...",
+        "Rostar hasselnötterna...",
+        "Tillber Sparvkungen...",
+        "Väljer de fetaste larverna...",
+        "Flyger hejvilt fram och tillbaka..."
+    ];
+    let textIndex = 0;
+    let textRotationInterval;
+
+    if (loadingText) {
+        loadingText.textContent = loadingTexts[0];
+        textRotationInterval = setInterval(() => {
+            textIndex = (textIndex + 1) % loadingTexts.length;
+            loadingText.textContent = loadingTexts[textIndex];
+        }, 1500); // Change text every 1.5 seconds
+    }
 
     if (introVideo && introVideoContainer && loadingScreen) {
         // Load video in background
@@ -17,11 +56,7 @@ document.addEventListener('DOMContentLoaded', () => {
         // When video is ready to play
         introVideo.addEventListener('canplay', () => {
             videoReady = true;
-            loadingText.style.display = 'none';
-            if (keyholeContainer) {
-                keyholeContainer.style.display = 'flex';
-            }
-            document.querySelector('.loading-spinner').style.display = 'none';
+            checkIfReadyToShow();
         });
 
         // Listen for click on keyhole
@@ -29,49 +64,123 @@ document.addEventListener('DOMContentLoaded', () => {
             if (videoReady && !clicked) {
                 clicked = true;
 
-                // First fade out keyhole
-                if (keyholeContainer) {
-                    keyholeContainer.classList.add('fade-out');
-                }
+                // Prevent scrolling IMMEDIATELY
+                document.body.classList.add('video-playing');
+                window.scrollTo(0, 0);
 
-                // After keyhole fades, fade out loading screen
+                // Fade out loading screen and start video immediately
+                loadingScreen.classList.add('fade-out');
                 setTimeout(() => {
-                    loadingScreen.classList.add('fade-out');
-                    setTimeout(() => {
-                        loadingScreen.remove();
-                    }, 800);
+                    loadingScreen.remove();
+                }, 800);
 
-                    // Show and play video
-                    introVideoContainer.style.display = 'flex';
-                    setTimeout(() => {
-                        const playPromise = introVideo.play();
+                // Show and play video
+                introVideoContainer.style.display = 'flex';
+                setTimeout(() => {
+                    const playPromise = introVideo.play();
 
-                        if (playPromise !== undefined) {
-                            playPromise.catch(error => {
-                                console.log("Autoplay prevented:", error);
-                            });
-                        }
-                    }, 100);
-                }, 600); // Wait for keyhole fade-out
+                    if (playPromise !== undefined) {
+                        playPromise.catch(error => {
+                            console.log("Autoplay prevented:", error);
+                        });
+                    }
+
+                    // Play intro music SIMULTANEOUSLY with video
+                    const introMusic = new Audio('intro.mp3');
+                    introMusic.volume = 0.5;
+                    introMusic.play().catch(err => console.log('Audio play prevented:', err));
+                }, 100);
             }
         };
 
         // Click on keyhole starts the experience
         if (keyholeImage) {
-            keyholeImage.addEventListener('click', startExperience);
+            keyholeImage.addEventListener('click', () => {
+                if (videoReady && !clicked) {
+                    // Don't set clicked yet - wait until we actually start the video
+
+                    // Play unlock sound
+                    const unlockSound = new Audio('unlock.mp3');
+                    unlockSound.volume = 0.7;
+                    unlockSound.play().catch(err => console.log('Audio play prevented:', err));
+
+                    // Dissolve biljett immediately (only the image, not the text)
+                    if (keyholeImage) {
+                        keyholeImage.style.animation = 'dissolve 1.5s ease-out forwards';
+
+                        // Add dissolve animation if not exists
+                        if (!document.getElementById('dissolve-animation-style')) {
+                            const style = document.createElement('style');
+                            style.id = 'dissolve-animation-style';
+                            style.textContent = `
+                                @keyframes dissolve {
+                                    0% {
+                                        opacity: 1;
+                                        transform: scale(1);
+                                        filter: blur(0px);
+                                    }
+                                    50% {
+                                        opacity: 0.5;
+                                        transform: scale(1.1);
+                                        filter: blur(5px);
+                                    }
+                                    100% {
+                                        opacity: 0;
+                                        transform: scale(1.3);
+                                        filter: blur(10px);
+                                    }
+                                }
+                            `;
+                            document.head.appendChild(style);
+                        }
+                    }
+
+                    // Fade out the text separately (no scale)
+                    const keyholeText = document.querySelector('.keyhole-text');
+                    if (keyholeText) {
+                        keyholeText.style.transition = 'opacity 1.5s ease-out';
+                        keyholeText.style.opacity = '0';
+                    }
+
+                    // Wait for sound to finish, then start video
+                    unlockSound.addEventListener('ended', () => {
+                        if (!clicked) {  // Check again to avoid double-trigger
+                            startExperience();  // This will set clicked = true internally
+                        }
+                    });
+
+                    // Fallback: start after 2 seconds even if sound fails
+                    setTimeout(() => {
+                        if (!clicked && (!introVideoContainer || introVideoContainer.style.display === 'none')) {
+                            startExperience();  // This will set clicked = true internally
+                        }
+                    }, 2500);
+                }
+            });
         }
 
         // When video ends, fade out and remove
         introVideo.addEventListener('ended', () => {
+            // Force scroll to top BEFORE removing video-playing class
+            window.scrollTo({ top: 0, behavior: 'instant' });
+
             introVideoContainer.classList.add('fade-out');
+
             setTimeout(() => {
-                introVideoContainer.remove();
-            }, 1000);
+                // Re-enable scrolling and ensure we're at top
+                document.body.classList.remove('video-playing');
+                window.scrollTo({ top: 0, behavior: 'instant' });
+
+                setTimeout(() => {
+                    introVideoContainer.remove();
+                }, 100);
+            }, 900);
         });
 
         // Fallback: if video fails to load
         introVideo.addEventListener('error', () => {
             console.log("Video failed to load");
+            clearInterval(textRotationInterval);
             loadingScreen.classList.add('fade-out');
             setTimeout(() => {
                 loadingScreen.remove();
@@ -193,19 +302,8 @@ document.addEventListener('DOMContentLoaded', () => {
     console.log('%c        ', 'font-size: 1px; padding: 25px 100px; background: linear-gradient(135deg, #1a0f0a 0%, #3d2817 100%); border: 2px solid #d4af37; border-top: none;');
 });
 
-// Start with body visible if there's an intro video, otherwise fade in
-if (!document.querySelector('.intro-video-container')) {
-    document.body.style.opacity = '0';
-    document.body.style.transition = 'opacity 0.5s ease';
-
-    // Smooth reveal on page load
-    window.addEventListener('load', () => {
-        document.body.style.opacity = '1';
-    });
-} else {
-    // If intro video exists, body should be visible immediately
-    document.body.style.opacity = '1';
-}
+// Ensure body is visible immediately when page loads
+document.body.style.opacity = '1';
 
 // R key to trigger candy rain (can be used multiple times)
 document.addEventListener('keydown', (e) => {
@@ -500,10 +598,7 @@ window.addEventListener('load', () => {
         createGoldParticles();
     }, 2000); // Start after page has loaded
 
-    // Initialize 3D Sparrow King after intro
-    setTimeout(() => {
-        init3DSparrow();
-    }, 5000);
+    // Don't auto-initialize Sparrow - wait for "S" key press
 });
 
 // ====== STORYTELLING ANIMATIONS ======
@@ -550,28 +645,179 @@ document.addEventListener('DOMContentLoaded', () => {
     if (processSection) {
         progressBarObserver.observe(processSection);
     }
+});
 
-    // ALTERNATIV 3: Parallax effects
-    const parallaxScenes = document.querySelectorAll('.parallax-scene');
+// ====== LATERNA MAGICA SLIDESHOW ======
+document.addEventListener('DOMContentLoaded', () => {
+    const slides = document.querySelectorAll('.slide');
+    const indicatorDots = document.querySelectorAll('.indicator-dot');
+    const projectorFrame = document.querySelector('.projector-frame');
 
-    parallaxScenes.forEach(scene => {
-        const parallaxText = scene.querySelector('.parallax-text');
-        if (parallaxText) {
-            storyObserver.observe(parallaxText);
-        }
+    if (slides.length === 0) return;
+
+    let currentSlideIndex = 0;
+    let isTransitioning = false;
+
+    // Function to go to specific slide
+    function goToSlide(index) {
+        if (isTransitioning || index === currentSlideIndex) return;
+
+        isTransitioning = true;
+
+        const currentSlide = slides[currentSlideIndex];
+        const nextSlide = slides[index];
+
+        // Add exiting class to current slide
+        currentSlide.classList.add('exiting');
+        currentSlide.classList.remove('active');
+
+        // Add active class to next slide
+        nextSlide.classList.add('active');
+        nextSlide.classList.remove('exiting');
+
+        // Update indicator dots
+        indicatorDots[currentSlideIndex].classList.remove('active');
+        indicatorDots[index].classList.add('active');
+
+        // Update current index
+        currentSlideIndex = index;
+
+        // Remove exiting class after transition
+        setTimeout(() => {
+            currentSlide.classList.remove('exiting');
+            isTransitioning = false;
+        }, 800);
+    }
+
+    // Function to advance to next slide
+    function nextSlide() {
+        const nextIndex = (currentSlideIndex + 1) % slides.length;
+        goToSlide(nextIndex);
+    }
+
+    // Function to go to previous slide
+    function prevSlide() {
+        const prevIndex = (currentSlideIndex - 1 + slides.length) % slides.length;
+        goToSlide(prevIndex);
+    }
+
+    // Click on projector frame to advance
+    if (projectorFrame) {
+        projectorFrame.addEventListener('click', (e) => {
+            // Don't trigger if clicking on indicator dots
+            if (e.target.classList.contains('indicator-dot')) return;
+            nextSlide();
+        });
+    }
+
+    // Click on indicator dots to jump to specific slide
+    indicatorDots.forEach((dot, index) => {
+        dot.addEventListener('click', (e) => {
+            e.stopPropagation();
+            goToSlide(index);
+        });
     });
 
-    // Parallax scroll effect
-    window.addEventListener('scroll', () => {
-        parallaxScenes.forEach(scene => {
-            const rect = scene.getBoundingClientRect();
-            const scrollPercent = (window.innerHeight - rect.top) / (window.innerHeight + rect.height);
+    // Keyboard navigation
+    document.addEventListener('keydown', (e) => {
+        const laternaMagica = document.querySelector('.laterna-magica-section');
+        if (!laternaMagica) return;
 
-            if (scrollPercent > 0 && scrollPercent < 1) {
-                const bg = scene.querySelector('.parallax-bg');
-                if (bg) {
-                    const translateY = (scrollPercent - 0.5) * 100;
-                    bg.style.transform = `translateY(${translateY}px)`;
+        const rect = laternaMagica.getBoundingClientRect();
+        const isVisible = rect.top < window.innerHeight && rect.bottom > 0;
+
+        if (isVisible) {
+            if (e.key === 'ArrowRight' || e.key === ' ') {
+                e.preventDefault();
+                nextSlide();
+            } else if (e.key === 'ArrowLeft') {
+                e.preventDefault();
+                prevSlide();
+            }
+        }
+    });
+});
+
+// ====== TIMELINE SCROLL SECTION ======
+document.addEventListener('DOMContentLoaded', () => {
+    const timelinePieces = document.querySelectorAll('.timeline-piece');
+    const infoBox = document.getElementById('timeline-info-box');
+    const infoTitle = document.getElementById('timeline-info-title');
+    const infoText = document.getElementById('timeline-info-text');
+    const infoClose = document.getElementById('timeline-info-close');
+
+    // Click timeline pieces to show info
+    if (timelinePieces.length > 0) {
+        timelinePieces.forEach((piece) => {
+            piece.addEventListener('click', (e) => {
+                e.stopPropagation();
+
+                // Remove active class from all pieces
+                timelinePieces.forEach(p => p.classList.remove('active'));
+
+                // Add active class to clicked piece
+                piece.classList.add('active');
+
+                // Get info from data attributes
+                const title = piece.getAttribute('data-title');
+                const text = piece.getAttribute('data-text');
+
+                // Update info box
+                infoTitle.textContent = title;
+                infoText.textContent = text;
+
+                // Show info box
+                infoBox.classList.add('visible');
+            });
+        });
+    }
+
+    // Close info box
+    if (infoClose) {
+        infoClose.addEventListener('click', () => {
+            infoBox.classList.remove('visible');
+            // Remove active class from all pieces
+            timelinePieces.forEach(p => p.classList.remove('active'));
+        });
+    }
+
+    // Close info box when clicking outside
+    document.addEventListener('click', (e) => {
+        if (infoBox.classList.contains('visible') &&
+            !infoBox.contains(e.target) &&
+            !e.target.classList.contains('timeline-piece')) {
+            infoBox.classList.remove('visible');
+            // Remove active class from all pieces
+            timelinePieces.forEach(p => p.classList.remove('active'));
+        }
+    });
+});
+
+// ====== INTERACTIVE CHOCOLATE SECTION ======
+document.addEventListener('DOMContentLoaded', () => {
+    const chocolates = [
+        { id: 'chocolate-1', closedSrc: 'choklad_1_stängd.webp', openSrc: 'choklad_1_öppen.webp' },
+        { id: 'chocolate-2', closedSrc: 'choklad_2_stängd.webp', openSrc: 'choklad_2_öppen_2.webp' },
+        { id: 'chocolate-3', closedSrc: 'choklad_3_stängd.webp', openSrc: 'choklad_3_öppen.webp' }
+    ];
+
+    // Handle clicks on chocolate zones
+    const zones = document.querySelectorAll('.chocolate-zone');
+    zones.forEach(zone => {
+        zone.addEventListener('click', () => {
+            const chocolateId = zone.getAttribute('data-chocolate');
+            const element = document.getElementById(chocolateId);
+            const choc = chocolates.find(c => c.id === chocolateId);
+
+            if (element && choc) {
+                const currentState = element.getAttribute('data-state');
+
+                if (currentState === 'closed') {
+                    element.src = choc.openSrc;
+                    element.setAttribute('data-state', 'open');
+                } else {
+                    element.src = choc.closedSrc;
+                    element.setAttribute('data-state', 'closed');
                 }
             }
         });
@@ -579,7 +825,17 @@ document.addEventListener('DOMContentLoaded', () => {
 });
 
 // ====== 3D SPARROW KING MASCOT ======
-function init3DSparrow() {
+let sparrowActive = false;
+
+// Listen for "S" key to summon Sparvkungen
+document.addEventListener('keydown', (e) => {
+    if ((e.key === 's' || e.key === 'S') && !sparrowActive) {
+        sparrowActive = true;
+        summonSparrow();
+    }
+});
+
+function summonSparrow() {
     const container = document.getElementById('sparrow-container');
     const sparrowModel = document.getElementById('sparrow-model');
 
@@ -588,16 +844,343 @@ function init3DSparrow() {
         return;
     }
 
-    // Show container with fade-in
-    container.classList.add('visible');
-    console.log('👑🐦 Sparvkungen är på väg!');
+    // Play crazy sound
+    const crazySound = new Audio('crazy.mp3');
+    crazySound.volume = 0.6;
+    crazySound.play().catch(err => console.log('Audio play prevented:', err));
+
+    // Set initial position at center BEFORE entrance animation
+    const size = window.innerWidth <= 768 ? 400 : 650;
+    const startX = (document.documentElement.clientWidth - size) / 2;
+    const startY = (document.documentElement.clientHeight - size) / 2;
+    container.style.left = `${startX}px`;
+    container.style.top = `${startY}px`;
+
+    // Show container with dramatic entrance
+    container.style.transform = 'scale(0.3) rotate(-180deg)';
+    container.style.transition = 'all 1s cubic-bezier(0.68, -0.55, 0.265, 1.55)';
+    container.style.opacity = '0';
+
+    setTimeout(() => {
+        container.classList.add('visible');
+        container.style.transform = 'scale(1) rotate(0deg)';
+        container.style.opacity = '1'; // Use inline style to override
+
+        // Remove transition BEFORE starting bouncing animation
+        setTimeout(() => {
+            container.style.transition = 'none';
+
+            // Start bouncing animation AFTER transition is removed
+            startSparrowBouncing(container);
+        }, 1000); // Wait for 1s entrance animation to complete
+    }, 100);
+
+    console.log('👑🐦 Sparvkungen har blivit kallad!');
 
     // Listen for model load events
     sparrowModel.addEventListener('load', () => {
-        console.log('👑🐦 Sparvkungen has arrived!');
+        console.log('👑🐦 Sparvkungen is here!');
     });
 
     sparrowModel.addEventListener('error', (event) => {
         console.error('Error loading Sparvkungen:', event);
+    });
+}
+
+function startSparrowBouncing(container) {
+    const size = window.innerWidth <= 768 ? 400 : 650; // Even bigger to fill edges!
+    // Negative margin to compensate for empty space around model in GLB file
+    const margin = -50;
+
+    // Get model-viewer element for 3D rotation
+    const modelViewer = container.querySelector('#sparrow-model');
+
+    // Start from center of viewport
+    let x = (document.documentElement.clientWidth - size) / 2;
+    let y = (document.documentElement.clientHeight - size) / 2;
+
+    // Random initial velocity - slower
+    let velocityX = (Math.random() - 0.5) * 3;
+    let velocityY = (Math.random() - 0.5) * 3;
+
+    // Make sure velocity is never too slow
+    if (Math.abs(velocityX) < 1) velocityX = velocityX < 0 ? -1 : 1;
+    if (Math.abs(velocityY) < 1) velocityY = velocityY < 0 ? -1 : 1;
+
+    // Store base velocity for gradual return
+    const baseVelocityX = velocityX;
+    const baseVelocityY = velocityY;
+    const velocityDamping = 0.03; // How fast velocity returns to base (0.03 = 3% per frame)
+
+    // Constant 3D rotation - steady multi-axis spin
+    let yaw = 0;   // rotation around Y axis (left-right spin)
+    let pitch = 0; // rotation around X axis (forward-backward tilt)
+    let roll = 0;  // rotation around Z axis (barrel roll)
+    let baseYawSpeed = 0.8;    // constant speed
+    let basePitchSpeed = 0.5;  // constant speed
+    let baseRollSpeed = 0.3;   // constant speed
+    let currentYawSpeed = baseYawSpeed;
+    let currentPitchSpeed = basePitchSpeed;
+    let currentRollSpeed = baseRollSpeed;
+    const rotationDamping = 0.05; // How fast rotation returns to base (5% per frame)
+    let frameCount = 0;
+
+    // Update container size
+    container.style.width = `${size}px`;
+    container.style.height = `${size}px`;
+
+    // Enable clicking and dragging on Sparvkungen
+    container.style.pointerEvents = 'auto';
+    container.style.cursor = 'grab';
+
+    let isDragging = false;
+    let dragOffsetX = 0;
+    let dragOffsetY = 0;
+    let wasDragged = false;
+    let lastDragX = x;
+    let lastDragY = y;
+    let dragVelocityX = 0;
+    let dragVelocityY = 0;
+
+    // WASD keyboard controls
+    const keys = { w: false, a: false, s: false, d: false };
+    const keyboardAcceleration = 0.5; // How fast keyboard input affects velocity
+
+    document.addEventListener('keydown', (e) => {
+        const key = e.key.toLowerCase();
+        if (key === 'w' || key === 'a' || key === 's' || key === 'd') {
+            keys[key] = true;
+            e.preventDefault(); // Prevent page scrolling
+        }
+    });
+
+    document.addEventListener('keyup', (e) => {
+        const key = e.key.toLowerCase();
+        if (key === 'w' || key === 'a' || key === 's' || key === 'd') {
+            keys[key] = false;
+        }
+    });
+
+    container.addEventListener('mousedown', (e) => {
+        isDragging = true;
+        wasDragged = false;
+        container.style.cursor = 'grabbing';
+
+        // Calculate offset from container's current position
+        const rect = container.getBoundingClientRect();
+        dragOffsetX = e.clientX - rect.left;
+        dragOffsetY = e.clientY - rect.top;
+
+        // Reset velocity tracking
+        lastDragX = x;
+        lastDragY = y;
+        dragVelocityX = 0;
+        dragVelocityY = 0;
+
+        e.preventDefault();
+    });
+
+    document.addEventListener('mousemove', (e) => {
+        if (isDragging) {
+            wasDragged = true;
+
+            // Save previous position
+            const prevX = x;
+            const prevY = y;
+
+            // Update position based on mouse
+            x = e.clientX - dragOffsetX;
+            y = e.clientY - dragOffsetY;
+
+            // Apply bounds
+            const viewportWidth = document.documentElement.clientWidth;
+            const viewportHeight = document.documentElement.clientHeight;
+            const maxX = viewportWidth - size - margin;
+            const maxY = viewportHeight - size - margin;
+
+            x = Math.max(margin, Math.min(x, maxX));
+            y = Math.max(margin, Math.min(y, maxY));
+
+            // Calculate drag velocity
+            dragVelocityX = x - prevX;
+            dragVelocityY = y - prevY;
+
+            container.style.left = `${x}px`;
+            container.style.top = `${y}px`;
+        }
+    });
+
+    document.addEventListener('mouseup', () => {
+        if (isDragging) {
+            isDragging = false;
+            container.style.cursor = 'grab';
+
+            // If it was just a click (not dragged), trigger spin boost
+            if (!wasDragged) {
+                // Boost rotation speed, will gradually return to base via damping
+                currentYawSpeed = baseYawSpeed * 5;
+                currentPitchSpeed = basePitchSpeed * 5;
+                currentRollSpeed = baseRollSpeed * 5;
+
+                console.log('🌀 Extra spin!');
+            } else {
+                // Apply throw velocity from drag
+                velocityX = dragVelocityX * 0.8; // Dampen slightly
+                velocityY = dragVelocityY * 0.8;
+
+                // Ensure minimum velocity if too slow
+                if (Math.abs(velocityX) < 0.5) velocityX = velocityX < 0 ? -1 : 1;
+                if (Math.abs(velocityY) < 0.5) velocityY = velocityY < 0 ? -1 : 1;
+
+                console.log(`🎯 Thrown with velocity: ${velocityX.toFixed(2)}, ${velocityY.toFixed(2)}`);
+            }
+        }
+    });
+
+    // Create debug overlay
+    const debugDiv = document.createElement('div');
+    debugDiv.id = 'sparrow-debug';
+    debugDiv.style.cssText = `
+        position: fixed;
+        top: 10px;
+        right: 10px;
+        background: rgba(0,0,0,0.8);
+        color: #0f0;
+        padding: 10px;
+        font-family: monospace;
+        font-size: 12px;
+        z-index: 99999;
+        border-radius: 5px;
+        display: none;
+    `;
+    document.body.appendChild(debugDiv);
+
+    // Press D to toggle debug info
+    document.addEventListener('keydown', (e) => {
+        if (e.key === 'd' || e.key === 'D') {
+            debugDiv.style.display = debugDiv.style.display === 'none' ? 'block' : 'none';
+        }
+    });
+
+    function animate() {
+        if (!sparrowActive) return;
+
+        frameCount++;
+
+        // Get current viewport dimensions (always needed for debug)
+        const viewportWidth = document.documentElement.clientWidth;
+        const viewportHeight = document.documentElement.clientHeight;
+        const maxX = viewportWidth - size - margin;
+        const maxY = viewportHeight - size - margin;
+
+        // Skip position updates if dragging
+        if (!isDragging) {
+            // Apply WASD keyboard controls
+            if (keys.w) velocityY -= keyboardAcceleration;
+            if (keys.s) velocityY += keyboardAcceleration;
+            if (keys.a) velocityX -= keyboardAcceleration;
+            if (keys.d) velocityX += keyboardAcceleration;
+
+            // Gradually return velocity to base velocity (slower when using keyboard)
+            const isUsingKeyboard = keys.w || keys.a || keys.s || keys.d;
+            if (!isUsingKeyboard) {
+                velocityX += (baseVelocityX - velocityX) * velocityDamping;
+                velocityY += (baseVelocityY - velocityY) * velocityDamping;
+            }
+
+            // Update position
+            x += velocityX;
+            y += velocityY;
+
+            // Bounce off LEFT edge
+            if (x < margin) {
+                x = margin;
+                velocityX = Math.abs(velocityX);
+                console.log('🔵 Bounced LEFT');
+            }
+
+            // Bounce off RIGHT edge
+            if (x > maxX) {
+                x = maxX;
+                velocityX = -Math.abs(velocityX);
+                console.log('🔵 Bounced RIGHT');
+            }
+
+            // Bounce off TOP edge
+            if (y < margin) {
+                y = margin;
+                velocityY = Math.abs(velocityY);
+                console.log('🔵 Bounced TOP');
+            }
+
+            // Bounce off BOTTOM edge
+            if (y > maxY) {
+                y = maxY;
+                velocityY = -Math.abs(velocityY);
+                console.log('🔵 Bounced BOTTOM');
+            }
+
+            // Safety clamp
+            x = Math.max(margin, Math.min(x, maxX));
+            y = Math.max(margin, Math.min(y, maxY));
+
+            // Apply position
+            container.style.left = `${x}px`;
+            container.style.top = `${y}px`;
+        }
+
+        // Gradually return rotation speed to base speed
+        currentYawSpeed += (baseYawSpeed - currentYawSpeed) * rotationDamping;
+        currentPitchSpeed += (basePitchSpeed - currentPitchSpeed) * rotationDamping;
+        currentRollSpeed += (baseRollSpeed - currentRollSpeed) * rotationDamping;
+
+        // Update 3D rotation (always, even when dragging)
+        yaw += currentYawSpeed;
+        pitch += currentPitchSpeed;
+        roll += currentRollSpeed;
+
+        // Apply 3D rotation to the model itself using model-viewer's orientation
+        if (modelViewer) {
+            modelViewer.orientation = `${yaw}deg ${pitch}deg ${roll}deg`;
+        }
+
+        // Update debug info every 30 frames
+        if (frameCount % 30 === 0 && debugDiv.style.display === 'block') {
+            debugDiv.innerHTML = `
+                Viewport: ${viewportWidth} x ${viewportHeight}<br>
+                Position: ${Math.round(x)}, ${Math.round(y)}<br>
+                Velocity: ${velocityX.toFixed(2)}, ${velocityY.toFixed(2)}<br>
+                Size: ${size}px<br>
+                Margin: ${margin}px<br>
+                MaxX: ${Math.round(maxX)}<br>
+                MaxY: ${Math.round(maxY)}
+            `;
+        }
+
+        requestAnimationFrame(animate);
+    }
+
+    animate();
+
+    console.log('👑 Sparvkung physics initialized:');
+    console.log(`   Viewport: ${document.documentElement.clientWidth}x${document.documentElement.clientHeight}`);
+    console.log(`   Size: ${size}px, Margin: ${margin}px`);
+    console.log(`   Press D to toggle debug overlay`);
+
+    // Handle window resize
+    window.addEventListener('resize', () => {
+        const newSize = window.innerWidth <= 768 ? 400 : 650;
+        const newMargin = -50; // Negative margin to compensate for model padding
+        container.style.width = `${newSize}px`;
+        container.style.height = `${newSize}px`;
+
+        const viewportWidth = document.documentElement.clientWidth;
+        const viewportHeight = document.documentElement.clientHeight;
+        const maxX = viewportWidth - newSize - newMargin;
+        const maxY = viewportHeight - newSize - newMargin;
+        x = Math.max(newMargin, Math.min(x, maxX));
+        y = Math.max(newMargin, Math.min(y, maxY));
+
+        console.log('🔄 Window resized, new bounds calculated');
     });
 }

@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Af Sparfvén — Lyxchoklad</title>
-    <link rel="stylesheet" href="styles.css?v=24">
+    <link rel="stylesheet" href="styles.css?v=34">
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@300;400;600;700&family=Montserrat:wght@200;300;400;600&family=Great+Vibes&display=swap" rel="stylesheet">
@@ -19,22 +19,21 @@
             id="sparrow-model"
             src="sparvkungen.glb"
             alt="Sparvkungen Mascot"
-            auto-rotate
-            rotation-per-second="30deg"
             camera-orbit="0deg 75deg 2.5m"
             style="width: 100%; height: 100%;"
             exposure="1.2"
-            shadow-intensity="0.8">
+            shadow-intensity="0">
         </model-viewer>
     </div>
+
     <!-- Loading Screen -->
     <div class="loading-screen">
         <div class="loading-content">
-            <div class="loading-spinner"></div>
+            <img src="kugghjul.webp" alt="Laddar" class="loading-spinner">
             <p class="loading-text">Laddar...</p>
             <div class="keyhole-container" style="display: none;">
-                <img src="nyckelhål_3.webp" alt="Klicka för att börja" class="keyhole-image">
-                <p class="keyhole-text">Välkommen till en värld av drömmar.</p>
+                <img src="biljett.webp" alt="Klicka för att börja" class="keyhole-image">
+                <p class="keyhole-text">Välkommen till dina drömmar</p>
             </div>
         </div>
     </div>
@@ -51,27 +50,96 @@
         <div class="scroll-indicator">↓</div>
     </section>
 
+    <!-- Interactive Chocolate Section -->
+    <h2 class="chocolate-section-title">VÅRENS KOLLEKTION</h2>
+    <section class="chocolate-interactive-section">
+        <img src="choklad_bakgrund.webp" alt="Choklad bakgrund" class="chocolate-background">
+
+        <img src="choklad_1_stängd.webp" alt="Choklad 1" class="chocolate-piece" id="chocolate-1" data-state="closed">
+        <img src="choklad_2_stängd.webp" alt="Choklad 2" class="chocolate-piece" id="chocolate-2" data-state="closed">
+        <img src="choklad_3_stängd.webp" alt="Choklad 3" class="chocolate-piece" id="chocolate-3" data-state="closed">
+
+        <!-- Clickable zones for each chocolate (assuming left/center/right positioning) -->
+        <div class="chocolate-zone" data-chocolate="chocolate-1" style="left: 0%; width: 33%;"></div>
+        <div class="chocolate-zone" data-chocolate="chocolate-2" style="left: 33%; width: 34%;"></div>
+        <div class="chocolate-zone" data-chocolate="chocolate-3" style="left: 67%; width: 33%;"></div>
+    </section>
+
+    <!-- Timeline Section -->
+    <section class="timeline-section">
+        <div class="timeline-container">
+            <img src="tid_bg.webp" alt="Tidslinje bakgrund" class="timeline-background">
+
+            <!-- Timeline pieces (transparent overlays) -->
+            <img src="tid_1.webp" alt="Tidslinje del 1" class="timeline-piece" id="tid-1" data-title="2016 - Början" data-text="Familjen Sparfvén startade sin chokladresa med en dröm och passion.">
+            <img src="tid_2.webp" alt="Tidslinje del 2" class="timeline-piece" id="tid-2" data-title="2017 - Expansion" data-text="Vi utökade vårt sortiment med unika smaker från hela världen.">
+            <img src="tid_3.webp" alt="Tidslinje del 3" class="timeline-piece" id="tid-3" data-title="2018 - Innovation" data-text="Nya tillverkningsmetoder och hantverkstekniker introducerades.">
+            <img src="tid_4.webp" alt="Tidslinje del 4" class="timeline-piece" id="tid-4" data-title="2020 - Utmaningar" data-text="Trots pandemi fortsatte vi att skapa chokladmagi.">
+            <img src="tid_5.webp" alt="Tidslinje del 5" class="timeline-piece" id="tid-5" data-title="2024 - Idag" data-text="Idag är vi stolta över att leverera Sveriges finaste hantverkschoklad.">
+        </div>
+
+        <!-- Info box that appears on click -->
+        <div class="timeline-info-box" id="timeline-info-box">
+            <button class="timeline-info-close" id="timeline-info-close">×</button>
+            <h3 class="timeline-info-title" id="timeline-info-title">Titel</h3>
+            <p class="timeline-info-text" id="timeline-info-text">Info text kommer här...</p>
+        </div>
+    </section>
+
+    <!-- Bildvisare - Laterna Magica -->
+    <section class="laterna-magica-section">
+        <div class="projector-frame">
+            <!-- Slides container -->
+            <div class="slides-container">
+                <div class="slide active" data-slide="1">
+                    <img src="hist_1.webp" alt="Det började med en dröm">
+                    <div class="slide-text">
+                        <h3>Det började med en dröm</h3>
+                        <p>2016 tog familjen Sparfvén första steget mot att skapa Sveriges finaste hantverkschoklad</p>
+                    </div>
+                    <div class="vignette"></div>
+                </div>
+
+                <div class="slide" data-slide="2">
+                    <img src="hist_2.webp" alt="Galna i generationer">
+                    <div class="slide-text">
+                        <h3>Galna i generationer</h3>
+                        <p>Passion, dedikation och ett uns galenskap - det är vår hemlighet</p>
+                    </div>
+                    <div class="vignette"></div>
+                </div>
+
+                <div class="slide" data-slide="3">
+                    <img src="hist_3.webp" alt="Från Alingsås till världen">
+                    <div class="slide-text">
+                        <h3>Från Alingsås till världen</h3>
+                        <p>100% hjärta. 0% hjärna. Alltid handgjort.</p>
+                    </div>
+                    <div class="vignette"></div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Slide indicator -->
+        <div class="slide-indicator">
+            <span class="indicator-dot active"></span>
+            <span class="indicator-dot"></span>
+            <span class="indicator-dot"></span>
+        </div>
+    </section>
+
     <!-- Collection Section -->
     <section class="collection">
         <h2 class="section-title">Kollektion</h2>
         <div class="collection-grid">
-            <div class="chocolate-card">
-                <div class="card-number">01</div>
-                <h3>MÖRK 70%</h3>
-                <p>Ecuador • Körsbär • Vanilj</p>
-                <div class="price">89 kr</div>
+            <div class="chocolate-card chocolate-image-card">
+                <img src="placeholder_chok1.jpg" alt="Choklad 1" class="chocolate-product-image">
             </div>
-            <div class="chocolate-card">
-                <div class="card-number">02</div>
-                <h3>MJÖLK 45%</h3>
-                <p>Karamell • Honung • Krämig</p>
-                <div class="price">79 kr</div>
+            <div class="chocolate-card chocolate-image-card">
+                <img src="placeholder_chok2.jpg" alt="Choklad 2" class="chocolate-product-image">
             </div>
-            <div class="chocolate-card">
-                <div class="card-number">03</div>
-                <h3>HAVSSALT</h3>
-                <p>Smältsalt • Karamell • Balans</p>
-                <div class="price">95 kr</div>
+            <div class="chocolate-card chocolate-image-card">
+                <img src="placeholder_chok3.jpg" alt="Choklad 3" class="chocolate-product-image">
             </div>
         </div>
     </section>
@@ -197,36 +265,6 @@
         </div>
     </section>
 
-    <!-- ALTERNATIV 3: FAMILJEHISTORIA - Parallax storytelling -->
-    <section class="parallax-story">
-        <h2 class="section-title">Alternativ 3: Familjehistoria</h2>
-        <p class="story-subtitle">(Parallax fullskärm med text-overlay)</p>
-
-        <div class="parallax-scene scene-1">
-            <div class="parallax-bg" style="background-image: url('https://images.unsplash.com/photo-1511381939415-e44015466834?w=1920&h=1080&fit=crop');"></div>
-            <div class="parallax-text">
-                <h3>Det började med en dröm</h3>
-                <p>2016 tog familjen Sparfvén första steget mot att skapa Sveriges finaste hantverk-schoklad</p>
-            </div>
-        </div>
-
-        <div class="parallax-scene scene-2">
-            <div class="parallax-bg" style="background-image: url('https://images.unsplash.com/photo-1606312619070-d48b4cac5eaf?w=1920&h=1080&fit=crop');"></div>
-            <div class="parallax-text">
-                <h3>Galna i generationer</h3>
-                <p>Passion, dedikation och ett uns galenskap - det är vår hemlighet</p>
-            </div>
-        </div>
-
-        <div class="parallax-scene scene-3">
-            <div class="parallax-bg" style="background-image: url('https://images.unsplash.com/photo-1590080876877-382be7a6950e?w=1920&h=1080&fit=crop');"></div>
-            <div class="parallax-text">
-                <h3>Från Alingsås till världen</h3>
-                <p>100% hjärta. 0% hjärna. Alltid handgjort.</p>
-            </div>
-        </div>
-    </section>
-
     <!-- Philosophy Section -->
     <section class="philosophy">
         <div class="philosophy-content">
@@ -255,6 +293,6 @@
         </div>
     </footer>
 
-    <script src="script.js?v=15"></script>
+    <script src="script.js?v=32"></script>
 </body>
 </html>
