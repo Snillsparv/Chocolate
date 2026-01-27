@@ -48,20 +48,49 @@ document.addEventListener('DOMContentLoaded', () => {
             return pixel[3] > 50; // Alpha threshold
         }
 
+        // Get textbox elements
+        const textbox = document.querySelector('.preload-textbox');
+        const textboxTitle = document.querySelector('.preload-textbox-title');
+        const textboxContent = document.querySelector('.preload-textbox-content');
+        let currentActiveLayer = null;
+
         // Handle clicks on preload page
         preloadPage.addEventListener('click', (e) => {
-            let clickedOnLayer = false;
-
             // Check layers in reverse order (top to bottom)
             for (let i = preloadLayers.length - 1; i >= 0; i--) {
                 const layer = preloadLayers[i];
                 if (isClickOnVisiblePixel(layer, e.clientX, e.clientY)) {
-                    // Toggle glow on this layer
-                    layer.classList.toggle('glow');
-                    clickedOnLayer = true;
-                    break;
+                    // If clicking same layer, toggle off
+                    if (currentActiveLayer === layer) {
+                        layer.classList.remove('glow');
+                        textbox.classList.remove('visible');
+                        currentActiveLayer = null;
+                    } else {
+                        // Remove glow from previous layer
+                        if (currentActiveLayer) {
+                            currentActiveLayer.classList.remove('glow');
+                        }
+                        // Add glow to this layer
+                        layer.classList.add('glow');
+                        currentActiveLayer = layer;
+
+                        // Show textbox with content
+                        const title = layer.dataset.title || '';
+                        const text = layer.dataset.text || '';
+                        textboxTitle.textContent = title;
+                        textboxContent.textContent = text;
+                        textbox.classList.add('visible');
+                    }
+                    return;
                 }
             }
+
+            // Clicked on empty area - hide textbox
+            if (currentActiveLayer) {
+                currentActiveLayer.classList.remove('glow');
+                currentActiveLayer = null;
+            }
+            textbox.classList.remove('visible');
         });
     }
 });
