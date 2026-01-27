@@ -1,3 +1,18 @@
+// Preload Page Handler
+document.addEventListener('DOMContentLoaded', () => {
+    const preloadPage = document.querySelector('.preload-page');
+
+    if (preloadPage) {
+        // Click anywhere on preload page to continue
+        preloadPage.addEventListener('click', () => {
+            preloadPage.classList.add('fade-out');
+            setTimeout(() => {
+                preloadPage.remove();
+            }, 800);
+        });
+    }
+});
+
 // Loading Screen and Intro Video Handler
 document.addEventListener('DOMContentLoaded', () => {
     const loadingScreen = document.querySelector('.loading-screen');

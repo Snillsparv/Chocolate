@@ -29,6 +29,46 @@ body {
     min-height: 100vh;
 }
 
+/* Preload Page */
+.preload-page {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100vw;
+    height: 100vh;
+    z-index: 10001;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: var(--chocolate-dark);
+    transition: opacity 0.8s ease-out;
+}
+
+.preload-page.fade-out {
+    opacity: 0;
+    pointer-events: none;
+}
+
+.preload-bg {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    object-position: center;
+}
+
+.preload-layer {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    object-position: center;
+}
+
 /* Loading Screen */
 .loading-screen {
     position: fixed;
