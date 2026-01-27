@@ -402,24 +402,19 @@ body.video-playing {
 /* Timeline Section */
 .timeline-section {
     width: 100%;
-    height: auto;
     position: relative;
     background: var(--chocolate-dark);
-    overflow: hidden;
 }
 
 .timeline-container {
     position: relative;
     width: 100%;
-    height: auto;
-    display: block;
 }
 
 .timeline-background {
     display: block;
     width: 100%;
     height: auto;
-    position: relative;
 }
 
 .timeline-piece {
@@ -428,10 +423,8 @@ body.video-playing {
     left: 0;
     width: 100%;
     height: auto;
-    object-fit: cover;
     cursor: pointer;
-    transition: all 0.3s ease;
-    z-index: 10;
+    transition: filter 0.3s ease;
     pointer-events: auto;
 }
 
