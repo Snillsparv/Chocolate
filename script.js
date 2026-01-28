@@ -647,9 +647,118 @@ document.addEventListener('DOMContentLoaded', () => {
     indicatorDots.forEach((dot, index) => {
         dot.addEventListener('click', (e) => {
             e.stopPropagation();
+
+            // Create golden line animation from dot to slide
+            createGoldenLineAnimation(dot, projectorFrame);
+
             goToSlide(index);
         });
     });
+
+    // Function to create golden line animation from dot to slide
+    function createGoldenLineAnimation(dot, target) {
+        const dotRect = dot.getBoundingClientRect();
+        const targetRect = target.getBoundingClientRect();
+
+        // Calculate start point (center of dot)
+        const startX = dotRect.left + dotRect.width / 2;
+        const startY = dotRect.top + dotRect.height / 2;
+
+        // Calculate end point (center bottom of slide area)
+        const endX = targetRect.left + targetRect.width / 2;
+        const endY = targetRect.top + targetRect.height * 0.7;
+
+        // Calculate distance and angle
+        const deltaX = endX - startX;
+        const deltaY = endY - startY;
+        const distance = Math.sqrt(deltaX * deltaX + deltaY * deltaY);
+        const angle = Math.atan2(deltaY, deltaX) * (180 / Math.PI);
+
+        // Create the golden line element
+        const goldenLine = document.createElement('div');
+        goldenLine.className = 'golden-line-animation';
+        goldenLine.style.cssText = `
+            position: fixed;
+            left: ${startX}px;
+            top: ${startY}px;
+            width: 0;
+            height: 3px;
+            background: linear-gradient(90deg,
+                rgba(212, 175, 55, 1) 0%,
+                rgba(244, 228, 193, 1) 50%,
+                rgba(212, 175, 55, 0.8) 100%);
+            transform-origin: left center;
+            transform: rotate(${angle}deg);
+            z-index: 1000;
+            pointer-events: none;
+            border-radius: 2px;
+            box-shadow: 0 0 10px rgba(212, 175, 55, 0.8),
+                        0 0 20px rgba(212, 175, 55, 0.5),
+                        0 0 30px rgba(212, 175, 55, 0.3);
+        `;
+
+        document.body.appendChild(goldenLine);
+
+        // Create sparkle at start point
+        createSparkle(startX, startY);
+
+        // Animate the line extending
+        requestAnimationFrame(() => {
+            goldenLine.style.transition = 'width 0.4s cubic-bezier(0.23, 1, 0.32, 1)';
+            goldenLine.style.width = distance + 'px';
+
+            // Create sparkle at end point after line reaches
+            setTimeout(() => {
+                createSparkle(endX, endY);
+            }, 350);
+        });
+
+        // Fade out and remove
+        setTimeout(() => {
+            goldenLine.style.transition = 'opacity 0.3s ease-out';
+            goldenLine.style.opacity = '0';
+            setTimeout(() => goldenLine.remove(), 300);
+        }, 600);
+    }
+
+    // Function to create sparkle effect
+    function createSparkle(x, y) {
+        for (let i = 0; i < 6; i++) {
+            const sparkle = document.createElement('div');
+            const angle = (i / 6) * Math.PI * 2;
+            const distance = 15 + Math.random() * 10;
+
+            sparkle.style.cssText = `
+                position: fixed;
+                left: ${x}px;
+                top: ${y}px;
+                width: 4px;
+                height: 4px;
+                background: radial-gradient(circle,
+                    rgba(255, 215, 0, 1) 0%,
+                    rgba(212, 175, 55, 0.8) 100%);
+                border-radius: 50%;
+                z-index: 1001;
+                pointer-events: none;
+                box-shadow: 0 0 6px rgba(212, 175, 55, 1);
+                transform: translate(-50%, -50%);
+            `;
+
+            document.body.appendChild(sparkle);
+
+            // Animate sparkle outward
+            requestAnimationFrame(() => {
+                sparkle.style.transition = 'all 0.4s ease-out';
+                sparkle.style.transform = `translate(
+                    calc(-50% + ${Math.cos(angle) * distance}px),
+                    calc(-50% + ${Math.sin(angle) * distance}px)
+                )`;
+                sparkle.style.opacity = '0';
+            });
+
+            setTimeout(() => sparkle.remove(), 400);
+        }
+    }
 
     // Keyboard navigation
     document.addEventListener('keydown', (e) => {
