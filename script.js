@@ -60,6 +60,39 @@ document.addEventListener('DOMContentLoaded', () => {
             return false;
         }
 
+        // Calculate the center of visible (non-transparent) pixels for a layer
+        function getSymbolCenter(layer) {
+            const data = layerCanvases.get(layer);
+            if (!data) return null;
+
+            const rect = layer.getBoundingClientRect();
+            const scaleX = rect.width / layer.naturalWidth;
+            const scaleY = rect.height / layer.naturalHeight;
+
+            let minX = Infinity, minY = Infinity, maxX = -Infinity, maxY = -Infinity;
+            const step = 10; // Sample every 10 pixels for performance
+
+            for (let y = 0; y < data.canvas.height; y += step) {
+                for (let x = 0; x < data.canvas.width; x += step) {
+                    const pixel = data.ctx.getImageData(x, y, 1, 1).data;
+                    if (pixel[3] > 50) {
+                        if (x < minX) minX = x;
+                        if (x > maxX) maxX = x;
+                        if (y < minY) minY = y;
+                        if (y > maxY) maxY = y;
+                    }
+                }
+            }
+
+            if (minX === Infinity) return null;
+
+            // Convert to screen coordinates
+            const centerX = rect.left + ((minX + maxX) / 2) * scaleX;
+            const centerY = rect.top + ((minY + maxY) / 2) * scaleY;
+
+            return { x: centerX, y: centerY };
+        }
+
         // Get textbox elements
         const textbox = document.querySelector('.preload-textbox');
         const textboxTitle = document.querySelector('.preload-textbox-title');
@@ -155,29 +188,30 @@ document.addEventListener('DOMContentLoaded', () => {
                         textboxTitle.textContent = title;
                         textboxContent.textContent = text;
 
-                        // Position textbox relative to click position
+                        // Position textbox relative to symbol's actual center
                         const layerIndex = i + 1; // 1-based
                         const gap = 40;
                         const boxWidth = 320;
                         const boxHeight = 200;
                         let left, top;
 
-                        // Use click position as reference for symbol location
-                        const clickX = e.clientX;
-                        const clickY = e.clientY;
+                        // Get symbol's actual visible center
+                        const symbolCenter = getSymbolCenter(layer);
+                        const symX = symbolCenter ? symbolCenter.x : e.clientX;
+                        const symY = symbolCenter ? symbolCenter.y : e.clientY;
 
                         if (layerIndex === 1 || layerIndex === 2) {
                             // Ruta 1 & 2: 40 pixlar till höger om symbolen
-                            left = clickX + gap;
-                            top = clickY - boxHeight / 2;
+                            left = symX + gap;
+                            top = symY - boxHeight / 2;
                         } else if (layerIndex === 3) {
                             // Ruta 3: 40 pixlar till vänster om symbolen
-                            left = clickX - boxWidth - gap;
-                            top = clickY - boxHeight / 2;
+                            left = symX - boxWidth - gap;
+                            top = symY - boxHeight / 2;
                         } else {
                             // Ruta 4 & 5: 40 pixlar snett upp till vänster
-                            left = clickX - boxWidth - gap;
-                            top = clickY - boxHeight - gap;
+                            left = symX - boxWidth - gap;
+                            top = symY - boxHeight - gap;
                         }
 
                         // Clamp within viewport
@@ -190,8 +224,8 @@ document.addEventListener('DOMContentLoaded', () => {
                         textbox.style.transform = 'none';
                         textbox.classList.add('visible');
 
-                        // Create golden line animation from click point to textbox
-                        createGoldenLineToTextbox(clickX, clickY, left + boxWidth / 2, top + boxHeight / 2);
+                        // Create golden line animation from symbol center to textbox
+                        createGoldenLineToTextbox(symX, symY, left + boxWidth / 2, top + boxHeight / 2);
                     }
                     return;
                 }
