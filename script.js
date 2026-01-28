@@ -201,8 +201,8 @@ document.addEventListener('DOMContentLoaded', () => {
                         const symY = symbolCenter ? symbolCenter.y : e.clientY;
 
                         if (layerIndex === 1) {
-                            // Ruta 1: +60px höger
-                            left = symX + gap + 60;
+                            // Ruta 1: +80px höger
+                            left = symX + gap + 80;
                             top = symY - boxHeight / 2;
                         } else if (layerIndex === 2) {
                             // Ruta 2: +50px höger
@@ -213,12 +213,12 @@ document.addEventListener('DOMContentLoaded', () => {
                             left = symX - boxWidth - gap - 30;
                             top = symY - boxHeight / 2 + 30;
                         } else if (layerIndex === 4) {
-                            // Ruta 4: -30px vänster
-                            left = symX - boxWidth - gap - 30;
+                            // Ruta 4: -50px vänster
+                            left = symX - boxWidth - gap - 50;
                             top = symY - boxHeight - gap - 10;
                         } else {
-                            // Ruta 5: -60px vänster, -60px uppåt
-                            left = symX - boxWidth - gap - 60;
+                            // Ruta 5: -70px vänster, -60px uppåt
+                            left = symX - boxWidth - gap - 70;
                             top = symY - boxHeight - gap - 60;
                         }
 
