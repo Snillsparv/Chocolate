@@ -156,25 +156,32 @@ document.addEventListener('DOMContentLoaded', () => {
                         textboxContent.textContent = text;
 
                         // Position textbox per symbol:
-                        // 1,2: right and below. 3: left and below. 4: above. 5: left and above.
                         const layerIndex = i + 1; // 1-based
                         const offset = 120;
                         const boxWidth = 320;
                         const boxHeight = 200;
                         let left, top;
 
-                        if (layerIndex === 1 || layerIndex === 2) {
+                        if (layerIndex === 1) {
+                            // Ruta 1: höger och nedanför
                             left = e.clientX + offset;
                             top = e.clientY + offset / 2;
+                        } else if (layerIndex === 2) {
+                            // Ruta 2: mer åt vänster
+                            left = e.clientX + offset / 2;
+                            top = e.clientY + offset / 2;
                         } else if (layerIndex === 3) {
-                            left = e.clientX - boxWidth - offset;
+                            // Ruta 3: mer åt höger (mindre offset åt vänster)
+                            left = e.clientX - boxWidth - offset / 2;
                             top = e.clientY + offset / 2;
                         } else if (layerIndex === 4) {
+                            // Ruta 4: längre upp så den inte täcker symbolen
                             left = e.clientX - boxWidth / 2;
-                            top = e.clientY - boxHeight - offset;
+                            top = e.clientY - boxHeight - offset * 1.5;
                         } else {
-                            left = e.clientX - boxWidth - offset;
-                            top = e.clientY - boxHeight - offset / 2;
+                            // Ruta 5: lite uppåt och lite mer till vänster
+                            left = e.clientX - boxWidth - offset * 1.3;
+                            top = e.clientY - boxHeight - offset;
                         }
 
                         // Clamp within viewport
