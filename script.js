@@ -201,25 +201,25 @@ document.addEventListener('DOMContentLoaded', () => {
                         const symY = symbolCenter ? symbolCenter.y : e.clientY;
 
                         if (layerIndex === 1) {
-                            // Ruta 1: +40px höger
-                            left = symX + gap + 40;
+                            // Ruta 1: +60px höger
+                            left = symX + gap + 60;
                             top = symY - boxHeight / 2;
                         } else if (layerIndex === 2) {
-                            // Ruta 2: +30px höger
-                            left = symX + gap + 30;
+                            // Ruta 2: +50px höger
+                            left = symX + gap + 50;
                             top = symY - boxHeight / 2;
                         } else if (layerIndex === 3) {
-                            // Ruta 3: -10px vänster, +10px nedåt
-                            left = symX - boxWidth - gap - 10;
-                            top = symY - boxHeight / 2 + 10;
+                            // Ruta 3: -30px vänster, +30px nedåt
+                            left = symX - boxWidth - gap - 30;
+                            top = symY - boxHeight / 2 + 30;
                         } else if (layerIndex === 4) {
-                            // Ruta 4: -10px vänster, -10px uppåt
-                            left = symX - boxWidth - gap - 10;
+                            // Ruta 4: -30px vänster
+                            left = symX - boxWidth - gap - 30;
                             top = symY - boxHeight - gap - 10;
                         } else {
-                            // Ruta 5: -40px vänster, -40px uppåt
-                            left = symX - boxWidth - gap - 40;
-                            top = symY - boxHeight - gap - 40;
+                            // Ruta 5: -60px vänster, -60px uppåt
+                            left = symX - boxWidth - gap - 60;
+                            top = symY - boxHeight - gap - 60;
                         }
 
                         // Clamp within viewport
