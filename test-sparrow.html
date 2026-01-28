@@ -1,0 +1,93 @@
+<!DOCTYPE html>
+<html lang="sv">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Test - Sparvkungen 3D</title>
+    <script type="module" src="https://unpkg.com/@google/model-viewer@3.3.0/dist/model-viewer.min.js"></script>
+    <style>
+        body {
+            margin: 0;
+            padding: 40px;
+            background: #1a0f0a;
+            color: #f4e4c1;
+            font-family: Arial, sans-serif;
+            text-align: center;
+        }
+
+        h1 {
+            color: #d4af37;
+            margin-bottom: 20px;
+        }
+
+        #info {
+            margin-bottom: 20px;
+            padding: 20px;
+            background: rgba(61, 40, 23, 0.5);
+            border: 1px solid #d4af37;
+            border-radius: 10px;
+        }
+
+        model-viewer {
+            width: 400px;
+            height: 400px;
+            margin: 0 auto;
+            background-color: transparent;
+            border: 2px solid #d4af37;
+            border-radius: 10px;
+        }
+
+        @media (max-width: 768px) {
+            model-viewer {
+                width: 300px;
+                height: 300px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <h1>👑 Test av Sparvkungen 3D-modell 🐦</h1>
+
+    <div id="info">
+        <p><strong>Status:</strong> <span id="status">Laddar...</span></p>
+        <p><strong>Filstorlek:</strong> 23 MB</p>
+        <p><strong>Fil:</strong> sparvkungen.glb</p>
+    </div>
+
+    <model-viewer
+        id="sparrow"
+        src="sparvkungen.glb"
+        alt="Sparvkungen"
+        auto-rotate
+        camera-controls
+        rotation-per-second="30deg"
+        camera-orbit="0deg 75deg 2.5m"
+        exposure="1.2"
+        shadow-intensity="1"
+        loading="eager">
+    </model-viewer>
+
+    <script>
+        const modelViewer = document.getElementById('sparrow');
+        const statusEl = document.getElementById('status');
+
+        modelViewer.addEventListener('load', () => {
+            statusEl.textContent = '✅ Sparvkungen laddad!';
+            statusEl.style.color = '#4ade80';
+            console.log('👑🐦 Sparvkungen har laddat!');
+        });
+
+        modelViewer.addEventListener('error', (event) => {
+            statusEl.textContent = '❌ Fel vid laddning';
+            statusEl.style.color = '#ef4444';
+            console.error('Fel vid laddning:', event);
+        });
+
+        modelViewer.addEventListener('progress', (event) => {
+            const progress = event.detail.totalProgress * 100;
+            statusEl.textContent = `Laddar... ${progress.toFixed(0)}%`;
+            console.log(`Laddning: ${progress.toFixed(0)}%`);
+        });
+    </script>
+</body>
+</html>

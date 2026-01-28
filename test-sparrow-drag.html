@@ -1,0 +1,364 @@
+<!DOCTYPE html>
+<html lang="sv">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Sparvkung Drag Test</title>
+    <script type="module" src="https://unpkg.com/@google/model-viewer@3.3.0/dist/model-viewer.min.js"></script>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            background: #1a0f0a;
+            color: #f4e4c1;
+            font-family: monospace;
+            overflow: hidden;
+            width: 100vw;
+            height: 100vh;
+        }
+
+        #sparrow-container {
+            position: fixed;
+            width: 200px;
+            height: 200px;
+            cursor: grab;
+            z-index: 100;
+        }
+
+        #sparrow-container:active {
+            cursor: grabbing;
+        }
+
+        model-viewer {
+            width: 100%;
+            height: 100%;
+        }
+
+        #debug {
+            position: fixed;
+            top: 10px;
+            right: 10px;
+            background: rgba(0,0,0,0.9);
+            color: #0f0;
+            padding: 15px;
+            font-size: 14px;
+            z-index: 999;
+            border: 2px solid #0f0;
+            border-radius: 5px;
+            min-width: 300px;
+        }
+
+        #debug h2 {
+            color: #d4af37;
+            margin-bottom: 10px;
+            font-size: 18px;
+        }
+
+        #debug .line {
+            margin: 5px 0;
+        }
+
+        #debug .warning {
+            color: #ff0;
+        }
+
+        #debug .error {
+            color: #f00;
+            font-weight: bold;
+        }
+
+        #debug .ok {
+            color: #0f0;
+        }
+
+        /* Visual boundary markers */
+        .boundary {
+            position: fixed;
+            background: rgba(255, 0, 0, 0.2);
+            border: 2px dashed #f00;
+            pointer-events: none;
+            z-index: 50;
+        }
+
+        .boundary.top {
+            top: 0;
+            left: 0;
+            right: 0;
+        }
+
+        .boundary.bottom {
+            bottom: 0;
+            left: 0;
+            right: 0;
+        }
+
+        .boundary.left {
+            top: 0;
+            bottom: 0;
+            left: 0;
+        }
+
+        .boundary.right {
+            top: 0;
+            bottom: 0;
+            right: 0;
+        }
+
+        #instructions {
+            position: fixed;
+            bottom: 10px;
+            left: 10px;
+            background: rgba(0,0,0,0.8);
+            color: #d4af37;
+            padding: 15px;
+            border-radius: 5px;
+            border: 1px solid #d4af37;
+        }
+    </style>
+</head>
+<body>
+    <div id="sparrow-container">
+        <model-viewer
+            id="sparrow-model"
+            src="sparvkungen.glb"
+            alt="Sparvkungen"
+            auto-rotate
+            rotation-per-second="30deg"
+            camera-orbit="0deg 75deg 2.5m"
+            exposure="1.2"
+            shadow-intensity="0.8">
+        </model-viewer>
+    </div>
+
+    <div id="debug">
+        <h2>👑 Sparvkung Debug Test</h2>
+        <div class="line">Viewport: <span id="viewport">-</span></div>
+        <div class="line">Position X: <span id="posX">-</span></div>
+        <div class="line">Position Y: <span id="posY">-</span></div>
+        <div class="line">Size: <span id="size">-</span></div>
+        <div class="line">Margin: <span id="margin">-</span></div>
+        <div class="line">Max X: <span id="maxX">-</span></div>
+        <div class="line">Max Y: <span id="maxY">-</span></div>
+        <div class="line">Effective Size (rotated): <span id="effectiveSize">-</span></div>
+        <hr style="margin: 10px 0; border-color: #333;">
+        <div class="line">Status: <span id="status">-</span></div>
+        <div class="line">Out of bounds: <span id="outOfBounds">-</span></div>
+    </div>
+
+    <div id="instructions">
+        <strong>🖱️ Dra Sparvkungen med musen ELLER tryck SPACE för att studsa</strong><br>
+        Röda streckade linjer = marginalgränser<br>
+        Grön text = inom gränserna<br>
+        Röd text = utanför gränserna<br>
+        <span id="bounceStatus" style="color: #d4af37; font-weight: bold;">Klicka SPACE för att starta</span>
+    </div>
+
+    <script>
+        const container = document.getElementById('sparrow-container');
+        const size = 200;
+        const margin = size * 0.5; // 50% = 100px
+
+        let isDragging = false;
+        let offsetX, offsetY;
+        let isBouncing = false;
+        let animationId = null;
+
+        // Start position - center
+        let x = (window.innerWidth - size) / 2;
+        let y = (window.innerHeight - size) / 2;
+
+        // Bounce velocity
+        let velocityX = 0;
+        let velocityY = 0;
+        let rotation = 0;
+
+        // Set initial position
+        container.style.left = x + 'px';
+        container.style.top = y + 'px';
+
+        // Create visual boundary markers
+        function createBoundaries() {
+            const boundaries = ['top', 'bottom', 'left', 'right'];
+            boundaries.forEach(side => {
+                const boundary = document.createElement('div');
+                boundary.className = `boundary ${side}`;
+
+                if (side === 'top' || side === 'bottom') {
+                    boundary.style.height = margin + 'px';
+                } else {
+                    boundary.style.width = margin + 'px';
+                }
+
+                document.body.appendChild(boundary);
+            });
+        }
+
+        createBoundaries();
+
+        // Mouse events
+        container.addEventListener('mousedown', (e) => {
+            if (!isBouncing) {
+                isDragging = true;
+                offsetX = e.clientX - x;
+                offsetY = e.clientY - y;
+            }
+        });
+
+        document.addEventListener('mousemove', (e) => {
+            if (isDragging) {
+                x = e.clientX - offsetX;
+                y = e.clientY - offsetY;
+
+                container.style.left = x + 'px';
+                container.style.top = y + 'px';
+
+                updateDebug();
+            }
+        });
+
+        document.addEventListener('mouseup', () => {
+            isDragging = false;
+        });
+
+        // SPACE key to toggle bouncing
+        document.addEventListener('keydown', (e) => {
+            if (e.code === 'Space') {
+                e.preventDefault();
+                toggleBounce();
+            }
+        });
+
+        function toggleBounce() {
+            isBouncing = !isBouncing;
+            const bounceStatus = document.getElementById('bounceStatus');
+
+            if (isBouncing) {
+                // Start bouncing
+                bounceStatus.textContent = '🎾 STUDSLÄGE AKTIVT - Tryck SPACE för att stoppa';
+                bounceStatus.style.color = '#0f0';
+
+                // Initialize random velocity
+                velocityX = (Math.random() - 0.5) * 6; // -3 to +3
+                velocityY = (Math.random() - 0.5) * 6;
+
+                startBouncing();
+            } else {
+                // Stop bouncing
+                bounceStatus.textContent = 'Klicka SPACE för att starta studsning';
+                bounceStatus.style.color = '#d4af37';
+
+                if (animationId) {
+                    cancelAnimationFrame(animationId);
+                    animationId = null;
+                }
+            }
+        }
+
+        function startBouncing() {
+            if (!isBouncing) return;
+
+            const viewportWidth = document.documentElement.clientWidth;
+            const viewportHeight = document.documentElement.clientHeight;
+            const maxX = viewportWidth - size - margin;
+            const maxY = viewportHeight - size - margin;
+
+            // Update position
+            x += velocityX;
+            y += velocityY;
+
+            // Bounce off edges
+            if (x < margin) {
+                x = margin;
+                velocityX = Math.abs(velocityX);
+                console.log('BOUNCE LEFT: x=', x, 'velocityX=', velocityX);
+            }
+            if (x > maxX) {
+                x = maxX;
+                velocityX = -Math.abs(velocityX);
+                console.log('BOUNCE RIGHT: x=', x, 'velocityX=', velocityX);
+            }
+            if (y < margin) {
+                y = margin;
+                velocityY = Math.abs(velocityY);
+                console.log('BOUNCE TOP: y=', y, 'velocityY=', velocityY);
+            }
+            if (y > maxY) {
+                y = maxY;
+                velocityY = -Math.abs(velocityY);
+                console.log('BOUNCE BOTTOM: y=', y, 'velocityY=', velocityY);
+            }
+
+            // Safety clamp
+            x = Math.max(margin, Math.min(x, maxX));
+            y = Math.max(margin, Math.min(y, maxY));
+
+            // Update rotation
+            rotation += 0.5;
+
+            // Apply position and rotation
+            container.style.left = `${x}px`;
+            container.style.top = `${y}px`;
+            container.style.transform = `rotate(${rotation}deg)`;
+
+            // Update debug info
+            updateDebug();
+
+            // Continue animation
+            animationId = requestAnimationFrame(startBouncing);
+        }
+
+        function updateDebug() {
+            const viewportWidth = document.documentElement.clientWidth;
+            const viewportHeight = document.documentElement.clientHeight;
+            const maxX = viewportWidth - size - margin;
+            const maxY = viewportHeight - size - margin;
+            const effectiveSize = Math.round(Math.sqrt(2) * size);
+
+            // Update debug display
+            document.getElementById('viewport').textContent = `${viewportWidth} x ${viewportHeight}`;
+            document.getElementById('posX').textContent = Math.round(x);
+            document.getElementById('posY').textContent = Math.round(y);
+            document.getElementById('size').textContent = `${size}px`;
+            document.getElementById('margin').textContent = `${margin}px (50%)`;
+            document.getElementById('maxX').textContent = Math.round(maxX);
+            document.getElementById('maxY').textContent = Math.round(maxY);
+            document.getElementById('effectiveSize').textContent = `${effectiveSize}px`;
+
+            // Check if out of bounds
+            const outOfBounds = [];
+            if (x < margin) outOfBounds.push('LEFT');
+            if (x > maxX) outOfBounds.push('RIGHT');
+            if (y < margin) outOfBounds.push('TOP');
+            if (y > maxY) outOfBounds.push('BOTTOM');
+
+            const statusEl = document.getElementById('status');
+            const outEl = document.getElementById('outOfBounds');
+
+            if (outOfBounds.length > 0) {
+                statusEl.textContent = 'OUT OF BOUNDS!';
+                statusEl.className = 'error';
+                outEl.textContent = outOfBounds.join(', ');
+                outEl.className = 'error';
+            } else {
+                statusEl.textContent = 'Within bounds ✓';
+                statusEl.className = 'ok';
+                outEl.textContent = 'None';
+                outEl.className = 'ok';
+            }
+        }
+
+        // Initial debug update
+        updateDebug();
+
+        // Update on window resize
+        window.addEventListener('resize', () => {
+            createBoundaries();
+            updateDebug();
+        });
+    </script>
+</body>
+</html>
