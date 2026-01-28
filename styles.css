@@ -92,7 +92,7 @@ body {
     width: 100%;
     height: 100%;
     object-fit: cover;
-    object-position: top center;
+    object-position: bottom center;
 }
 
 .tid-layer {
@@ -102,7 +102,7 @@ body {
     width: 100%;
     height: 100%;
     object-fit: cover;
-    object-position: top center;
+    object-position: bottom center;
     cursor: pointer;
     transition: filter 0.3s ease;
     z-index: 10;
