@@ -28,7 +28,7 @@ document.addEventListener('DOMContentLoaded', () => {
             }
         });
 
-        // Check if click is on non-transparent pixel
+        // Check if click is on or near non-transparent pixel (with expanded radius)
         function isClickOnVisiblePixel(layer, clickX, clickY) {
             const data = layerCanvases.get(layer);
             if (!data) return false;
@@ -37,15 +37,27 @@ document.addEventListener('DOMContentLoaded', () => {
             const scaleX = layer.naturalWidth / rect.width;
             const scaleY = layer.naturalHeight / rect.height;
 
-            const x = Math.floor((clickX - rect.left) * scaleX);
-            const y = Math.floor((clickY - rect.top) * scaleY);
+            const centerX = Math.floor((clickX - rect.left) * scaleX);
+            const centerY = Math.floor((clickY - rect.top) * scaleY);
 
-            if (x < 0 || x >= data.canvas.width || y < 0 || y >= data.canvas.height) {
-                return false;
+            // Check a radius of 30 pixels around the click point
+            const radius = 30;
+            for (let offsetX = -radius; offsetX <= radius; offsetX += 5) {
+                for (let offsetY = -radius; offsetY <= radius; offsetY += 5) {
+                    const x = centerX + offsetX;
+                    const y = centerY + offsetY;
+
+                    if (x < 0 || x >= data.canvas.width || y < 0 || y >= data.canvas.height) {
+                        continue;
+                    }
+
+                    const pixel = data.ctx.getImageData(x, y, 1, 1).data;
+                    if (pixel[3] > 50) {
+                        return true;
+                    }
+                }
             }
-
-            const pixel = data.ctx.getImageData(x, y, 1, 1).data;
-            return pixel[3] > 50; // Alpha threshold
+            return false;
         }
 
         // Get textbox elements
@@ -79,6 +91,29 @@ document.addEventListener('DOMContentLoaded', () => {
                         const text = layer.dataset.text || '';
                         textboxTitle.textContent = title;
                         textboxContent.textContent = text;
+
+                        // Position textbox near click position
+                        const padding = 20;
+                        let left = e.clientX + padding;
+                        let top = e.clientY - 50;
+
+                        // Keep textbox within viewport
+                        const boxWidth = 320;
+                        const boxHeight = 200;
+                        if (left + boxWidth > window.innerWidth) {
+                            left = e.clientX - boxWidth - padding;
+                        }
+                        if (top + boxHeight > window.innerHeight) {
+                            top = window.innerHeight - boxHeight - padding;
+                        }
+                        if (top < padding) {
+                            top = padding;
+                        }
+
+                        textbox.style.left = left + 'px';
+                        textbox.style.top = top + 'px';
+                        textbox.style.right = 'auto';
+                        textbox.style.transform = 'none';
                         textbox.classList.add('visible');
                     }
                     return;
