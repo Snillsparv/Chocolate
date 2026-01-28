@@ -175,13 +175,13 @@ document.addEventListener('DOMContentLoaded', () => {
                             left = e.clientX - boxWidth - offset / 4;
                             top = e.clientY + offset / 2;
                         } else if (layerIndex === 4) {
-                            // Ruta 4: lite till vänster och lite uppåt
+                            // Ruta 4: pyttelite högre upp
                             left = e.clientX - boxWidth / 2 - offset / 2;
-                            top = e.clientY - boxHeight - offset * 1.8;
+                            top = e.clientY - boxHeight - offset * 2;
                         } else {
-                            // Ruta 5: lite uppåt och pyttelite till höger
+                            // Ruta 5: en bit uppåt
                             left = e.clientX - boxWidth - offset * 1.1;
-                            top = e.clientY - boxHeight - offset * 1.2;
+                            top = e.clientY - boxHeight - offset * 1.6;
                         }
 
                         // Clamp within viewport
