@@ -75,7 +75,7 @@ body {
     filter: brightness(1.3) drop-shadow(0 0 30px rgba(212, 175, 55, 0.8));
 }
 
-/* Tid Section (Historien med gyllene linjer) */
+/* Tid Section (Historien) */
 .tid-section {
     position: relative;
     width: 100vw;
@@ -87,28 +87,22 @@ body {
 
 .tid-bg {
     position: absolute;
-    top: 50%;
-    left: 50%;
-    transform: translate(-50%, -50%);
+    top: 0;
+    left: 0;
     width: 100%;
     height: 100%;
-    min-width: 100vw;
-    min-height: 100vh;
     object-fit: cover;
-    object-position: center;
+    object-position: top center;
 }
 
 .tid-layer {
     position: absolute;
-    top: 50%;
-    left: 50%;
-    transform: translate(-50%, -50%);
+    top: 0;
+    left: 0;
     width: 100%;
     height: 100%;
-    min-width: 100vw;
-    min-height: 100vh;
     object-fit: cover;
-    object-position: center;
+    object-position: top center;
     cursor: pointer;
     transition: filter 0.3s ease;
     z-index: 10;
@@ -119,7 +113,7 @@ body {
 }
 
 .tid-textbox {
-    position: fixed;
+    position: absolute;
     max-width: 320px;
     padding: 2rem;
     background: rgba(26, 15, 10, 0.95);
@@ -460,7 +454,7 @@ body.video-playing {
     transform: translateX(-50%);
     z-index: 10;
     text-transform: uppercase;
-    text-shadow: 0 0 20px rgba(212, 175, 55, 0.3);
+    text-shadow: 0 2px 4px rgba(0, 0, 0, 0.8), 0 0 20px rgba(212, 175, 55, 0.3);
     margin: 0;
 }
 
