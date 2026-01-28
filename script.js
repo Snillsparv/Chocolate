@@ -1478,3 +1478,33 @@ function startSparrowBouncing(container) {
         console.log('🔄 Window resized, new bounds calculated');
     });
 }
+
+// Guldägg Section Handler
+document.addEventListener('DOMContentLoaded', () => {
+    const guldaggEgg = document.getElementById('guldagg-egg');
+    const guldaggVideo = document.getElementById('guldagg-video');
+    const guldaggBgFinal = document.getElementById('guldagg-bg-final');
+    const guldaggBg = document.querySelector('.guldagg-bg');
+
+    if (guldaggEgg && guldaggVideo) {
+        guldaggEgg.addEventListener('click', () => {
+            // Hide the egg
+            guldaggEgg.style.display = 'none';
+            
+            // Show and play the video
+            guldaggVideo.style.display = 'block';
+            guldaggVideo.play().catch(err => console.log('Video play error:', err));
+        });
+
+        // When video ends, show the final background
+        guldaggVideo.addEventListener('ended', () => {
+            guldaggVideo.style.display = 'none';
+            if (guldaggBgFinal) {
+                guldaggBgFinal.style.display = 'block';
+            }
+            if (guldaggBg) {
+                guldaggBg.style.display = 'none';
+            }
+        });
+    }
+});
