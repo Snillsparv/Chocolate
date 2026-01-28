@@ -50,46 +50,19 @@
         <div class="scroll-indicator">↓</div>
     </section>
 
-    <!-- Bildvisare - Laterna Magica -->
-    <section class="laterna-magica-section">
-        <div class="projector-frame">
-            <!-- Slides container -->
-            <div class="slides-container">
-                <div class="slide active" data-slide="1">
-                    <img src="hist_1.webp" alt="Det började med en dröm">
-                    <div class="slide-text">
-                        <h3>Det började med en dröm</h3>
-                        <p>2016 tog familjen Sparfvén första steget mot att skapa Sveriges finaste hantverkschoklad</p>
-                    </div>
-                    <div class="vignette"></div>
-                </div>
+    <!-- Interactive Chocolate Section -->
+    <h2 class="chocolate-section-title">VÅRENS KOLLEKTION</h2>
+    <section class="chocolate-interactive-section">
+        <img src="choklad_bakgrund.webp" alt="Choklad bakgrund" class="chocolate-background">
 
-                <div class="slide" data-slide="2">
-                    <img src="hist_2.webp" alt="Galna i generationer">
-                    <div class="slide-text">
-                        <h3>Galna i generationer</h3>
-                        <p>Passion, dedikation och ett uns galenskap - det är vår hemlighet</p>
-                    </div>
-                    <div class="vignette"></div>
-                </div>
+        <img src="choklad_1_stängd.webp" alt="Choklad 1" class="chocolate-piece" id="chocolate-1" data-state="closed">
+        <img src="choklad_2_stängd.webp" alt="Choklad 2" class="chocolate-piece" id="chocolate-2" data-state="closed">
+        <img src="choklad_3_stängd.webp" alt="Choklad 3" class="chocolate-piece" id="chocolate-3" data-state="closed">
 
-                <div class="slide" data-slide="3">
-                    <img src="hist_3.webp" alt="Från Alingsås till världen">
-                    <div class="slide-text">
-                        <h3>Från Alingsås till världen</h3>
-                        <p>100% hjärta. 0% hjärna. Alltid handgjort.</p>
-                    </div>
-                    <div class="vignette"></div>
-                </div>
-            </div>
-        </div>
-
-        <!-- Slide indicator -->
-        <div class="slide-indicator">
-            <span class="indicator-dot active"></span>
-            <span class="indicator-dot"></span>
-            <span class="indicator-dot"></span>
-        </div>
+        <!-- Clickable zones for each chocolate -->
+        <div class="chocolate-zone" data-chocolate="chocolate-1" style="left: 0%; width: 33%;"></div>
+        <div class="chocolate-zone" data-chocolate="chocolate-2" style="left: 33%; width: 34%;"></div>
+        <div class="chocolate-zone" data-chocolate="chocolate-3" style="left: 67%; width: 33%;"></div>
     </section>
 
     <!-- Tid Section (Historien) -->
@@ -117,6 +90,6 @@
         </div>
     </footer>
 
-    <script src="script.js?v=40"></script>
+    <script src="script.js?v=41"></script>
 </body>
 </html>
