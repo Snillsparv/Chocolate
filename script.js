@@ -155,33 +155,38 @@ document.addEventListener('DOMContentLoaded', () => {
                         textboxTitle.textContent = title;
                         textboxContent.textContent = text;
 
-                        // Position textbox per symbol:
+                        // Position textbox per symbol (based on symbol position, not click)
                         const layerIndex = i + 1; // 1-based
                         const offset = 120;
                         const boxWidth = 320;
                         const boxHeight = 200;
                         let left, top;
 
+                        // Get symbol's bounding box for consistent positioning
+                        const layerRect = layer.getBoundingClientRect();
+                        const symbolCenterX = layerRect.left + layerRect.width / 2;
+                        const symbolCenterY = layerRect.top + layerRect.height / 2;
+
                         if (layerIndex === 1) {
                             // Ruta 1: höger och nedanför
-                            left = e.clientX + offset;
-                            top = e.clientY + offset / 2;
+                            left = symbolCenterX + offset;
+                            top = symbolCenterY + offset / 2;
                         } else if (layerIndex === 2) {
                             // Ruta 2: lite mer åt vänster
-                            left = e.clientX + offset / 4;
-                            top = e.clientY + offset / 2;
+                            left = symbolCenterX + offset / 4;
+                            top = symbolCenterY + offset / 2;
                         } else if (layerIndex === 3) {
                             // Ruta 3: lite mer åt höger
-                            left = e.clientX - boxWidth - offset / 4;
-                            top = e.clientY + offset / 2;
+                            left = symbolCenterX - boxWidth - offset / 4;
+                            top = symbolCenterY + offset / 2;
                         } else if (layerIndex === 4) {
                             // Ruta 4: pyttelite högre upp
-                            left = e.clientX - boxWidth / 2 - offset / 2;
-                            top = e.clientY - boxHeight - offset * 2;
+                            left = symbolCenterX - boxWidth / 2 - offset / 2;
+                            top = symbolCenterY - boxHeight - offset * 2;
                         } else {
                             // Ruta 5: en bit uppåt
-                            left = e.clientX - boxWidth - offset * 1.1;
-                            top = e.clientY - boxHeight - offset * 1.6;
+                            left = symbolCenterX - boxWidth - offset * 1.1;
+                            top = symbolCenterY - boxHeight - offset * 1.6;
                         }
 
                         // Clamp within viewport
@@ -194,8 +199,8 @@ document.addEventListener('DOMContentLoaded', () => {
                         textbox.style.transform = 'none';
                         textbox.classList.add('visible');
 
-                        // Create golden line animation from click to textbox
-                        createGoldenLineToTextbox(e.clientX, e.clientY, left + boxWidth / 2, top + boxHeight / 2);
+                        // Create golden line animation from symbol center to textbox
+                        createGoldenLineToTextbox(symbolCenterX, symbolCenterY, left + boxWidth / 2, top + boxHeight / 2);
                     }
                     return;
                 }
