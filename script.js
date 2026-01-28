@@ -200,18 +200,26 @@ document.addEventListener('DOMContentLoaded', () => {
                         const symX = symbolCenter ? symbolCenter.x : e.clientX;
                         const symY = symbolCenter ? symbolCenter.y : e.clientY;
 
-                        if (layerIndex === 1 || layerIndex === 2) {
-                            // Ruta 1 & 2: 40 pixlar till höger om symbolen
-                            left = symX + gap;
+                        if (layerIndex === 1) {
+                            // Ruta 1: +40px höger
+                            left = symX + gap + 40;
+                            top = symY - boxHeight / 2;
+                        } else if (layerIndex === 2) {
+                            // Ruta 2: +30px höger
+                            left = symX + gap + 30;
                             top = symY - boxHeight / 2;
                         } else if (layerIndex === 3) {
-                            // Ruta 3: 40 pixlar till vänster om symbolen
-                            left = symX - boxWidth - gap;
-                            top = symY - boxHeight / 2;
+                            // Ruta 3: -10px vänster, +10px nedåt
+                            left = symX - boxWidth - gap - 10;
+                            top = symY - boxHeight / 2 + 10;
+                        } else if (layerIndex === 4) {
+                            // Ruta 4: -10px vänster, -10px uppåt
+                            left = symX - boxWidth - gap - 10;
+                            top = symY - boxHeight - gap - 10;
                         } else {
-                            // Ruta 4 & 5: 40 pixlar snett upp till vänster
-                            left = symX - boxWidth - gap;
-                            top = symY - boxHeight - gap;
+                            // Ruta 5: -40px vänster, -40px uppåt
+                            left = symX - boxWidth - gap - 40;
+                            top = symY - boxHeight - gap - 40;
                         }
 
                         // Clamp within viewport
