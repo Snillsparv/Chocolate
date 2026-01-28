@@ -16,6 +16,11 @@
 
 html {
     scroll-behavior: smooth;
+    scrollbar-width: none; /* Firefox */
+}
+
+html::-webkit-scrollbar {
+    display: none; /* Chrome, Safari, Edge */
 }
 
 body {
@@ -27,6 +32,7 @@ body {
     color: var(--cream);
     overflow-x: hidden;
     min-height: 100vh;
+    -ms-overflow-style: none; /* IE */
 }
 
 /* NEW LAYERED TIMELINE - Brand New Section */
@@ -72,32 +78,40 @@ body {
 /* Tid Section (Historien med gyllene linjer) */
 .tid-section {
     position: relative;
-    width: 100%;
+    width: 100vw;
     height: 100vh;
+    min-height: 100vh;
     overflow: hidden;
     background: var(--chocolate-dark);
 }
 
 .tid-bg {
     position: absolute;
-    top: 0;
-    left: 0;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
     width: 100%;
     height: 100%;
+    min-width: 100vw;
+    min-height: 100vh;
     object-fit: cover;
     object-position: center;
 }
 
 .tid-layer {
     position: absolute;
-    top: 0;
-    left: 0;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
     width: 100%;
     height: 100%;
+    min-width: 100vw;
+    min-height: 100vh;
     object-fit: cover;
     object-position: center;
     cursor: pointer;
     transition: filter 0.3s ease;
+    z-index: 10;
 }
 
 .tid-layer.glow {
@@ -440,9 +454,14 @@ body.video-playing {
     letter-spacing: 0.3em;
     color: var(--gold);
     text-align: center;
-    margin: 4rem 0 2rem 0;
+    position: absolute;
+    top: 2rem;
+    left: 50%;
+    transform: translateX(-50%);
+    z-index: 10;
     text-transform: uppercase;
     text-shadow: 0 0 20px rgba(212, 175, 55, 0.3);
+    margin: 0;
 }
 
 /* Interactive Chocolate Section */

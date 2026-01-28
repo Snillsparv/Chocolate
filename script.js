@@ -116,7 +116,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 background: linear-gradient(90deg, rgba(212,175,55,1) 0%, rgba(244,228,193,1) 50%, rgba(212,175,55,0.8) 100%);
                 transform-origin: left center;
                 transform: rotate(${angle}deg);
-                z-index: 1000;
+                z-index: 5;
                 pointer-events: none;
                 border-radius: 2px;
                 box-shadow: 0 0 10px rgba(212,175,55,0.8), 0 0 20px rgba(212,175,55,0.5), 0 0 30px rgba(212,175,55,0.3);
@@ -148,7 +148,7 @@ document.addEventListener('DOMContentLoaded', () => {
                     position: fixed; left: ${x}px; top: ${y}px;
                     width: 4px; height: 4px;
                     background: radial-gradient(circle, rgba(255,215,0,1) 0%, rgba(212,175,55,0.8) 100%);
-                    border-radius: 50%; z-index: 1001; pointer-events: none;
+                    border-radius: 50%; z-index: 6; pointer-events: none;
                     box-shadow: 0 0 6px rgba(212,175,55,1);
                     transform: translate(-50%, -50%);
                 `;
@@ -1007,7 +1007,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 rgba(212, 175, 55, 0.8) 100%);
             transform-origin: left center;
             transform: rotate(${angle}deg);
-            z-index: 1000;
+            z-index: 5;
             pointer-events: none;
             border-radius: 2px;
             box-shadow: 0 0 10px rgba(212, 175, 55, 0.8),
@@ -1056,7 +1056,7 @@ document.addEventListener('DOMContentLoaded', () => {
                     rgba(255, 215, 0, 1) 0%,
                     rgba(212, 175, 55, 0.8) 100%);
                 border-radius: 50%;
-                z-index: 1001;
+                z-index: 6;
                 pointer-events: none;
                 box-shadow: 0 0 6px rgba(212, 175, 55, 1);
                 transform: translate(-50%, -50%);
