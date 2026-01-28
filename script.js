@@ -1121,14 +1121,7 @@ document.addEventListener('DOMContentLoaded', () => {
 // ====== 3D SPARROW KING MASCOT ======
 let sparrowActive = false;
 
-// Listen for "S" key to summon Sparvkungen
-document.addEventListener('keydown', (e) => {
-    if ((e.key === 's' || e.key === 'S') && !sparrowActive) {
-        sparrowActive = true;
-        summonSparrow();
-    }
-});
-
+// Function to summon Sparvkungen (called from guldägg animation)
 function summonSparrow() {
     const container = document.getElementById('sparrow-container');
     const sparrowModel = document.getElementById('sparrow-model');
@@ -1549,6 +1542,12 @@ document.addEventListener('DOMContentLoaded', () => {
             // Show and play the video
             guldaggVideo.style.display = 'block';
             guldaggVideo.play().catch(err => console.log('Video play error:', err));
+
+            // Summon Sparvkungen during the animation
+            if (!sparrowActive) {
+                sparrowActive = true;
+                summonSparrow();
+            }
         });
 
         // When video ends, show the final background
