@@ -1,14 +1,14 @@
-// Preload Page Handler
+// Tid Section Handler (Historia)
 document.addEventListener('DOMContentLoaded', () => {
-    const preloadPage = document.querySelector('.preload-page');
-    const preloadLayers = document.querySelectorAll('.preload-layer');
+    const tidSection = document.querySelector('.tid-section');
+    const tidLayers = document.querySelectorAll('.tid-layer');
 
-    if (preloadPage && preloadLayers.length > 0) {
+    if (tidSection && tidLayers.length > 0) {
         // Store canvas data for each layer to detect non-transparent clicks
         const layerCanvases = new Map();
 
         // Load each image into a canvas for pixel detection
-        preloadLayers.forEach((layer) => {
+        tidLayers.forEach((layer) => {
             const canvas = document.createElement('canvas');
             const ctx = canvas.getContext('2d', { willReadFrequently: true });
 
@@ -94,9 +94,9 @@ document.addEventListener('DOMContentLoaded', () => {
         }
 
         // Get textbox elements
-        const textbox = document.querySelector('.preload-textbox');
-        const textboxTitle = document.querySelector('.preload-textbox-title');
-        const textboxContent = document.querySelector('.preload-textbox-content');
+        const textbox = document.querySelector('.tid-textbox');
+        const textboxTitle = document.querySelector('.tid-textbox-title');
+        const textboxContent = document.querySelector('.tid-textbox-content');
         let currentActiveLayer = null;
 
         // Function to create golden line animation from click point to textbox
@@ -162,11 +162,11 @@ document.addEventListener('DOMContentLoaded', () => {
             }
         }
 
-        // Handle clicks on preload page
-        preloadPage.addEventListener('click', (e) => {
+        // Handle clicks on tid section
+        tidSection.addEventListener('click', (e) => {
             // Check layers in reverse order (top to bottom)
-            for (let i = preloadLayers.length - 1; i >= 0; i--) {
-                const layer = preloadLayers[i];
+            for (let i = tidLayers.length - 1; i >= 0; i--) {
+                const layer = tidLayers[i];
                 if (isClickOnVisiblePixel(layer, e.clientX, e.clientY)) {
                     // If clicking same layer, toggle off
                     if (currentActiveLayer === layer) {

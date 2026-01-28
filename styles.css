@@ -112,6 +112,75 @@ body {
     line-height: 1.6;
 }
 
+/* Tid Section (Historia) */
+.tid-section {
+    position: relative;
+    width: 100%;
+    height: 100vh;
+    overflow: hidden;
+    background: var(--chocolate-dark);
+}
+
+.tid-bg {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    object-position: center;
+}
+
+.tid-layer {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    object-position: center;
+    cursor: pointer;
+    transition: filter 0.3s ease;
+}
+
+.tid-layer.glow {
+    filter: brightness(1.5) drop-shadow(0 0 20px rgba(212, 175, 55, 0.8));
+}
+
+.tid-textbox {
+    position: fixed;
+    max-width: 320px;
+    padding: 2rem;
+    background: rgba(26, 15, 10, 0.95);
+    border: 1px solid var(--gold);
+    border-radius: 10px;
+    box-shadow: 0 0 30px rgba(212, 175, 55, 0.4);
+    opacity: 0;
+    visibility: hidden;
+    transition: opacity 0.4s ease, visibility 0.4s ease;
+    z-index: 100;
+}
+
+.tid-textbox.visible {
+    opacity: 1;
+    visibility: visible;
+}
+
+.tid-textbox-title {
+    font-family: 'Great Vibes', cursive;
+    font-size: 2rem;
+    color: var(--gold);
+    margin-bottom: 1rem;
+    text-shadow: 0 0 10px rgba(212, 175, 55, 0.5);
+}
+
+.tid-textbox-content {
+    font-family: 'Cormorant Garamond', serif;
+    font-size: 1.1rem;
+    color: var(--cream);
+    line-height: 1.6;
+}
+
 /* Loading Screen */
 .loading-screen {
     position: fixed;
