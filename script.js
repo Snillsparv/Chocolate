@@ -167,21 +167,21 @@ document.addEventListener('DOMContentLoaded', () => {
                             left = e.clientX + offset;
                             top = e.clientY + offset / 2;
                         } else if (layerIndex === 2) {
-                            // Ruta 2: mer åt vänster
-                            left = e.clientX + offset / 2;
+                            // Ruta 2: lite mer åt vänster
+                            left = e.clientX + offset / 4;
                             top = e.clientY + offset / 2;
                         } else if (layerIndex === 3) {
-                            // Ruta 3: mer åt höger (mindre offset åt vänster)
-                            left = e.clientX - boxWidth - offset / 2;
+                            // Ruta 3: lite mer åt höger
+                            left = e.clientX - boxWidth - offset / 4;
                             top = e.clientY + offset / 2;
                         } else if (layerIndex === 4) {
-                            // Ruta 4: längre upp så den inte täcker symbolen
-                            left = e.clientX - boxWidth / 2;
-                            top = e.clientY - boxHeight - offset * 1.5;
+                            // Ruta 4: lite till vänster och lite uppåt
+                            left = e.clientX - boxWidth / 2 - offset / 2;
+                            top = e.clientY - boxHeight - offset * 1.8;
                         } else {
-                            // Ruta 5: lite uppåt och lite mer till vänster
-                            left = e.clientX - boxWidth - offset * 1.3;
-                            top = e.clientY - boxHeight - offset;
+                            // Ruta 5: lite uppåt och pyttelite till höger
+                            left = e.clientX - boxWidth - offset * 1.1;
+                            top = e.clientY - boxHeight - offset * 1.2;
                         }
 
                         // Clamp within viewport
