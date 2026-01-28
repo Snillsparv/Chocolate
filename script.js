@@ -1487,10 +1487,65 @@ document.addEventListener('DOMContentLoaded', () => {
     const guldaggBg = document.querySelector('.guldagg-bg');
 
     if (guldaggEgg && guldaggVideo) {
-        guldaggEgg.addEventListener('click', () => {
+        // Create canvas for transparent pixel detection
+        const eggCanvas = document.createElement('canvas');
+        const eggCtx = eggCanvas.getContext('2d', { willReadFrequently: true });
+        let eggCanvasReady = false;
+
+        // Load egg image into canvas when ready
+        const loadEggCanvas = () => {
+            if (guldaggEgg.complete && guldaggEgg.naturalWidth > 0) {
+                eggCanvas.width = guldaggEgg.naturalWidth;
+                eggCanvas.height = guldaggEgg.naturalHeight;
+                eggCtx.drawImage(guldaggEgg, 0, 0);
+                eggCanvasReady = true;
+            }
+        };
+
+        guldaggEgg.addEventListener('load', loadEggCanvas);
+        if (guldaggEgg.complete) loadEggCanvas();
+
+        // Check if click is on non-transparent pixel
+        function isClickOnEgg(clickX, clickY) {
+            if (!eggCanvasReady) return true; // Fallback to allow click
+
+            const rect = guldaggEgg.getBoundingClientRect();
+            const scaleX = guldaggEgg.naturalWidth / rect.width;
+            const scaleY = guldaggEgg.naturalHeight / rect.height;
+
+            const x = Math.floor((clickX - rect.left) * scaleX);
+            const y = Math.floor((clickY - rect.top) * scaleY);
+
+            if (x < 0 || x >= eggCanvas.width || y < 0 || y >= eggCanvas.height) {
+                return false;
+            }
+
+            // Check a small radius around click point
+            const radius = 30;
+            for (let offsetX = -radius; offsetX <= radius; offsetX += 5) {
+                for (let offsetY = -radius; offsetY <= radius; offsetY += 5) {
+                    const checkX = x + offsetX;
+                    const checkY = y + offsetY;
+                    if (checkX >= 0 && checkX < eggCanvas.width && checkY >= 0 && checkY < eggCanvas.height) {
+                        const pixel = eggCtx.getImageData(checkX, checkY, 1, 1).data;
+                        if (pixel[3] > 50) {
+                            return true;
+                        }
+                    }
+                }
+            }
+            return false;
+        }
+
+        guldaggEgg.addEventListener('click', (e) => {
+            // Only trigger if clicking on non-transparent part
+            if (!isClickOnEgg(e.clientX, e.clientY)) {
+                return;
+            }
+
             // Hide the egg
             guldaggEgg.style.display = 'none';
-            
+
             // Show and play the video
             guldaggVideo.style.display = 'block';
             guldaggVideo.play().catch(err => console.log('Video play error:', err));
@@ -1499,11 +1554,11 @@ document.addEventListener('DOMContentLoaded', () => {
         // When video ends, show the final background
         guldaggVideo.addEventListener('ended', () => {
             guldaggVideo.style.display = 'none';
-            if (guldaggBgFinal) {
+            if (guldaggBgFinal && guldaggBg) {
+                // Swap backgrounds - show final, hide original
                 guldaggBgFinal.style.display = 'block';
-            }
-            if (guldaggBg) {
-                guldaggBg.style.display = 'none';
+                guldaggBg.style.opacity = '0';
+                guldaggBg.style.visibility = 'hidden';
             }
         });
     }
