@@ -40,8 +40,8 @@ document.addEventListener('DOMContentLoaded', () => {
             const centerX = Math.floor((clickX - rect.left) * scaleX);
             const centerY = Math.floor((clickY - rect.top) * scaleY);
 
-            // Check a radius of 30 pixels around the click point
-            const radius = 30;
+            // Check a radius of 60 pixels around the click point
+            const radius = 60;
             for (let offsetX = -radius; offsetX <= radius; offsetX += 5) {
                 for (let offsetY = -radius; offsetY <= radius; offsetY += 5) {
                     const x = centerX + offsetX;
@@ -92,23 +92,31 @@ document.addEventListener('DOMContentLoaded', () => {
                         textboxTitle.textContent = title;
                         textboxContent.textContent = text;
 
-                        // Position textbox near click position
-                        const padding = 20;
-                        let left = e.clientX + padding;
-                        let top = e.clientY - 50;
-
-                        // Keep textbox within viewport
+                        // Position textbox per symbol:
+                        // 1,2: right and below. 3: left and below. 4: above. 5: left and above.
+                        const layerIndex = i + 1; // 1-based
+                        const offset = 120;
                         const boxWidth = 320;
                         const boxHeight = 200;
-                        if (left + boxWidth > window.innerWidth) {
-                            left = e.clientX - boxWidth - padding;
+                        let left, top;
+
+                        if (layerIndex === 1 || layerIndex === 2) {
+                            left = e.clientX + offset;
+                            top = e.clientY + offset / 2;
+                        } else if (layerIndex === 3) {
+                            left = e.clientX - boxWidth - offset;
+                            top = e.clientY + offset / 2;
+                        } else if (layerIndex === 4) {
+                            left = e.clientX - boxWidth / 2;
+                            top = e.clientY - boxHeight - offset;
+                        } else {
+                            left = e.clientX - boxWidth - offset;
+                            top = e.clientY - boxHeight - offset / 2;
                         }
-                        if (top + boxHeight > window.innerHeight) {
-                            top = window.innerHeight - boxHeight - padding;
-                        }
-                        if (top < padding) {
-                            top = padding;
-                        }
+
+                        // Clamp within viewport
+                        left = Math.max(20, Math.min(left, window.innerWidth - boxWidth - 20));
+                        top = Math.max(20, Math.min(top, window.innerHeight - boxHeight - 20));
 
                         textbox.style.left = left + 'px';
                         textbox.style.top = top + 'px';
