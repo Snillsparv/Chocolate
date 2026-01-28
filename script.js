@@ -1,3 +1,143 @@
+// Preload Page Handler
+document.addEventListener('DOMContentLoaded', () => {
+    const preloadPage = document.querySelector('.preload-page');
+    const preloadLayers = document.querySelectorAll('.preload-layer');
+
+    if (preloadPage && preloadLayers.length > 0) {
+        // Store canvas data for each layer to detect non-transparent clicks
+        const layerCanvases = new Map();
+
+        // Load each image into a canvas for pixel detection
+        preloadLayers.forEach((layer) => {
+            const canvas = document.createElement('canvas');
+            const ctx = canvas.getContext('2d', { willReadFrequently: true });
+
+            layer.addEventListener('load', () => {
+                canvas.width = layer.naturalWidth;
+                canvas.height = layer.naturalHeight;
+                ctx.drawImage(layer, 0, 0);
+                layerCanvases.set(layer, { canvas, ctx });
+            });
+
+            // If already loaded
+            if (layer.complete && layer.naturalWidth > 0) {
+                canvas.width = layer.naturalWidth;
+                canvas.height = layer.naturalHeight;
+                ctx.drawImage(layer, 0, 0);
+                layerCanvases.set(layer, { canvas, ctx });
+            }
+        });
+
+        // Check if click is on or near non-transparent pixel (with expanded radius)
+        function isClickOnVisiblePixel(layer, clickX, clickY) {
+            const data = layerCanvases.get(layer);
+            if (!data) return false;
+
+            const rect = layer.getBoundingClientRect();
+            const scaleX = layer.naturalWidth / rect.width;
+            const scaleY = layer.naturalHeight / rect.height;
+
+            const centerX = Math.floor((clickX - rect.left) * scaleX);
+            const centerY = Math.floor((clickY - rect.top) * scaleY);
+
+            // Check a radius of 60 pixels around the click point
+            const radius = 60;
+            for (let offsetX = -radius; offsetX <= radius; offsetX += 5) {
+                for (let offsetY = -radius; offsetY <= radius; offsetY += 5) {
+                    const x = centerX + offsetX;
+                    const y = centerY + offsetY;
+
+                    if (x < 0 || x >= data.canvas.width || y < 0 || y >= data.canvas.height) {
+                        continue;
+                    }
+
+                    const pixel = data.ctx.getImageData(x, y, 1, 1).data;
+                    if (pixel[3] > 50) {
+                        return true;
+                    }
+                }
+            }
+            return false;
+        }
+
+        // Get textbox elements
+        const textbox = document.querySelector('.preload-textbox');
+        const textboxTitle = document.querySelector('.preload-textbox-title');
+        const textboxContent = document.querySelector('.preload-textbox-content');
+        let currentActiveLayer = null;
+
+        // Handle clicks on preload page
+        preloadPage.addEventListener('click', (e) => {
+            // Check layers in reverse order (top to bottom)
+            for (let i = preloadLayers.length - 1; i >= 0; i--) {
+                const layer = preloadLayers[i];
+                if (isClickOnVisiblePixel(layer, e.clientX, e.clientY)) {
+                    // If clicking same layer, toggle off
+                    if (currentActiveLayer === layer) {
+                        layer.classList.remove('glow');
+                        textbox.classList.remove('visible');
+                        currentActiveLayer = null;
+                    } else {
+                        // Remove glow from previous layer
+                        if (currentActiveLayer) {
+                            currentActiveLayer.classList.remove('glow');
+                        }
+                        // Add glow to this layer
+                        layer.classList.add('glow');
+                        currentActiveLayer = layer;
+
+                        // Show textbox with content
+                        const title = layer.dataset.title || '';
+                        const text = layer.dataset.text || '';
+                        textboxTitle.textContent = title;
+                        textboxContent.textContent = text;
+
+                        // Position textbox per symbol:
+                        // 1,2: right and below. 3: left and below. 4: above. 5: left and above.
+                        const layerIndex = i + 1; // 1-based
+                        const offset = 120;
+                        const boxWidth = 320;
+                        const boxHeight = 200;
+                        let left, top;
+
+                        if (layerIndex === 1 || layerIndex === 2) {
+                            left = e.clientX + offset;
+                            top = e.clientY + offset / 2;
+                        } else if (layerIndex === 3) {
+                            left = e.clientX - boxWidth - offset;
+                            top = e.clientY + offset / 2;
+                        } else if (layerIndex === 4) {
+                            left = e.clientX - boxWidth / 2;
+                            top = e.clientY - boxHeight - offset;
+                        } else {
+                            left = e.clientX - boxWidth - offset;
+                            top = e.clientY - boxHeight - offset / 2;
+                        }
+
+                        // Clamp within viewport
+                        left = Math.max(20, Math.min(left, window.innerWidth - boxWidth - 20));
+                        top = Math.max(20, Math.min(top, window.innerHeight - boxHeight - 20));
+
+                        textbox.style.left = left + 'px';
+                        textbox.style.top = top + 'px';
+                        textbox.style.right = 'auto';
+                        textbox.style.transform = 'none';
+                        textbox.classList.add('visible');
+                    }
+                    return;
+                }
+            }
+
+            // Clicked on empty area - hide textbox
+            if (currentActiveLayer) {
+                currentActiveLayer.classList.remove('glow');
+                currentActiveLayer = null;
+            }
+            textbox.classList.remove('visible');
+        });
+    }
+});
+
 // Loading Screen and Intro Video Handler
 document.addEventListener('DOMContentLoaded', () => {
     const loadingScreen = document.querySelector('.loading-screen');
