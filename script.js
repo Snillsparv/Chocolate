@@ -157,7 +157,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
                         // Position textbox per symbol (based on symbol position, not click)
                         const layerIndex = i + 1; // 1-based
-                        const offset = 120;
+                        const offset = 40;
                         const boxWidth = 320;
                         const boxHeight = 200;
                         let left, top;
@@ -172,21 +172,21 @@ document.addEventListener('DOMContentLoaded', () => {
                             left = symbolCenterX + offset;
                             top = symbolCenterY + offset / 2;
                         } else if (layerIndex === 2) {
-                            // Ruta 2: lite mer åt vänster
-                            left = symbolCenterX + offset / 4;
+                            // Ruta 2: nära symbolen
+                            left = symbolCenterX + offset / 2;
                             top = symbolCenterY + offset / 2;
                         } else if (layerIndex === 3) {
-                            // Ruta 3: lite mer åt höger
-                            left = symbolCenterX - boxWidth - offset / 4;
+                            // Ruta 3: nära symbolen till vänster
+                            left = symbolCenterX - boxWidth - offset / 2;
                             top = symbolCenterY + offset / 2;
                         } else if (layerIndex === 4) {
-                            // Ruta 4: pyttelite högre upp
-                            left = symbolCenterX - boxWidth / 2 - offset / 2;
-                            top = symbolCenterY - boxHeight - offset * 2;
+                            // Ruta 4: ovanför symbolen
+                            left = symbolCenterX - boxWidth / 2;
+                            top = symbolCenterY - boxHeight - offset;
                         } else {
-                            // Ruta 5: en bit uppåt
-                            left = symbolCenterX - boxWidth - offset * 1.1;
-                            top = symbolCenterY - boxHeight - offset * 1.6;
+                            // Ruta 5: till vänster och ovanför
+                            left = symbolCenterX - boxWidth - offset;
+                            top = symbolCenterY - boxHeight - offset / 2;
                         }
 
                         // Clamp within viewport
