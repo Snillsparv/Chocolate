@@ -66,6 +66,69 @@ document.addEventListener('DOMContentLoaded', () => {
         const textboxContent = document.querySelector('.preload-textbox-content');
         let currentActiveLayer = null;
 
+        // Function to create golden line animation from click point to textbox
+        function createGoldenLineToTextbox(startX, startY, endX, endY) {
+            const deltaX = endX - startX;
+            const deltaY = endY - startY;
+            const distance = Math.sqrt(deltaX * deltaX + deltaY * deltaY);
+            const angle = Math.atan2(deltaY, deltaX) * (180 / Math.PI);
+
+            const goldenLine = document.createElement('div');
+            goldenLine.style.cssText = `
+                position: fixed;
+                left: ${startX}px;
+                top: ${startY}px;
+                width: 0;
+                height: 3px;
+                background: linear-gradient(90deg, rgba(212,175,55,1) 0%, rgba(244,228,193,1) 50%, rgba(212,175,55,0.8) 100%);
+                transform-origin: left center;
+                transform: rotate(${angle}deg);
+                z-index: 1000;
+                pointer-events: none;
+                border-radius: 2px;
+                box-shadow: 0 0 10px rgba(212,175,55,0.8), 0 0 20px rgba(212,175,55,0.5), 0 0 30px rgba(212,175,55,0.3);
+            `;
+            document.body.appendChild(goldenLine);
+
+            // Sparkle at start
+            createSparkle(startX, startY);
+
+            requestAnimationFrame(() => {
+                goldenLine.style.transition = 'width 0.4s cubic-bezier(0.23, 1, 0.32, 1)';
+                goldenLine.style.width = distance + 'px';
+                setTimeout(() => createSparkle(endX, endY), 350);
+            });
+
+            setTimeout(() => {
+                goldenLine.style.transition = 'opacity 0.3s ease-out';
+                goldenLine.style.opacity = '0';
+                setTimeout(() => goldenLine.remove(), 300);
+            }, 600);
+        }
+
+        function createSparkle(x, y) {
+            for (let i = 0; i < 6; i++) {
+                const sparkle = document.createElement('div');
+                const a = (i / 6) * Math.PI * 2;
+                const d = 15 + Math.random() * 10;
+                sparkle.style.cssText = `
+                    position: fixed; left: ${x}px; top: ${y}px;
+                    width: 4px; height: 4px;
+                    background: radial-gradient(circle, rgba(255,215,0,1) 0%, rgba(212,175,55,0.8) 100%);
+                    border-radius: 50%; z-index: 1001; pointer-events: none;
+                    box-shadow: 0 0 6px rgba(212,175,55,1);
+                    transform: translate(-50%, -50%);
+                `;
+                document.body.appendChild(sparkle);
+                requestAnimationFrame(() => {
+                    sparkle.style.transition = 'all 0.4s ease-out';
+                    sparkle.style.transform = `translate(calc(-50% + ${Math.cos(a) * d}px), calc(-50% + ${Math.sin(a) * d}px))`;
+                    sparkle.style.opacity = '0';
+                });
+                setTimeout(() => sparkle.remove(), 400);
+            }
+        }
+
         // Handle clicks on preload page
         preloadPage.addEventListener('click', (e) => {
             // Check layers in reverse order (top to bottom)
@@ -123,6 +186,9 @@ document.addEventListener('DOMContentLoaded', () => {
                         textbox.style.right = 'auto';
                         textbox.style.transform = 'none';
                         textbox.classList.add('visible');
+
+                        // Create golden line animation from click to textbox
+                        createGoldenLineToTextbox(e.clientX, e.clientY, left + boxWidth / 2, top + boxHeight / 2);
                     }
                     return;
                 }
