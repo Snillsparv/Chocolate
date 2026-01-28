@@ -155,38 +155,29 @@ document.addEventListener('DOMContentLoaded', () => {
                         textboxTitle.textContent = title;
                         textboxContent.textContent = text;
 
-                        // Position textbox per symbol (based on symbol position, not click)
+                        // Position textbox relative to click position
                         const layerIndex = i + 1; // 1-based
-                        const offset = 40;
+                        const gap = 40;
                         const boxWidth = 320;
                         const boxHeight = 200;
                         let left, top;
 
-                        // Get symbol's bounding box for consistent positioning
-                        const layerRect = layer.getBoundingClientRect();
-                        const symbolCenterX = layerRect.left + layerRect.width / 2;
-                        const symbolCenterY = layerRect.top + layerRect.height / 2;
+                        // Use click position as reference for symbol location
+                        const clickX = e.clientX;
+                        const clickY = e.clientY;
 
-                        if (layerIndex === 1) {
-                            // Ruta 1: höger och nedanför
-                            left = symbolCenterX + offset;
-                            top = symbolCenterY + offset / 2;
-                        } else if (layerIndex === 2) {
-                            // Ruta 2: nära symbolen
-                            left = symbolCenterX + offset / 2;
-                            top = symbolCenterY + offset / 2;
+                        if (layerIndex === 1 || layerIndex === 2) {
+                            // Ruta 1 & 2: 40 pixlar till höger om symbolen
+                            left = clickX + gap;
+                            top = clickY - boxHeight / 2;
                         } else if (layerIndex === 3) {
-                            // Ruta 3: nära symbolen till vänster
-                            left = symbolCenterX - boxWidth - offset / 2;
-                            top = symbolCenterY + offset / 2;
-                        } else if (layerIndex === 4) {
-                            // Ruta 4: ovanför symbolen
-                            left = symbolCenterX - boxWidth / 2;
-                            top = symbolCenterY - boxHeight - offset;
+                            // Ruta 3: 40 pixlar till vänster om symbolen
+                            left = clickX - boxWidth - gap;
+                            top = clickY - boxHeight / 2;
                         } else {
-                            // Ruta 5: till vänster och ovanför
-                            left = symbolCenterX - boxWidth - offset;
-                            top = symbolCenterY - boxHeight - offset / 2;
+                            // Ruta 4 & 5: 40 pixlar snett upp till vänster
+                            left = clickX - boxWidth - gap;
+                            top = clickY - boxHeight - gap;
                         }
 
                         // Clamp within viewport
@@ -199,8 +190,8 @@ document.addEventListener('DOMContentLoaded', () => {
                         textbox.style.transform = 'none';
                         textbox.classList.add('visible');
 
-                        // Create golden line animation from symbol center to textbox
-                        createGoldenLineToTextbox(symbolCenterX, symbolCenterY, left + boxWidth / 2, top + boxHeight / 2);
+                        // Create golden line animation from click point to textbox
+                        createGoldenLineToTextbox(clickX, clickY, left + boxWidth / 2, top + boxHeight / 2);
                     }
                     return;
                 }
