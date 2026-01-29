@@ -19,30 +19,24 @@ document.addEventListener('DOMContentLoaded', () => {
         const viewportWidth = window.innerWidth;
         const slideWidth = bgWidth / totalSlides;
 
-        // Add padding so all symbols can be centered (first and last included)
-        const sidePadding = Math.max(0, (viewportWidth / 2) - (slideWidth / 2));
-        timelineTrack.style.paddingLeft = `${sidePadding}px`;
-        timelineTrack.style.paddingRight = `${sidePadding}px`;
-
-        // Also offset the absolute positioned timeline elements by the same amount
-        timelineElements.forEach(el => {
-            el.style.left = `${sidePadding}px`;
-        });
+        // Simple centering: for each symbol, calculate where its center is and translate
+        // Symbol i's center in the image = slideWidth * i + slideWidth/2
+        // To center it in viewport, translate = viewportWidth/2 - symbolCenter
 
         function goToSlide(index) {
             // Clamp index
             index = Math.max(0, Math.min(index, totalSlides - 1));
             currentIndex = index;
 
-            // Calculate scroll position to center the current slide in the middle of the screen
-            // Each symbol's center relative to the padded track
-            const symbolCenterInTrack = sidePadding + (slideWidth * index) + (slideWidth / 2);
-            const scrollPos = symbolCenterInTrack - (viewportWidth / 2);
-            const maxScroll = bgWidth + (sidePadding * 2) - viewportWidth;
-            const clampedScroll = Math.max(0, Math.min(scrollPos, maxScroll));
+            // Calculate symbol center position in the image
+            const symbolCenter = (slideWidth * index) + (slideWidth / 2);
 
-            // Apply transform
-            timelineTrack.style.transform = `translateX(-${clampedScroll}px)`;
+            // Calculate translateX to put symbol center at viewport center
+            // Positive = shift content right, Negative = shift content left
+            const translateX = (viewportWidth / 2) - symbolCenter;
+
+            // Apply transform - this centers the symbol exactly
+            timelineTrack.style.transform = `translateX(${translateX}px)`;
 
             // Update active states
             timelineElements.forEach((el, i) => {

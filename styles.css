@@ -654,8 +654,9 @@ body.video-playing {
     display: flex;
     align-items: center;
     justify-content: center;
-    box-shadow: 0 -30px 60px rgba(0, 0, 0, 0.3);
+    box-shadow: 0 -30px 60px rgba(0, 0, 0, 0.3), 0 30px 60px rgba(0, 0, 0, 0.5);
     overflow: hidden;
+    z-index: 5;
 }
 
 .chocolate-background {
@@ -1340,7 +1341,10 @@ body.video-playing {
 .footer {
     padding: 4rem 2rem 2rem;
     border-top: 1px solid rgba(212, 175, 55, 0.2);
-    box-shadow: 0 -20px 40px rgba(0, 0, 0, 0.4);
+    box-shadow: 0 -30px 60px rgba(0, 0, 0, 0.7);
+    background: var(--chocolate-dark);
+    position: relative;
+    z-index: 10;
 }
 
 .footer-content {
