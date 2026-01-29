@@ -1186,18 +1186,19 @@ function startSparrowBouncing(container) {
     let x = (document.documentElement.clientWidth - size) / 2;
     let y = window.scrollY + (document.documentElement.clientHeight - size) / 2;
 
-    // Random initial velocity - slower
-    let velocityX = (Math.random() - 0.5) * 3;
-    let velocityY = (Math.random() - 0.5) * 3;
+    // Random initial velocity - faster!
+    let velocityX = (Math.random() - 0.5) * 12 + (Math.random() > 0.5 ? 4 : -4);
+    let velocityY = (Math.random() - 0.5) * 12 + (Math.random() > 0.5 ? 4 : -4);
 
-    // Make sure velocity is never too slow
-    if (Math.abs(velocityX) < 1) velocityX = velocityX < 0 ? -1 : 1;
-    if (Math.abs(velocityY) < 1) velocityY = velocityY < 0 ? -1 : 1;
+    // Minimum velocity - never slower than this
+    const minVelocity = 3;
+    if (Math.abs(velocityX) < minVelocity) velocityX = velocityX < 0 ? -minVelocity : minVelocity;
+    if (Math.abs(velocityY) < minVelocity) velocityY = velocityY < 0 ? -minVelocity : minVelocity;
 
-    // Store base velocity for gradual return
+    // Store base velocity for gradual return (keep it fast!)
     const baseVelocityX = velocityX;
     const baseVelocityY = velocityY;
-    const velocityDamping = 0.03; // How fast velocity returns to base (0.03 = 3% per frame)
+    const velocityDamping = 0.02; // How fast velocity returns to base (slower damping)
 
     // Constant 3D rotation - steady multi-axis spin
     let yaw = 0;   // rotation around Y axis (left-right spin)
@@ -1375,6 +1376,14 @@ function startSparrowBouncing(container) {
                 velocityY += (baseVelocityY - velocityY) * velocityDamping;
             }
 
+            // NEVER let velocity drop below minimum - keep him moving!
+            if (Math.abs(velocityX) < minVelocity) {
+                velocityX = velocityX >= 0 ? minVelocity : -minVelocity;
+            }
+            if (Math.abs(velocityY) < minVelocity) {
+                velocityY = velocityY >= 0 ? minVelocity : -minVelocity;
+            }
+
             // Update position
             x += velocityX;
             y += velocityY;
@@ -1382,29 +1391,25 @@ function startSparrowBouncing(container) {
             // Bounce off LEFT edge
             if (x < margin) {
                 x = margin;
-                velocityX = Math.abs(velocityX);
-                console.log('🔵 Bounced LEFT');
+                velocityX = Math.max(Math.abs(velocityX), minVelocity);
             }
 
             // Bounce off RIGHT edge
             if (x > maxX) {
                 x = maxX;
-                velocityX = -Math.abs(velocityX);
-                console.log('🔵 Bounced RIGHT');
+                velocityX = -Math.max(Math.abs(velocityX), minVelocity);
             }
 
             // Bounce off TOP edge
             if (y < margin) {
                 y = margin;
-                velocityY = Math.abs(velocityY);
-                console.log('🔵 Bounced TOP');
+                velocityY = Math.max(Math.abs(velocityY), minVelocity);
             }
 
             // Bounce off BOTTOM edge
             if (y > maxY) {
                 y = maxY;
-                velocityY = -Math.abs(velocityY);
-                console.log('🔵 Bounced BOTTOM');
+                velocityY = -Math.max(Math.abs(velocityY), minVelocity);
             }
 
             // Safety clamp
