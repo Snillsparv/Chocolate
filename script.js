@@ -1143,8 +1143,8 @@ function summonSparrow() {
     container.style.left = `${startX}px`;
     container.style.top = `${startY}px`;
 
-    // Show container with dramatic entrance
-    container.style.transform = 'scale(0.3) rotate(-180deg)';
+    // Show container with dramatic entrance - start from 0% scale (emerging from egg)
+    container.style.transform = 'scale(0) rotate(-180deg)';
     container.style.transition = 'all 1s cubic-bezier(0.68, -0.55, 0.265, 1.55)';
     container.style.opacity = '0';
 
@@ -1543,10 +1543,12 @@ document.addEventListener('DOMContentLoaded', () => {
             guldaggVideo.style.display = 'block';
             guldaggVideo.play().catch(err => console.log('Video play error:', err));
 
-            // Summon Sparvkungen during the animation
+            // Summon Sparvkungen after 3 seconds (emerging from the egg)
             if (!sparrowActive) {
                 sparrowActive = true;
-                summonSparrow();
+                setTimeout(() => {
+                    summonSparrow();
+                }, 3000);
             }
         });
 
