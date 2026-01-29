@@ -175,8 +175,8 @@ body {
     width: 100%;
     background: var(--chocolate-dark);
     overflow: hidden;
-    border: 4px solid var(--gold);
-    box-shadow: 0 0 30px rgba(212, 175, 55, 0.3), inset 0 0 60px rgba(0, 0, 0, 0.3);
+    border-bottom: 4px solid var(--gold);
+    box-shadow: 0 4px 30px rgba(212, 175, 55, 0.3);
 }
 
 .timeline-section-title {
@@ -1354,7 +1354,7 @@ body.video-playing {
     font-size: 0.9rem;
     font-weight: 300;
     letter-spacing: 0.2em;
-    color: var(--gold-light);
+    color: var(--gold);
     margin-bottom: 0.5rem;
 }
 
@@ -1362,7 +1362,7 @@ body.video-playing {
     font-size: 0.85rem;
     font-weight: 200;
     letter-spacing: 0.3em;
-    color: rgba(212, 175, 55, 0.5);
+    color: var(--gold);
 }
 
 /* Responsive */
@@ -1474,7 +1474,7 @@ body.video-playing {
 }
 
 .guldagg-egg:hover {
-    filter: brightness(1.1) drop-shadow(0 0 20px rgba(212, 175, 55, 0.5));
+    filter: brightness(1.2) drop-shadow(0 0 40px rgba(212, 175, 55, 0.9)) drop-shadow(0 0 80px rgba(180, 140, 20, 0.7));
 }
 
 .guldagg-video {
@@ -1517,13 +1517,10 @@ body.video-playing {
     z-index: 25;
     opacity: 0;
     pointer-events: none;
-    background: rgba(0, 0, 0, 0.5);
-    padding: 1rem 2rem;
-    border-radius: 10px;
 }
 
 .sparv-kungen-text.visible {
-    animation: flashText 0.4s ease-in-out 10;
+    animation: flashText 0.4s ease-in-out 8;
 }
 
 @keyframes flashText {

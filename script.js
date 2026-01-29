@@ -23,6 +23,11 @@ document.addEventListener('DOMContentLoaded', () => {
         const leftPadding = Math.max(0, (viewportWidth / 2) - (slideWidth / 2));
         timelineTrack.style.paddingLeft = `${leftPadding}px`;
 
+        // Also offset the absolute positioned timeline elements by the same amount
+        timelineElements.forEach(el => {
+            el.style.left = `${leftPadding}px`;
+        });
+
         function goToSlide(index) {
             // Clamp index
             index = Math.max(0, Math.min(index, totalSlides - 1));
@@ -1466,10 +1471,10 @@ document.addEventListener('DOMContentLoaded', () => {
             const sparvKungenText = document.getElementById('sparv-kungen-text');
             if (sparvKungenText) {
                 sparvKungenText.classList.add('visible');
-                // Remove the animation class after it completes (10 flashes * 0.4s = 4s)
+                // Remove the animation class after it completes (8 flashes * 0.4s = 3.2s)
                 setTimeout(() => {
                     sparvKungenText.classList.remove('visible');
-                }, 4000);
+                }, 3200);
             }
 
             // Hide the egg
