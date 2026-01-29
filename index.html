@@ -32,7 +32,10 @@
             <img src="kugghjul_2.webp" alt="Laddar" class="loading-spinner">
             <p class="loading-text">Laddar...</p>
             <div class="keyhole-container" style="display: none;">
-                <img src="biljett.webp" alt="Klicka för att börja" class="keyhole-image">
+                <div class="sparkles-wrapper">
+                    <img src="biljett.webp" alt="Klicka för att börja" class="keyhole-image">
+                    <div class="gold-sparkles" id="gold-sparkles"></div>
+                </div>
                 <p class="keyhole-text">Välkommen till dina drömmar</p>
             </div>
         </div>
@@ -69,52 +72,54 @@
     <section class="timeline-section">
         <h2 class="timeline-section-title">VÅR HISTORIA</h2>
 
-        <!-- Navigation arrows -->
-        <button class="timeline-arrow timeline-arrow-left" id="timeline-prev" style="display: none;">‹</button>
-        <button class="timeline-arrow timeline-arrow-right" id="timeline-next">›</button>
-
         <!-- Scrollable timeline container -->
         <div class="timeline-viewport">
             <div class="timeline-track" id="timeline-track">
                 <!-- Background -->
-                <img src="tidslinje_3++.webp" alt="" class="timeline-bg">
+                <img src="tidslinje_3+++.webp" alt="" class="timeline-bg">
 
                 <!-- Timeline elements (t_0 to t_5) -->
-                <img src="t_0++.webp" alt="" class="timeline-element active" data-index="0">
-                <img src="t_1++.webp" alt="" class="timeline-element" data-index="1">
-                <img src="t_2++.webp" alt="" class="timeline-element" data-index="2">
-                <img src="t_3++.webp" alt="" class="timeline-element" data-index="3">
-                <img src="t_4++.webp" alt="" class="timeline-element" data-index="4">
-                <img src="t_5++.webp" alt="" class="timeline-element" data-index="5">
+                <img src="t_0+++.webp" alt="" class="timeline-element active" data-index="0">
+                <img src="t_1+++.webp" alt="" class="timeline-element" data-index="1">
+                <img src="t_2+++.webp" alt="" class="timeline-element" data-index="2">
+                <img src="t_3+++.webp" alt="" class="timeline-element" data-index="3">
+                <img src="t_4+++.webp" alt="" class="timeline-element" data-index="4">
+                <img src="t_5+++.webp" alt="" class="timeline-element" data-index="5">
             </div>
         </div>
 
-        <!-- Text section below -->
+        <!-- Text section below with arrows -->
         <div class="timeline-text-section">
-            <div class="timeline-text" data-index="0">
-                <h3>Ädelt ursprung</h3>
-                <p>Af Sparfvén är ett chokladmärke med anor. Allt började 3000 år före Kraxus när gammelfarbror Sparv-Noa byggde en jättestor båt för att rädda alla varelser på jorden undan en fruktansvärd störtflod skickad av Braxen-kungen.</p>
+            <button class="timeline-text-arrow timeline-text-arrow-left" id="timeline-text-prev" style="display: none;">‹</button>
+
+            <div class="timeline-text-content">
+                <div class="timeline-text" data-index="0">
+                    <h3>Ädelt ursprung</h3>
+                    <p>Af Sparfvén är ett chokladmärke med anor. Allt började 3000 år före Kraxus när gammelfarbror Sparv-Noa byggde en jättestor båt för att rädda alla varelser på jorden undan en fruktansvärd störtflod skickad av Braxen-kungen.</p>
+                </div>
+                <div class="timeline-text" data-index="1" style="display: none;">
+                    <h3>En skänk från ovan</h3>
+                    <p>När Sparv-Noa släppt av alla andra djur seglade han vidare in i Amazonas mörka djungel i jakt på ett gudomligt tecken. Snart upptäckte han att floden blev tjockare och mörkare. Sparv-Noa smakade på den och märkte att det var det godaste som någonsin funnits.</p>
+                </div>
+                <div class="timeline-text" data-index="2" style="display: none;">
+                    <h3>Chokladflodens hemlighet</h3>
+                    <p>Han insåg att Sparv-Kungen just hade uppfunnit choklad och med det givit honom det efterlängtade tecknet: "Här skall du bygga din chokladfabrik!"</p>
+                </div>
+                <div class="timeline-text" data-index="3" style="display: none;">
+                    <h3>Ett sparviskt urverk</h3>
+                    <p>Sparvarna gick så samman och uppförde Af Sparfvéns Chokladfabrik mitt i den kakaotäta djungeln och började tillverka choklad som snart var berömd över hela världen.</p>
+                </div>
+                <div class="timeline-text" data-index="4" style="display: none;">
+                    <h3>En gnutta galenskap</h3>
+                    <p>En gång om året samlas de tokigaste och mest rubbade mästerkockarna i chokladfabriken för att experimentera fram nya revolutionerande smaker.</p>
+                </div>
+                <div class="timeline-text" data-index="5" style="display: none;">
+                    <h3>Snille och smak</h3>
+                    <p>Som Sparv-Bert Einstein så väl formulerade det: "Choklad är viktigare än kunskap!"</p>
+                </div>
             </div>
-            <div class="timeline-text" data-index="1" style="display: none;">
-                <h3>En skänk från ovan</h3>
-                <p>När Sparv-Noa släppt av alla andra djur seglade han vidare in i Amazonas mörka djungel i jakt på ett gudomligt tecken. Snart upptäckte han att floden blev tjockare och mörkare. Sparv-Noa smakade på den och märkte att det var det godaste som någonsin funnits.</p>
-            </div>
-            <div class="timeline-text" data-index="2" style="display: none;">
-                <h3>Chokladflodens hemlighet</h3>
-                <p>Han insåg att Sparv-Kungen just hade uppfunnit choklad och med det givit honom det efterlängtade tecknet: "Här skall du bygga din chokladfabrik!"</p>
-            </div>
-            <div class="timeline-text" data-index="3" style="display: none;">
-                <h3>Ett sparviskt urverk</h3>
-                <p>Sparvarna gick så samman och uppförde Af Sparfvéns Chokladfabrik mitt i den kakaotäta djungeln och började tillverka choklad som snart var berömd över hela världen.</p>
-            </div>
-            <div class="timeline-text" data-index="4" style="display: none;">
-                <h3>En gnutta galenskap</h3>
-                <p>En gång om året samlas de tokigaste och mest rubbade mästerkockarna i chokladfabriken för att experimentera fram nya revolutionerande smaker.</p>
-            </div>
-            <div class="timeline-text" data-index="5" style="display: none;">
-                <h3>Snille och smak</h3>
-                <p>Som Sparv-Bert Einstein så väl formulerade det: "Choklad är viktigare än kunskap!"</p>
-            </div>
+
+            <button class="timeline-text-arrow timeline-text-arrow-right" id="timeline-text-next">›</button>
         </div>
     </section>
 
@@ -127,6 +132,7 @@
             <source src="guldägg_video_2.mp4" type="video/mp4">
         </video>
         <img src="guldägg_bg_2.webp" alt="" class="guldagg-bg-final" id="guldagg-bg-final" style="display: none;">
+        <div class="sparv-kungen-text" id="sparv-kungen-text">SPARV-KUNGEN HAR BLIVIT KALLAD!</div>
     </section>
 
     <!-- Contact -->

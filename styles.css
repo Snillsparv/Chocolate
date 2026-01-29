@@ -249,11 +249,19 @@ body {
     right: 20px;
 }
 
-/* Text section below timeline */
+/* Text section below timeline - same height as timeline viewport */
 .timeline-text-section {
     background: var(--chocolate-dark);
     padding: 2rem;
-    min-height: 150px;
+    height: 250px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    position: relative;
+}
+
+.timeline-text-content {
+    flex: 1;
     display: flex;
     justify-content: center;
     align-items: center;
@@ -278,6 +286,30 @@ body {
     font-size: 1.2rem;
     color: var(--cream);
     line-height: 1.8;
+}
+
+/* Navigation arrows in text section */
+.timeline-text-arrow {
+    background: rgba(26, 15, 10, 0.8);
+    border: 2px solid var(--gold);
+    color: var(--gold);
+    font-size: 3rem;
+    width: 60px;
+    height: 80px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    border-radius: 5px;
+    flex-shrink: 0;
+    margin: 0 1rem;
+}
+
+.timeline-text-arrow:hover {
+    background: var(--gold);
+    color: var(--chocolate-dark);
+    box-shadow: 0 0 20px rgba(212, 175, 55, 0.6);
 }
 
 @keyframes fadeIn {
@@ -1386,9 +1418,9 @@ body.video-playing {
         cursor: url('cursor_bird.webp') 2 2, auto;
     }
 
-    a, button, .scroll-indicator, .chocolate-card, .chocolate-zone,
-    .tid-layer, .indicator-dot, .timeline-arrow, .keyhole-image {
-        cursor: url('cursor_point.webp') 2 2, pointer !important;
+    a, button, .scroll-indicator, .chocolate-card,
+    .tid-layer, .indicator-dot, .timeline-arrow, .timeline-text-arrow, .keyhole-image {
+        cursor: url('cursor_point_new.webp') 2 2, pointer !important;
     }
 
     #sparrow-container {
@@ -1448,4 +1480,67 @@ body.video-playing {
     height: 100%;
     object-fit: fill;
     z-index: 15;
+}
+
+/* Sparv-Kungen flashing text */
+.sparv-kungen-text {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    font-family: 'Cormorant Garamond', serif;
+    font-size: clamp(2rem, 6vw, 5rem);
+    font-weight: 700;
+    color: var(--gold);
+    text-align: center;
+    text-shadow: 0 0 30px rgba(212, 175, 55, 0.8), 0 0 60px rgba(212, 175, 55, 0.5);
+    letter-spacing: 0.1em;
+    z-index: 25;
+    opacity: 0;
+    pointer-events: none;
+}
+
+.sparv-kungen-text.visible {
+    animation: flashText 0.5s ease-in-out 6;
+}
+
+@keyframes flashText {
+    0%, 100% { opacity: 1; }
+    50% { opacity: 0; }
+}
+
+/* Gold sparkles around biljett */
+.sparkles-wrapper {
+    position: relative;
+    display: inline-block;
+}
+
+.gold-sparkles {
+    position: absolute;
+    top: -30px;
+    left: -30px;
+    right: -30px;
+    bottom: -30px;
+    pointer-events: none;
+    overflow: visible;
+}
+
+.sparkle {
+    position: absolute;
+    width: 8px;
+    height: 8px;
+    background: radial-gradient(circle, var(--gold) 0%, transparent 70%);
+    border-radius: 50%;
+    animation: sparkle 2s ease-in-out infinite;
+}
+
+@keyframes sparkle {
+    0%, 100% {
+        opacity: 0;
+        transform: scale(0);
+    }
+    50% {
+        opacity: 1;
+        transform: scale(1);
+    }
 }

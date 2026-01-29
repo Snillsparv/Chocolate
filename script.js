@@ -4,8 +4,9 @@ document.addEventListener('DOMContentLoaded', () => {
     const timelineBg = document.querySelector('.timeline-bg');
     const timelineElements = document.querySelectorAll('.timeline-element');
     const timelineTexts = document.querySelectorAll('.timeline-text');
-    const prevBtn = document.getElementById('timeline-prev');
-    const nextBtn = document.getElementById('timeline-next');
+    // Use the new text section arrows
+    const prevBtn = document.getElementById('timeline-text-prev');
+    const nextBtn = document.getElementById('timeline-text-next');
 
     if (!timelineTrack || !timelineBg || timelineElements.length === 0) return;
 
@@ -23,8 +24,10 @@ document.addEventListener('DOMContentLoaded', () => {
             index = Math.max(0, Math.min(index, totalSlides - 1));
             currentIndex = index;
 
-            // Calculate scroll position to center the current slide
-            const scrollPos = (slideWidth * index) - (viewportWidth / 2) + (slideWidth / 2);
+            // Calculate scroll position to center the current slide in the middle of the screen
+            // The symbol should be exactly in the center of the viewport width
+            const symbolCenterX = (slideWidth * index) + (slideWidth / 2);
+            const scrollPos = symbolCenterX - (viewportWidth / 2);
             const maxScroll = bgWidth - viewportWidth;
             const clampedScroll = Math.max(0, Math.min(scrollPos, maxScroll));
 
@@ -42,13 +45,13 @@ document.addEventListener('DOMContentLoaded', () => {
             });
 
             // Update arrow visibility
-            prevBtn.style.display = index === 0 ? 'none' : 'flex';
-            nextBtn.style.display = index === totalSlides - 1 ? 'none' : 'flex';
+            if (prevBtn) prevBtn.style.display = index === 0 ? 'none' : 'flex';
+            if (nextBtn) nextBtn.style.display = index === totalSlides - 1 ? 'none' : 'flex';
         }
 
         // Arrow click handlers
-        prevBtn.addEventListener('click', () => goToSlide(currentIndex - 1));
-        nextBtn.addEventListener('click', () => goToSlide(currentIndex + 1));
+        if (prevBtn) prevBtn.addEventListener('click', () => goToSlide(currentIndex - 1));
+        if (nextBtn) nextBtn.addEventListener('click', () => goToSlide(currentIndex + 1));
 
         // Keyboard navigation
         document.addEventListener('keydown', (e) => {
@@ -107,8 +110,36 @@ document.addEventListener('DOMContentLoaded', () => {
             loadingText.style.display = 'none';
             if (keyholeContainer) {
                 keyholeContainer.style.display = 'flex';
+                // Create gold sparkles around biljett
+                createBiljettSparkles();
             }
             document.querySelector('.loading-spinner').style.display = 'none';
+        }
+    }
+
+    // Create animated gold sparkles around the biljett
+    function createBiljettSparkles() {
+        const sparklesContainer = document.getElementById('gold-sparkles');
+        if (!sparklesContainer) return;
+
+        // Create 20 sparkles at random positions around the ticket
+        for (let i = 0; i < 20; i++) {
+            const sparkle = document.createElement('div');
+            sparkle.className = 'sparkle';
+
+            // Random position around the edges
+            const angle = (i / 20) * Math.PI * 2;
+            const radius = 80 + Math.random() * 60; // Vary the distance
+            const x = 50 + Math.cos(angle) * (radius / 3);  // percentage
+            const y = 50 + Math.sin(angle) * (radius / 3);
+
+            sparkle.style.left = `${x}%`;
+            sparkle.style.top = `${y}%`;
+            sparkle.style.animationDelay = `${Math.random() * 2}s`;
+            sparkle.style.width = `${6 + Math.random() * 8}px`;
+            sparkle.style.height = sparkle.style.width;
+
+            sparklesContainer.appendChild(sparkle);
         }
     }
 
@@ -366,45 +397,6 @@ document.addEventListener('DOMContentLoaded', () => {
             this.style.transform = 'translateY(0) perspective(1000px) rotateX(0) rotateY(0) scale(1)';
         });
     });
-
-    // Parallax effect for chocolate section background
-    const chocolateBackground = document.querySelector('.chocolate-background');
-    const chocolateSection = document.querySelector('.chocolate-interactive-section');
-
-    if (chocolateBackground && chocolateSection) {
-        window.addEventListener('scroll', () => {
-            const rect = chocolateSection.getBoundingClientRect();
-            const sectionHeight = chocolateSection.offsetHeight;
-            const windowHeight = window.innerHeight;
-
-            // Only apply parallax when section is in view
-            if (rect.top < windowHeight && rect.bottom > 0) {
-                // Calculate how far through the section we've scrolled (0 to 1)
-                const scrollProgress = (windowHeight - rect.top) / (windowHeight + sectionHeight);
-                // Apply parallax - move background slower than scroll
-                const parallaxOffset = (scrollProgress - 0.5) * 100; // ±50px movement
-                chocolateBackground.style.transform = `translateY(${parallaxOffset}px) scale(1.1)`;
-            }
-        }, { passive: true });
-    }
-
-    // Parallax effect for guldägg section background
-    const guldaggBg = document.querySelector('.guldagg-bg');
-    const guldaggSection = document.querySelector('.guldagg-section');
-
-    if (guldaggBg && guldaggSection) {
-        window.addEventListener('scroll', () => {
-            const rect = guldaggSection.getBoundingClientRect();
-            const sectionHeight = guldaggSection.offsetHeight;
-            const windowHeight = window.innerHeight;
-
-            if (rect.top < windowHeight && rect.bottom > 0) {
-                const scrollProgress = (windowHeight - rect.top) / (windowHeight + sectionHeight);
-                const parallaxOffset = (scrollProgress - 0.5) * 100;
-                guldaggBg.style.transform = `translateY(${parallaxOffset}px) scale(1.1)`;
-            }
-        }, { passive: true });
-    }
 
     // Add subtle floating animation to scroll indicator
     const indicator = document.querySelector('.scroll-indicator');
@@ -1450,7 +1442,7 @@ document.addEventListener('DOMContentLoaded', () => {
         // Change cursor to pointer only when over non-transparent pixels
         guldaggEgg.addEventListener('mousemove', (e) => {
             if (isClickOnEgg(e.clientX, e.clientY)) {
-                guldaggEgg.style.cursor = 'url("cursor_point.webp") 2 2, pointer';
+                guldaggEgg.style.cursor = 'url("cursor_point_new.webp") 2 2, pointer';
             } else {
                 guldaggEgg.style.cursor = 'inherit';
             }
@@ -1464,6 +1456,16 @@ document.addEventListener('DOMContentLoaded', () => {
             // Only trigger if clicking on non-transparent part
             if (!isClickOnEgg(e.clientX, e.clientY)) {
                 return;
+            }
+
+            // Show flashing text "SPARV-KUNGEN HAR BLIVIT KALLAD!"
+            const sparvKungenText = document.getElementById('sparv-kungen-text');
+            if (sparvKungenText) {
+                sparvKungenText.classList.add('visible');
+                // Remove the animation class after it completes (6 flashes * 0.5s = 3s)
+                setTimeout(() => {
+                    sparvKungenText.classList.remove('visible');
+                }, 3000);
             }
 
             // Hide the egg
