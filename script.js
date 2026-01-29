@@ -19,6 +19,10 @@ document.addEventListener('DOMContentLoaded', () => {
         const viewportWidth = window.innerWidth;
         const slideWidth = bgWidth / totalSlides;
 
+        // Add left padding so first symbol can be centered
+        const leftPadding = Math.max(0, (viewportWidth / 2) - (slideWidth / 2));
+        timelineTrack.style.paddingLeft = `${leftPadding}px`;
+
         function goToSlide(index) {
             // Clamp index
             index = Math.max(0, Math.min(index, totalSlides - 1));
@@ -27,8 +31,8 @@ document.addEventListener('DOMContentLoaded', () => {
             // Calculate scroll position to center the current slide in the middle of the screen
             // The symbol should be exactly in the center of the viewport width
             const symbolCenterX = (slideWidth * index) + (slideWidth / 2);
-            const scrollPos = symbolCenterX - (viewportWidth / 2);
-            const maxScroll = bgWidth - viewportWidth;
+            const scrollPos = symbolCenterX - (viewportWidth / 2) + leftPadding;
+            const maxScroll = bgWidth + leftPadding - viewportWidth;
             const clampedScroll = Math.max(0, Math.min(scrollPos, maxScroll));
 
             // Apply transform
@@ -1462,10 +1466,10 @@ document.addEventListener('DOMContentLoaded', () => {
             const sparvKungenText = document.getElementById('sparv-kungen-text');
             if (sparvKungenText) {
                 sparvKungenText.classList.add('visible');
-                // Remove the animation class after it completes (6 flashes * 0.5s = 3s)
+                // Remove the animation class after it completes (10 flashes * 0.4s = 4s)
                 setTimeout(() => {
                     sparvKungenText.classList.remove('visible');
-                }, 3000);
+                }, 4000);
             }
 
             // Hide the egg
@@ -1476,9 +1480,17 @@ document.addEventListener('DOMContentLoaded', () => {
             guldaggVideo.volume = 0.7;
             guldaggVideo.muted = false;
             guldaggVideo.play().catch(err => console.log('Video play error:', err));
+
+            // Summon Sparvkungen a bit earlier (before video ends)
+            setTimeout(() => {
+                if (!sparrowActive) {
+                    sparrowActive = true;
+                    summonSparrow();
+                }
+            }, 3000); // Appear 3 seconds after click, before video ends
         });
 
-        // When video ends, show the final background and summon Sparvkungen
+        // When video ends, show the final background
         guldaggVideo.addEventListener('ended', () => {
             guldaggVideo.style.display = 'none';
             if (guldaggBgFinal && guldaggBg) {
@@ -1486,12 +1498,6 @@ document.addEventListener('DOMContentLoaded', () => {
                 guldaggBgFinal.style.display = 'block';
                 guldaggBg.style.opacity = '0';
                 guldaggBg.style.visibility = 'hidden';
-            }
-
-            // Summon Sparvkungen after animation ends
-            if (!sparrowActive) {
-                sparrowActive = true;
-                summonSparrow();
             }
         });
     }
