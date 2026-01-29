@@ -381,9 +381,27 @@ document.addEventListener('DOMContentLoaded', () => {
             if (rect.top < windowHeight && rect.bottom > 0) {
                 // Calculate how far through the section we've scrolled (0 to 1)
                 const scrollProgress = (windowHeight - rect.top) / (windowHeight + sectionHeight);
-                // Apply subtle parallax - move background slightly slower than scroll
-                const parallaxOffset = (scrollProgress - 0.5) * 50; // ±25px movement
-                chocolateBackground.style.transform = `translateY(${parallaxOffset}px)`;
+                // Apply parallax - move background slower than scroll
+                const parallaxOffset = (scrollProgress - 0.5) * 100; // ±50px movement
+                chocolateBackground.style.transform = `translateY(${parallaxOffset}px) scale(1.1)`;
+            }
+        }, { passive: true });
+    }
+
+    // Parallax effect for guldägg section background
+    const guldaggBg = document.querySelector('.guldagg-bg');
+    const guldaggSection = document.querySelector('.guldagg-section');
+
+    if (guldaggBg && guldaggSection) {
+        window.addEventListener('scroll', () => {
+            const rect = guldaggSection.getBoundingClientRect();
+            const sectionHeight = guldaggSection.offsetHeight;
+            const windowHeight = window.innerHeight;
+
+            if (rect.top < windowHeight && rect.bottom > 0) {
+                const scrollProgress = (windowHeight - rect.top) / (windowHeight + sectionHeight);
+                const parallaxOffset = (scrollProgress - 0.5) * 100;
+                guldaggBg.style.transform = `translateY(${parallaxOffset}px) scale(1.1)`;
             }
         }, { passive: true });
     }

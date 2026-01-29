@@ -606,6 +606,7 @@ body.video-playing {
     align-items: center;
     justify-content: center;
     box-shadow: 0 -30px 60px rgba(0, 0, 0, 0.3);
+    overflow: hidden;
 }
 
 .chocolate-background {
@@ -1386,7 +1387,7 @@ body.video-playing {
     }
 
     a, button, .scroll-indicator, .chocolate-card, .chocolate-zone,
-    .tid-layer, .indicator-dot, .timeline-arrow {
+    .tid-layer, .indicator-dot, .timeline-arrow, .keyhole-image {
         cursor: url('cursor_point.webp') 2 2, pointer !important;
     }
 
