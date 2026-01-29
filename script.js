@@ -1446,7 +1446,7 @@ document.addEventListener('DOMContentLoaded', () => {
         // Change cursor to pointer only when over non-transparent pixels
         guldaggEgg.addEventListener('mousemove', (e) => {
             if (isClickOnEgg(e.clientX, e.clientY)) {
-                guldaggEgg.style.cursor = 'url("cursor_point_new+.webp") 2 2, pointer';
+                guldaggEgg.style.cursor = 'url("cursor_2.webp") 2 2, pointer';
             } else {
                 guldaggEgg.style.cursor = 'inherit';
             }
