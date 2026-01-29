@@ -1136,10 +1136,10 @@ function summonSparrow() {
     crazySound.volume = 0.6;
     crazySound.play().catch(err => console.log('Audio play prevented:', err));
 
-    // Set initial position at center BEFORE entrance animation
+    // Set initial position at center of current view BEFORE entrance animation
     const size = window.innerWidth <= 768 ? 400 : 650;
     const startX = (document.documentElement.clientWidth - size) / 2;
-    const startY = (document.documentElement.clientHeight - size) / 2;
+    const startY = window.scrollY + (document.documentElement.clientHeight - size) / 2;
     container.style.left = `${startX}px`;
     container.style.top = `${startY}px`;
 
@@ -1182,9 +1182,9 @@ function startSparrowBouncing(container) {
     // Get model-viewer element for 3D rotation
     const modelViewer = container.querySelector('#sparrow-model');
 
-    // Start from center of viewport
+    // Start from center of current view (accounting for scroll)
     let x = (document.documentElement.clientWidth - size) / 2;
-    let y = (document.documentElement.clientHeight - size) / 2;
+    let y = window.scrollY + (document.documentElement.clientHeight - size) / 2;
 
     // Random initial velocity - slower
     let velocityX = (Math.random() - 0.5) * 3;
@@ -1275,15 +1275,15 @@ function startSparrowBouncing(container) {
             const prevX = x;
             const prevY = y;
 
-            // Update position based on mouse
+            // Update position based on mouse (account for scroll since we use absolute positioning)
             x = e.clientX - dragOffsetX;
-            y = e.clientY - dragOffsetY;
+            y = e.clientY + window.scrollY - dragOffsetY;
 
-            // Apply bounds
-            const viewportWidth = document.documentElement.clientWidth;
-            const viewportHeight = document.documentElement.clientHeight;
-            const maxX = viewportWidth - size - margin;
-            const maxY = viewportHeight - size - margin;
+            // Apply bounds - use full page height, not just viewport
+            const pageWidth = document.documentElement.clientWidth;
+            const pageHeight = document.body.scrollHeight;
+            const maxX = pageWidth - size - margin;
+            const maxY = pageHeight - size - margin;
 
             x = Math.max(margin, Math.min(x, maxX));
             y = Math.max(margin, Math.min(y, maxY));
@@ -1354,11 +1354,11 @@ function startSparrowBouncing(container) {
 
         frameCount++;
 
-        // Get current viewport dimensions (always needed for debug)
-        const viewportWidth = document.documentElement.clientWidth;
-        const viewportHeight = document.documentElement.clientHeight;
-        const maxX = viewportWidth - size - margin;
-        const maxY = viewportHeight - size - margin;
+        // Get current page dimensions (full page, not just viewport)
+        const pageWidth = document.documentElement.clientWidth;
+        const pageHeight = document.body.scrollHeight;
+        const maxX = pageWidth - size - margin;
+        const maxY = pageHeight - size - margin;
 
         // Skip position updates if dragging
         if (!isDragging) {
@@ -1434,7 +1434,7 @@ function startSparrowBouncing(container) {
         // Update debug info every 30 frames
         if (frameCount % 30 === 0 && debugDiv.style.display === 'block') {
             debugDiv.innerHTML = `
-                Viewport: ${viewportWidth} x ${viewportHeight}<br>
+                Page: ${pageWidth} x ${pageHeight}<br>
                 Position: ${Math.round(x)}, ${Math.round(y)}<br>
                 Velocity: ${velocityX.toFixed(2)}, ${velocityY.toFixed(2)}<br>
                 Size: ${size}px<br>
@@ -1450,7 +1450,7 @@ function startSparrowBouncing(container) {
     animate();
 
     console.log('👑 Sparvkung physics initialized:');
-    console.log(`   Viewport: ${document.documentElement.clientWidth}x${document.documentElement.clientHeight}`);
+    console.log(`   Page: ${document.documentElement.clientWidth}x${document.body.scrollHeight}`);
     console.log(`   Size: ${size}px, Margin: ${margin}px`);
     console.log(`   Press D to toggle debug overlay`);
 
@@ -1461,10 +1461,10 @@ function startSparrowBouncing(container) {
         container.style.width = `${newSize}px`;
         container.style.height = `${newSize}px`;
 
-        const viewportWidth = document.documentElement.clientWidth;
-        const viewportHeight = document.documentElement.clientHeight;
-        const maxX = viewportWidth - newSize - newMargin;
-        const maxY = viewportHeight - newSize - newMargin;
+        const pageWidth = document.documentElement.clientWidth;
+        const pageHeight = document.body.scrollHeight;
+        const maxX = pageWidth - newSize - newMargin;
+        const maxY = pageHeight - newSize - newMargin;
         x = Math.max(newMargin, Math.min(x, maxX));
         y = Math.max(newMargin, Math.min(y, maxY));
 
