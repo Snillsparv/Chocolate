@@ -1382,20 +1382,20 @@ body.video-playing {
 /* Cursor Effect */
 @media (hover: hover) {
     body {
-        cursor: url('cursor_bird.png') 2 2, auto;
+        cursor: url('cursor_bird.webp') 2 2, auto;
     }
 
     a, button, .scroll-indicator, .chocolate-card, .chocolate-zone,
-    .tid-layer, .guldagg-egg, .indicator-dot, .timeline-arrow {
-        cursor: url('cursor_point.png') 2 2, pointer;
+    .tid-layer, .indicator-dot, .timeline-arrow {
+        cursor: url('cursor_point.webp') 2 2, pointer !important;
     }
 
     #sparrow-container {
-        cursor: url('cursor_drag.png') 16 16, grab;
+        cursor: url('cursor_drag.webp') 16 16, grab;
     }
 
     #sparrow-container:active {
-        cursor: url('cursor_drag.png') 16 16, grabbing;
+        cursor: url('cursor_drag.webp') 16 16, grabbing;
     }
 }
 
@@ -1420,7 +1420,7 @@ body.video-playing {
     width: 100%;
     height: 100%;
     object-fit: fill;
-    cursor: pointer;
+    cursor: inherit;
     transition: filter 0.3s ease;
     z-index: 10;
 }

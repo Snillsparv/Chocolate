@@ -369,7 +369,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
     // Parallax effect for chocolate section background
     const chocolateBackground = document.querySelector('.chocolate-background');
-    const chocolateSection = document.querySelector('.chocolate-section');
+    const chocolateSection = document.querySelector('.chocolate-interactive-section');
 
     if (chocolateBackground && chocolateSection) {
         window.addEventListener('scroll', () => {
@@ -416,12 +416,34 @@ document.addEventListener('keydown', (e) => {
 
 function createChocolateRain() {
     const chocolates = ['🍫', '🍬', '🍭', '🧁', '🍰'];
-    const scrollY = window.scrollY; // Capture current scroll position
+    const scrollY = window.scrollY;
+    const fallDistance = window.innerHeight + 200;
+
+    // Remove old animation style and create new one with current viewport height
+    const oldStyle = document.getElementById('chocolate-rain-style');
+    if (oldStyle) oldStyle.remove();
+
+    const style = document.createElement('style');
+    style.id = 'chocolate-rain-style';
+    style.textContent = `
+        @keyframes candyFall {
+            0% {
+                transform: translateY(0) rotate(0deg);
+                opacity: 1;
+            }
+            100% {
+                transform: translateY(${fallDistance}px) rotate(360deg);
+                opacity: 0;
+            }
+        }
+    `;
+    document.head.appendChild(style);
 
     for (let i = 0; i < 50; i++) {
         setTimeout(() => {
             const chocolate = document.createElement('div');
             chocolate.textContent = chocolates[Math.floor(Math.random() * chocolates.length)];
+            const duration = Math.random() * 3 + 2;
             chocolate.style.cssText = `
                 position: absolute;
                 top: ${scrollY - 50}px;
@@ -429,28 +451,13 @@ function createChocolateRain() {
                 font-size: ${Math.random() * 30 + 20}px;
                 z-index: 9999;
                 pointer-events: none;
-                animation: fallAbsolute ${Math.random() * 3 + 2}s linear forwards;
+                animation: candyFall ${duration}s linear forwards;
             `;
 
             document.body.appendChild(chocolate);
 
-            setTimeout(() => chocolate.remove(), 5000);
+            setTimeout(() => chocolate.remove(), 6000);
         }, i * 100);
-    }
-
-    // Add animation if not exists
-    if (!document.getElementById('chocolate-rain-style')) {
-        const style = document.createElement('style');
-        style.id = 'chocolate-rain-style';
-        style.textContent = `
-            @keyframes fallAbsolute {
-                to {
-                    transform: translateY(${window.innerHeight + 100}px) rotate(360deg);
-                    opacity: 0;
-                }
-            }
-        `;
-        document.head.appendChild(style);
     }
 }
 
@@ -1253,31 +1260,6 @@ function startSparrowBouncing(container) {
         }
     });
 
-    // Create debug overlay
-    const debugDiv = document.createElement('div');
-    debugDiv.id = 'sparrow-debug';
-    debugDiv.style.cssText = `
-        position: fixed;
-        top: 10px;
-        right: 10px;
-        background: rgba(0,0,0,0.8);
-        color: #0f0;
-        padding: 10px;
-        font-family: monospace;
-        font-size: 12px;
-        z-index: 99999;
-        border-radius: 5px;
-        display: none;
-    `;
-    document.body.appendChild(debugDiv);
-
-    // Press D to toggle debug info
-    document.addEventListener('keydown', (e) => {
-        if (e.key === 'd' || e.key === 'D') {
-            debugDiv.style.display = debugDiv.style.display === 'none' ? 'block' : 'none';
-        }
-    });
-
     function animate() {
         if (!sparrowActive) return;
 
@@ -1364,28 +1346,12 @@ function startSparrowBouncing(container) {
             modelViewer.orientation = `${yaw}deg ${pitch}deg ${roll}deg`;
         }
 
-        // Update debug info every 30 frames
-        if (frameCount % 30 === 0 && debugDiv.style.display === 'block') {
-            debugDiv.innerHTML = `
-                Page: ${pageWidth} x ${pageHeight}<br>
-                Position: ${Math.round(x)}, ${Math.round(y)}<br>
-                Velocity: ${velocityX.toFixed(2)}, ${velocityY.toFixed(2)}<br>
-                Size: ${size}px<br>
-                Margin: ${margin}px<br>
-                MaxX: ${Math.round(maxX)}<br>
-                MaxY: ${Math.round(maxY)}
-            `;
-        }
-
         requestAnimationFrame(animate);
     }
 
     animate();
 
-    console.log('👑 Sparvkung physics initialized:');
-    console.log(`   Page: ${document.documentElement.clientWidth}x${document.body.scrollHeight}`);
-    console.log(`   Size: ${size}px, Margin: ${margin}px`);
-    console.log(`   Press D to toggle debug overlay`);
+    console.log('👑 Sparvkung physics initialized');
 
     // Handle window resize
     window.addEventListener('resize', () => {
@@ -1462,6 +1428,19 @@ document.addEventListener('DOMContentLoaded', () => {
             }
             return false;
         }
+
+        // Change cursor to pointer only when over non-transparent pixels
+        guldaggEgg.addEventListener('mousemove', (e) => {
+            if (isClickOnEgg(e.clientX, e.clientY)) {
+                guldaggEgg.style.cursor = 'url("cursor_point.webp") 2 2, pointer';
+            } else {
+                guldaggEgg.style.cursor = 'inherit';
+            }
+        });
+
+        guldaggEgg.addEventListener('mouseleave', () => {
+            guldaggEgg.style.cursor = 'inherit';
+        });
 
         guldaggEgg.addEventListener('click', (e) => {
             // Only trigger if clicking on non-transparent part
