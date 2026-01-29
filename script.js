@@ -19,13 +19,14 @@ document.addEventListener('DOMContentLoaded', () => {
         const viewportWidth = window.innerWidth;
         const slideWidth = bgWidth / totalSlides;
 
-        // Add left padding so first symbol can be centered
-        const leftPadding = Math.max(0, (viewportWidth / 2) - (slideWidth / 2));
-        timelineTrack.style.paddingLeft = `${leftPadding}px`;
+        // Add padding so all symbols can be centered (first and last included)
+        const sidePadding = Math.max(0, (viewportWidth / 2) - (slideWidth / 2));
+        timelineTrack.style.paddingLeft = `${sidePadding}px`;
+        timelineTrack.style.paddingRight = `${sidePadding}px`;
 
         // Also offset the absolute positioned timeline elements by the same amount
         timelineElements.forEach(el => {
-            el.style.left = `${leftPadding}px`;
+            el.style.left = `${sidePadding}px`;
         });
 
         function goToSlide(index) {
@@ -34,10 +35,10 @@ document.addEventListener('DOMContentLoaded', () => {
             currentIndex = index;
 
             // Calculate scroll position to center the current slide in the middle of the screen
-            // The symbol should be exactly in the center of the viewport width
-            const symbolCenterX = (slideWidth * index) + (slideWidth / 2);
-            const scrollPos = symbolCenterX - (viewportWidth / 2) + leftPadding;
-            const maxScroll = bgWidth + leftPadding - viewportWidth;
+            // Each symbol's center relative to the padded track
+            const symbolCenterInTrack = sidePadding + (slideWidth * index) + (slideWidth / 2);
+            const scrollPos = symbolCenterInTrack - (viewportWidth / 2);
+            const maxScroll = bgWidth + (sidePadding * 2) - viewportWidth;
             const clampedScroll = Math.max(0, Math.min(scrollPos, maxScroll));
 
             // Apply transform
@@ -1451,7 +1452,7 @@ document.addEventListener('DOMContentLoaded', () => {
         // Change cursor to pointer only when over non-transparent pixels
         guldaggEgg.addEventListener('mousemove', (e) => {
             if (isClickOnEgg(e.clientX, e.clientY)) {
-                guldaggEgg.style.cursor = 'url("cursor_point_new.webp") 2 2, pointer';
+                guldaggEgg.style.cursor = 'url("cursor_point_new+.webp") 2 2, pointer';
             } else {
                 guldaggEgg.style.cursor = 'inherit';
             }
