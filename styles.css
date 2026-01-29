@@ -156,6 +156,135 @@ body {
     margin: 0;
 }
 
+/* New Horizontal Timeline Section */
+.timeline-section {
+    position: relative;
+    width: 100%;
+    background: var(--chocolate-dark);
+    overflow: hidden;
+}
+
+.timeline-section-title {
+    font-family: 'Cormorant Garamond', serif;
+    font-size: 3rem;
+    font-weight: 600;
+    letter-spacing: 0.3em;
+    color: var(--gold);
+    text-align: center;
+    position: absolute;
+    top: 2rem;
+    left: 50%;
+    transform: translateX(-50%);
+    z-index: 50;
+    text-transform: uppercase;
+    text-shadow: 0 2px 4px rgba(0, 0, 0, 0.8), 0 0 20px rgba(212, 175, 55, 0.3);
+    margin: 0;
+}
+
+.timeline-viewport {
+    width: 100%;
+    overflow: hidden;
+}
+
+.timeline-track {
+    position: relative;
+    display: flex;
+    transition: transform 0.8s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+}
+
+.timeline-bg {
+    display: block;
+    height: auto;
+    min-width: max-content;
+}
+
+.timeline-element {
+    position: absolute;
+    top: 0;
+    left: 0;
+    height: 100%;
+    width: auto;
+    opacity: 0.4;
+    filter: brightness(0.6);
+    transition: opacity 0.5s ease, filter 0.5s ease;
+    pointer-events: none;
+}
+
+.timeline-element.active {
+    opacity: 1;
+    filter: brightness(1.2) drop-shadow(0 0 20px rgba(212, 175, 55, 0.6));
+}
+
+/* Navigation arrows */
+.timeline-arrow {
+    position: absolute;
+    top: 50%;
+    transform: translateY(-50%);
+    z-index: 100;
+    background: rgba(26, 15, 10, 0.8);
+    border: 2px solid var(--gold);
+    color: var(--gold);
+    font-size: 3rem;
+    width: 60px;
+    height: 80px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    border-radius: 5px;
+}
+
+.timeline-arrow:hover {
+    background: var(--gold);
+    color: var(--chocolate-dark);
+    box-shadow: 0 0 20px rgba(212, 175, 55, 0.6);
+}
+
+.timeline-arrow-left {
+    left: 20px;
+}
+
+.timeline-arrow-right {
+    right: 20px;
+}
+
+/* Text section below timeline */
+.timeline-text-section {
+    background: var(--chocolate-dark);
+    padding: 2rem;
+    min-height: 150px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.timeline-text {
+    max-width: 800px;
+    text-align: center;
+    animation: fadeIn 0.5s ease;
+}
+
+.timeline-text h3 {
+    font-family: 'Great Vibes', cursive;
+    font-size: 2.5rem;
+    color: var(--gold);
+    margin-bottom: 1rem;
+    text-shadow: 0 0 10px rgba(212, 175, 55, 0.5);
+}
+
+.timeline-text p {
+    font-family: 'Cormorant Garamond', serif;
+    font-size: 1.2rem;
+    color: var(--cream);
+    line-height: 1.8;
+}
+
+@keyframes fadeIn {
+    from { opacity: 0; transform: translateY(10px); }
+    to { opacity: 1; transform: translateY(0); }
+}
+
 /* Loading Screen */
 .loading-screen {
     position: fixed;
@@ -483,6 +612,9 @@ body.video-playing {
     width: 100%;
     height: auto;
     display: block;
+    transform: translateY(0);
+    transition: transform 0.1s ease-out;
+    will-change: transform;
 }
 
 .chocolate-piece {
@@ -1250,17 +1382,20 @@ body.video-playing {
 /* Cursor Effect */
 @media (hover: hover) {
     body {
-        cursor: url('cursor-gold.svg') 2 2, auto;
+        cursor: url('cursor_bird.png') 2 2, auto;
     }
 
-    .chocolate-card:hover {
-        cursor: url('cursor-gold.svg') 2 2, pointer;
+    a, button, .scroll-indicator, .chocolate-card, .chocolate-zone,
+    .tid-layer, .guldagg-egg, .indicator-dot, .timeline-arrow {
+        cursor: url('cursor_point.png') 2 2, pointer;
     }
 
-    a:hover,
-    button:hover,
-    .scroll-indicator:hover {
-        cursor: url('cursor-gold.svg') 2 2, pointer;
+    #sparrow-container {
+        cursor: url('cursor_drag.png') 16 16, grab;
+    }
+
+    #sparrow-container:active {
+        cursor: url('cursor_drag.png') 16 16, grabbing;
     }
 }
 

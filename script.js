@@ -1,185 +1,83 @@
-// Tid Section Handler (Historia)
+// Horizontal Timeline Section Handler
 document.addEventListener('DOMContentLoaded', () => {
-    const tidSection = document.querySelector('.tid-section');
-    const tidLayers = document.querySelectorAll('.tid-layer');
+    const timelineTrack = document.getElementById('timeline-track');
+    const timelineBg = document.querySelector('.timeline-bg');
+    const timelineElements = document.querySelectorAll('.timeline-element');
+    const timelineTexts = document.querySelectorAll('.timeline-text');
+    const prevBtn = document.getElementById('timeline-prev');
+    const nextBtn = document.getElementById('timeline-next');
 
-    if (tidSection && tidLayers.length > 0) {
-        // Store canvas data for each layer to detect non-transparent clicks
-        const layerCanvases = new Map();
+    if (!timelineTrack || !timelineBg || timelineElements.length === 0) return;
 
-        // Load each image into a canvas for pixel detection
-        tidLayers.forEach((layer) => {
-            const canvas = document.createElement('canvas');
-            const ctx = canvas.getContext('2d', { willReadFrequently: true });
+    let currentIndex = 0;
+    const totalSlides = 6; // t_0 to t_5
 
-            layer.addEventListener('load', () => {
-                canvas.width = layer.naturalWidth;
-                canvas.height = layer.naturalHeight;
-                ctx.drawImage(layer, 0, 0);
-                layerCanvases.set(layer, { canvas, ctx });
+    // Wait for background image to load to get dimensions
+    const initTimeline = () => {
+        const bgWidth = timelineBg.naturalWidth || timelineBg.offsetWidth;
+        const viewportWidth = window.innerWidth;
+        const slideWidth = bgWidth / totalSlides;
+
+        function goToSlide(index) {
+            // Clamp index
+            index = Math.max(0, Math.min(index, totalSlides - 1));
+            currentIndex = index;
+
+            // Calculate scroll position to center the current slide
+            const scrollPos = (slideWidth * index) - (viewportWidth / 2) + (slideWidth / 2);
+            const maxScroll = bgWidth - viewportWidth;
+            const clampedScroll = Math.max(0, Math.min(scrollPos, maxScroll));
+
+            // Apply transform
+            timelineTrack.style.transform = `translateX(-${clampedScroll}px)`;
+
+            // Update active states
+            timelineElements.forEach((el, i) => {
+                el.classList.toggle('active', i === index);
             });
 
-            // If already loaded
-            if (layer.complete && layer.naturalWidth > 0) {
-                canvas.width = layer.naturalWidth;
-                canvas.height = layer.naturalHeight;
-                ctx.drawImage(layer, 0, 0);
-                layerCanvases.set(layer, { canvas, ctx });
+            // Update text visibility
+            timelineTexts.forEach((text, i) => {
+                text.style.display = i === index ? 'block' : 'none';
+            });
+
+            // Update arrow visibility
+            prevBtn.style.display = index === 0 ? 'none' : 'flex';
+            nextBtn.style.display = index === totalSlides - 1 ? 'none' : 'flex';
+        }
+
+        // Arrow click handlers
+        prevBtn.addEventListener('click', () => goToSlide(currentIndex - 1));
+        nextBtn.addEventListener('click', () => goToSlide(currentIndex + 1));
+
+        // Keyboard navigation
+        document.addEventListener('keydown', (e) => {
+            const section = document.querySelector('.timeline-section');
+            if (!section) return;
+            const rect = section.getBoundingClientRect();
+            const isVisible = rect.top < window.innerHeight && rect.bottom > 0;
+
+            if (isVisible) {
+                if (e.key === 'ArrowLeft') {
+                    goToSlide(currentIndex - 1);
+                } else if (e.key === 'ArrowRight') {
+                    goToSlide(currentIndex + 1);
+                }
             }
         });
 
-        // Check if click is on or near non-transparent pixel (with expanded radius)
-        function isClickOnVisiblePixel(layer, clickX, clickY) {
-            const data = layerCanvases.get(layer);
-            if (!data) return false;
+        // Initialize first slide
+        goToSlide(0);
 
-            const rect = layer.getBoundingClientRect();
-            const scaleX = layer.naturalWidth / rect.width;
-            const scaleY = layer.naturalHeight / rect.height;
+        // Handle resize
+        window.addEventListener('resize', () => goToSlide(currentIndex));
+    };
 
-            const centerX = Math.floor((clickX - rect.left) * scaleX);
-            const centerY = Math.floor((clickY - rect.top) * scaleY);
-
-            // Check a radius of 60 pixels around the click point
-            const radius = 60;
-            for (let offsetX = -radius; offsetX <= radius; offsetX += 5) {
-                for (let offsetY = -radius; offsetY <= radius; offsetY += 5) {
-                    const x = centerX + offsetX;
-                    const y = centerY + offsetY;
-
-                    if (x < 0 || x >= data.canvas.width || y < 0 || y >= data.canvas.height) {
-                        continue;
-                    }
-
-                    const pixel = data.ctx.getImageData(x, y, 1, 1).data;
-                    if (pixel[3] > 50) {
-                        return true;
-                    }
-                }
-            }
-            return false;
-        }
-
-        // Calculate the center of visible (non-transparent) pixels for a layer
-        function getSymbolCenter(layer) {
-            const data = layerCanvases.get(layer);
-            if (!data) return null;
-
-            const rect = layer.getBoundingClientRect();
-            const scaleX = rect.width / layer.naturalWidth;
-            const scaleY = rect.height / layer.naturalHeight;
-
-            let minX = Infinity, minY = Infinity, maxX = -Infinity, maxY = -Infinity;
-            const step = 10; // Sample every 10 pixels for performance
-
-            for (let y = 0; y < data.canvas.height; y += step) {
-                for (let x = 0; x < data.canvas.width; x += step) {
-                    const pixel = data.ctx.getImageData(x, y, 1, 1).data;
-                    if (pixel[3] > 50) {
-                        if (x < minX) minX = x;
-                        if (x > maxX) maxX = x;
-                        if (y < minY) minY = y;
-                        if (y > maxY) maxY = y;
-                    }
-                }
-            }
-
-            if (minX === Infinity) return null;
-
-            // Convert to screen coordinates
-            const centerX = rect.left + ((minX + maxX) / 2) * scaleX;
-            const centerY = rect.top + ((minY + maxY) / 2) * scaleY;
-
-            return { x: centerX, y: centerY };
-        }
-
-        // Get textbox elements
-        const textbox = document.querySelector('.tid-textbox');
-        const textboxTitle = document.querySelector('.tid-textbox-title');
-        const textboxContent = document.querySelector('.tid-textbox-content');
-        let currentActiveLayer = null;
-
-        // Handle clicks on tid section
-        tidSection.addEventListener('click', (e) => {
-            // Check layers in reverse order (top to bottom)
-            for (let i = tidLayers.length - 1; i >= 0; i--) {
-                const layer = tidLayers[i];
-                if (isClickOnVisiblePixel(layer, e.clientX, e.clientY)) {
-                    // If clicking same layer, toggle off
-                    if (currentActiveLayer === layer) {
-                        layer.classList.remove('glow');
-                        textbox.classList.remove('visible');
-                        currentActiveLayer = null;
-                    } else {
-                        // Remove glow from previous layer
-                        if (currentActiveLayer) {
-                            currentActiveLayer.classList.remove('glow');
-                        }
-                        // Add glow to this layer
-                        layer.classList.add('glow');
-                        currentActiveLayer = layer;
-
-                        // Show textbox with content
-                        const title = layer.dataset.title || '';
-                        const text = layer.dataset.text || '';
-                        textboxTitle.textContent = title;
-                        textboxContent.textContent = text;
-
-                        // Position textbox relative to symbol's actual center
-                        const layerIndex = i + 1; // 1-based
-                        const gap = 40;
-                        const boxWidth = 320;
-                        const boxHeight = 200;
-                        let left, top;
-
-                        // Get symbol's actual visible center
-                        const symbolCenter = getSymbolCenter(layer);
-                        const symX = symbolCenter ? symbolCenter.x : e.clientX;
-                        const symY = symbolCenter ? symbolCenter.y : e.clientY;
-
-                        if (layerIndex === 1) {
-                            // Ruta 1: +80px höger
-                            left = symX + gap + 80;
-                            top = symY - boxHeight / 2;
-                        } else if (layerIndex === 2) {
-                            // Ruta 2: +50px höger
-                            left = symX + gap + 50;
-                            top = symY - boxHeight / 2;
-                        } else if (layerIndex === 3) {
-                            // Ruta 3: -30px vänster, +30px nedåt
-                            left = symX - boxWidth - gap - 30;
-                            top = symY - boxHeight / 2 + 30;
-                        } else if (layerIndex === 4) {
-                            // Ruta 4: -50px vänster
-                            left = symX - boxWidth - gap - 50;
-                            top = symY - boxHeight - gap - 10;
-                        } else {
-                            // Ruta 5: -70px vänster, -60px uppåt
-                            left = symX - boxWidth - gap - 70;
-                            top = symY - boxHeight - gap - 60;
-                        }
-
-                        // Clamp within viewport
-                        left = Math.max(20, Math.min(left, window.innerWidth - boxWidth - 20));
-                        top = Math.max(20, Math.min(top, window.innerHeight - boxHeight - 20));
-
-                        textbox.style.left = left + 'px';
-                        textbox.style.top = top + 'px';
-                        textbox.style.right = 'auto';
-                        textbox.style.transform = 'none';
-                        textbox.classList.add('visible');
-                    }
-                    return;
-                }
-            }
-
-            // Clicked on empty area - hide textbox
-            if (currentActiveLayer) {
-                currentActiveLayer.classList.remove('glow');
-                currentActiveLayer = null;
-            }
-            textbox.classList.remove('visible');
-        });
+    // Wait for image load
+    if (timelineBg.complete && timelineBg.naturalWidth > 0) {
+        initTimeline();
+    } else {
+        timelineBg.addEventListener('load', initTimeline);
     }
 });
 
@@ -469,7 +367,26 @@ document.addEventListener('DOMContentLoaded', () => {
         });
     });
 
-    // Parallax removed - was causing auto-scroll issues
+    // Parallax effect for chocolate section background
+    const chocolateBackground = document.querySelector('.chocolate-background');
+    const chocolateSection = document.querySelector('.chocolate-section');
+
+    if (chocolateBackground && chocolateSection) {
+        window.addEventListener('scroll', () => {
+            const rect = chocolateSection.getBoundingClientRect();
+            const sectionHeight = chocolateSection.offsetHeight;
+            const windowHeight = window.innerHeight;
+
+            // Only apply parallax when section is in view
+            if (rect.top < windowHeight && rect.bottom > 0) {
+                // Calculate how far through the section we've scrolled (0 to 1)
+                const scrollProgress = (windowHeight - rect.top) / (windowHeight + sectionHeight);
+                // Apply subtle parallax - move background slightly slower than scroll
+                const parallaxOffset = (scrollProgress - 0.5) * 50; // ±25px movement
+                chocolateBackground.style.transform = `translateY(${parallaxOffset}px)`;
+            }
+        }, { passive: true });
+    }
 
     // Add subtle floating animation to scroll indicator
     const indicator = document.querySelector('.scroll-indicator');
@@ -499,19 +416,20 @@ document.addEventListener('keydown', (e) => {
 
 function createChocolateRain() {
     const chocolates = ['🍫', '🍬', '🍭', '🧁', '🍰'];
+    const scrollY = window.scrollY; // Capture current scroll position
 
     for (let i = 0; i < 50; i++) {
         setTimeout(() => {
             const chocolate = document.createElement('div');
             chocolate.textContent = chocolates[Math.floor(Math.random() * chocolates.length)];
             chocolate.style.cssText = `
-                position: fixed;
-                top: -50px;
+                position: absolute;
+                top: ${scrollY - 50}px;
                 left: ${Math.random() * 100}vw;
                 font-size: ${Math.random() * 30 + 20}px;
                 z-index: 9999;
                 pointer-events: none;
-                animation: fall ${Math.random() * 3 + 2}s linear forwards;
+                animation: fallAbsolute ${Math.random() * 3 + 2}s linear forwards;
             `;
 
             document.body.appendChild(chocolate);
@@ -525,9 +443,9 @@ function createChocolateRain() {
         const style = document.createElement('style');
         style.id = 'chocolate-rain-style';
         style.textContent = `
-            @keyframes fall {
+            @keyframes fallAbsolute {
                 to {
-                    transform: translateY(100vh) rotate(360deg);
+                    transform: translateY(${window.innerHeight + 100}px) rotate(360deg);
                     opacity: 0;
                 }
             }
@@ -1103,6 +1021,11 @@ document.addEventListener('DOMContentLoaded', () => {
             const element = document.getElementById(chocolateId);
             const choc = chocolates.find(c => c.id === chocolateId);
 
+            // Play bite sound
+            const biteSound = new Audio('choc_bite.mp3');
+            biteSound.volume = 0.6;
+            biteSound.play().catch(err => console.log('Audio play prevented:', err));
+
             if (element && choc) {
                 const currentState = element.getAttribute('data-state');
 
@@ -1253,6 +1176,11 @@ function startSparrowBouncing(container) {
         isDragging = true;
         wasDragged = false;
         container.style.cursor = 'grabbing';
+
+        // Play scream sound when clicking on Sparvkungen
+        const screamSound = new Audio('sparrow_scream.mp3');
+        screamSound.volume = 0.5;
+        screamSound.play().catch(err => console.log('Audio play prevented:', err));
 
         // Calculate offset from container's current position
         const rect = container.getBoundingClientRect();
@@ -1544,20 +1472,14 @@ document.addEventListener('DOMContentLoaded', () => {
             // Hide the egg
             guldaggEgg.style.display = 'none';
 
-            // Show and play the video
+            // Show and play the video with audio
             guldaggVideo.style.display = 'block';
+            guldaggVideo.volume = 0.7;
+            guldaggVideo.muted = false;
             guldaggVideo.play().catch(err => console.log('Video play error:', err));
-
-            // Summon Sparvkungen after 3 seconds (emerging from the egg)
-            if (!sparrowActive) {
-                sparrowActive = true;
-                setTimeout(() => {
-                    summonSparrow();
-                }, 3000);
-            }
         });
 
-        // When video ends, show the final background
+        // When video ends, show the final background and summon Sparvkungen
         guldaggVideo.addEventListener('ended', () => {
             guldaggVideo.style.display = 'none';
             if (guldaggBgFinal && guldaggBg) {
@@ -1565,6 +1487,12 @@ document.addEventListener('DOMContentLoaded', () => {
                 guldaggBgFinal.style.display = 'block';
                 guldaggBg.style.opacity = '0';
                 guldaggBg.style.visibility = 'hidden';
+            }
+
+            // Summon Sparvkungen after animation ends
+            if (!sparrowActive) {
+                sparrowActive = true;
+                summonSparrow();
             }
         });
     }
