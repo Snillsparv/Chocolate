@@ -1442,7 +1442,7 @@ body.video-playing {
 
     a, button, .scroll-indicator, .chocolate-card,
     .tid-layer, .indicator-dot, .timeline-arrow, .timeline-text-arrow, .keyhole-image {
-        cursor: url('cursor_2.webp') 2 2, pointer !important;
+        cursor: url('cursor_3.webp') 2 2, pointer !important;
     }
 
     #sparrow-container {

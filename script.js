@@ -13,26 +13,27 @@ document.addEventListener('DOMContentLoaded', () => {
     let currentIndex = 0;
     const totalSlides = 6; // t_0 to t_5
 
+    // Specific center positions for each timeline point (from image specifications)
+    // Image is 5272px wide
+    const centerPositions = [1264, 1784, 2280, 2923, 3457, 3959];
+    const imageWidth = 5272;
+
     // Wait for background image to load to get dimensions
     const initTimeline = () => {
-        const bgWidth = timelineBg.naturalWidth || timelineBg.offsetWidth;
-        const viewportWidth = window.innerWidth;
-        const slideWidth = bgWidth / totalSlides;
-
-        // Simple centering: for each symbol, calculate where its center is and translate
-        // Symbol i's center in the image = slideWidth * i + slideWidth/2
-        // To center it in viewport, translate = viewportWidth/2 - symbolCenter
+        const bgWidth = timelineBg.naturalWidth || imageWidth;
+        const scale = bgWidth / imageWidth; // Scale factor if image renders differently
 
         function goToSlide(index) {
             // Clamp index
             index = Math.max(0, Math.min(index, totalSlides - 1));
             currentIndex = index;
 
-            // Calculate symbol center position in the image
-            const symbolCenter = (slideWidth * index) + (slideWidth / 2);
+            const viewportWidth = window.innerWidth;
+
+            // Get the specific center position for this slide
+            const symbolCenter = centerPositions[index] * scale;
 
             // Calculate translateX to put symbol center at viewport center
-            // Positive = shift content right, Negative = shift content left
             const translateX = (viewportWidth / 2) - symbolCenter;
 
             // Apply transform - this centers the symbol exactly
@@ -1446,7 +1447,7 @@ document.addEventListener('DOMContentLoaded', () => {
         // Change cursor to pointer only when over non-transparent pixels
         guldaggEgg.addEventListener('mousemove', (e) => {
             if (isClickOnEgg(e.clientX, e.clientY)) {
-                guldaggEgg.style.cursor = 'url("cursor_2.webp") 2 2, pointer';
+                guldaggEgg.style.cursor = 'url("cursor_3.webp") 2 2, pointer';
             } else {
                 guldaggEgg.style.cursor = 'inherit';
             }
