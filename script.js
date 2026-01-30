@@ -670,3 +670,115 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     });
 });
+
+// ====== INTERAKTIV TIDSLINJE ======
+document.addEventListener('DOMContentLoaded', () => {
+    const timelineWrapper = document.querySelector('.timeline-images-wrapper');
+    const timelineOverlays = document.querySelectorAll('.timeline-overlay');
+    const timelineDots = document.querySelectorAll('.timeline-dot');
+    const prevBtn = document.querySelector('.timeline-prev');
+    const nextBtn = document.querySelector('.timeline-next');
+    const timelineViewport = document.querySelector('.timeline-viewport');
+
+    if (!timelineWrapper || timelineOverlays.length === 0) return;
+
+    // Centerpositioner för varje t-bild (från användaren)
+    const centerPositions = [1264, 1784, 2280, 2923, 3457, 3959];
+    const imageWidth = 5272;
+    let currentIndex = 0;
+
+    // Funktion för att centrera bilden baserat på position
+    function centerOnPosition(index) {
+        const viewportWidth = timelineViewport.offsetWidth;
+        const centerPos = centerPositions[index];
+
+        // Beräkna offset för att centrera positionen i viewporten
+        let offset = centerPos - (viewportWidth / 2);
+
+        // Begränsa offset så att bilden inte går utanför kanterna
+        const maxOffset = imageWidth - viewportWidth;
+        offset = Math.max(0, Math.min(offset, maxOffset));
+
+        timelineWrapper.style.transform = `translateX(-${offset}px)`;
+    }
+
+    // Funktion för att aktivera en tidslinjepunkt
+    function goToTimelinePoint(index) {
+        if (index < 0 || index >= timelineOverlays.length) return;
+
+        // Uppdatera aktiv overlay
+        timelineOverlays.forEach((overlay, i) => {
+            if (i === index) {
+                overlay.classList.add('active');
+            } else {
+                overlay.classList.remove('active');
+            }
+        });
+
+        // Uppdatera aktiv dot
+        timelineDots.forEach((dot, i) => {
+            if (i === index) {
+                dot.classList.add('active');
+            } else {
+                dot.classList.remove('active');
+            }
+        });
+
+        // Centrera på positionen
+        centerOnPosition(index);
+
+        currentIndex = index;
+    }
+
+    // Nästa punkt
+    function nextTimelinePoint() {
+        const nextIndex = (currentIndex + 1) % timelineOverlays.length;
+        goToTimelinePoint(nextIndex);
+    }
+
+    // Föregående punkt
+    function prevTimelinePoint() {
+        const prevIndex = (currentIndex - 1 + timelineOverlays.length) % timelineOverlays.length;
+        goToTimelinePoint(prevIndex);
+    }
+
+    // Event listeners för pilar
+    if (nextBtn) {
+        nextBtn.addEventListener('click', nextTimelinePoint);
+    }
+    if (prevBtn) {
+        prevBtn.addEventListener('click', prevTimelinePoint);
+    }
+
+    // Event listeners för dots
+    timelineDots.forEach((dot, index) => {
+        dot.addEventListener('click', () => {
+            goToTimelinePoint(index);
+        });
+    });
+
+    // Tangentbordsnavigering när sektionen är synlig
+    document.addEventListener('keydown', (e) => {
+        const timelineSection = document.querySelector('.story-timeline-new');
+        if (!timelineSection) return;
+
+        const rect = timelineSection.getBoundingClientRect();
+        const isVisible = rect.top < window.innerHeight && rect.bottom > 0;
+
+        if (isVisible) {
+            if (e.key === 'ArrowRight') {
+                nextTimelinePoint();
+            } else if (e.key === 'ArrowLeft') {
+                prevTimelinePoint();
+            }
+        }
+    });
+
+    // Initialisera - centrera på första punkten
+    centerOnPosition(0);
+
+    // Uppdatera centrering vid fönsterändring
+    window.addEventListener('resize', () => {
+        centerOnPosition(currentIndex);
+    });
+});
