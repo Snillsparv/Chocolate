@@ -167,6 +167,8 @@ body {
         var(--gold) 80%,
         transparent 100%);
     box-shadow: 0 0 20px rgba(212, 175, 55, 0.5);
+    position: relative;
+    z-index: 100;
 }
 
 /* New Horizontal Timeline Section */
@@ -222,7 +224,8 @@ body {
     opacity: 0.4;
     filter: brightness(0.6);
     transition: opacity 0.5s ease, filter 0.5s ease;
-    pointer-events: none;
+    pointer-events: auto;
+    cursor: url('cursor_3.webp') 2 2, pointer;
 }
 
 .timeline-element.active {
@@ -480,6 +483,7 @@ body.video-playing {
     background-size: cover;
     background-position: center center;
     background-repeat: no-repeat;
+    z-index: 100;
 }
 
 /* Animated text overlay */
@@ -705,7 +709,7 @@ body.video-playing {
     position: absolute;
     top: 0;
     height: 100%;
-    cursor: pointer;
+    cursor: url('cursor_3.webp') 2 2, pointer;
     z-index: 10;
     transition: background 0.3s ease;
 }

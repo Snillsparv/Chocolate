@@ -58,6 +58,11 @@ document.addEventListener('DOMContentLoaded', () => {
         if (prevBtn) prevBtn.addEventListener('click', () => goToSlide(currentIndex - 1));
         if (nextBtn) nextBtn.addEventListener('click', () => goToSlide(currentIndex + 1));
 
+        // Make timeline elements clickable
+        timelineElements.forEach((element, index) => {
+            element.addEventListener('click', () => goToSlide(index));
+        });
+
         // Keyboard navigation
         document.addEventListener('keydown', (e) => {
             const section = document.querySelector('.timeline-section');
@@ -1044,7 +1049,7 @@ document.addEventListener('DOMContentLoaded', () => {
             const choc = chocolates.find(c => c.id === chocolateId);
 
             // Play bite sound
-            const biteSound = new Audio('choc_bite.mp3');
+            const biteSound = new Audio('choco_bite_2.mp3');
             biteSound.volume = 0.6;
             biteSound.play().catch(err => console.log('Audio play prevented:', err));
 
