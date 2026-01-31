@@ -58,10 +58,33 @@ document.addEventListener('DOMContentLoaded', () => {
         if (prevBtn) prevBtn.addEventListener('click', () => goToSlide(currentIndex - 1));
         if (nextBtn) nextBtn.addEventListener('click', () => goToSlide(currentIndex + 1));
 
-        // Make timeline elements clickable
-        timelineElements.forEach((element, index) => {
-            element.addEventListener('click', () => goToSlide(index));
-        });
+        // Make timeline clickable - detect which symbol was clicked based on position
+        const timelineViewport = document.querySelector('.timeline-viewport');
+        if (timelineViewport) {
+            timelineViewport.addEventListener('click', (e) => {
+                // Get click position relative to the track
+                const trackRect = timelineTrack.getBoundingClientRect();
+                const clickX = e.clientX - trackRect.left;
+
+                // Scale to original image coordinates
+                const displayWidth = timelineBg.offsetWidth;
+                const originalX = (clickX / displayWidth) * imageWidth;
+
+                // Find which symbol is closest to the click
+                let closestIndex = 0;
+                let closestDistance = Infinity;
+
+                centerPositions.forEach((pos, index) => {
+                    const distance = Math.abs(originalX - pos);
+                    if (distance < closestDistance) {
+                        closestDistance = distance;
+                        closestIndex = index;
+                    }
+                });
+
+                goToSlide(closestIndex);
+            });
+        }
 
         // Keyboard navigation
         document.addEventListener('keydown', (e) => {
@@ -1040,29 +1063,106 @@ document.addEventListener('DOMContentLoaded', () => {
         { id: 'chocolate-3', closedSrc: 'choklad_3_stängd.webp', openSrc: 'choklad_3_öppen.webp' }
     ];
 
-    // Handle clicks on chocolate zones
-    const zones = document.querySelectorAll('.chocolate-zone');
-    zones.forEach(zone => {
-        zone.addEventListener('click', () => {
-            const chocolateId = zone.getAttribute('data-chocolate');
-            const element = document.getElementById(chocolateId);
-            const choc = chocolates.find(c => c.id === chocolateId);
+    // Create canvases for transparent pixel detection
+    const chocolateCanvases = {};
+
+    chocolates.forEach(choc => {
+        const element = document.getElementById(choc.id);
+        if (!element) return;
+
+        const canvas = document.createElement('canvas');
+        const ctx = canvas.getContext('2d', { willReadFrequently: true });
+        chocolateCanvases[choc.id] = { canvas, ctx, ready: false };
+
+        const loadCanvas = () => {
+            if (element.complete && element.naturalWidth > 0) {
+                canvas.width = element.naturalWidth;
+                canvas.height = element.naturalHeight;
+                ctx.drawImage(element, 0, 0);
+                chocolateCanvases[choc.id].ready = true;
+            }
+        };
+
+        element.addEventListener('load', loadCanvas);
+        if (element.complete) loadCanvas();
+
+        // Check if click is on non-transparent pixel
+        function isClickOnChocolate(clickX, clickY) {
+            const canvasData = chocolateCanvases[choc.id];
+            if (!canvasData.ready) return false;
+
+            const rect = element.getBoundingClientRect();
+            const scaleX = element.naturalWidth / rect.width;
+            const scaleY = element.naturalHeight / rect.height;
+
+            const x = Math.floor((clickX - rect.left) * scaleX);
+            const y = Math.floor((clickY - rect.top) * scaleY);
+
+            if (x < 0 || x >= canvas.width || y < 0 || y >= canvas.height) {
+                return false;
+            }
+
+            // Check a small radius around click point
+            const radius = 20;
+            for (let offsetX = -radius; offsetX <= radius; offsetX += 5) {
+                for (let offsetY = -radius; offsetY <= radius; offsetY += 5) {
+                    const checkX = x + offsetX;
+                    const checkY = y + offsetY;
+                    if (checkX >= 0 && checkX < canvas.width && checkY >= 0 && checkY < canvas.height) {
+                        const pixel = canvasData.ctx.getImageData(checkX, checkY, 1, 1).data;
+                        if (pixel[3] > 50) {
+                            return true;
+                        }
+                    }
+                }
+            }
+            return false;
+        }
+
+        // Change cursor when over non-transparent pixels
+        element.addEventListener('mousemove', (e) => {
+            if (isClickOnChocolate(e.clientX, e.clientY)) {
+                element.style.cursor = 'url("cursor_3.webp") 2 2, pointer';
+            } else {
+                element.style.cursor = 'default';
+            }
+        });
+
+        element.addEventListener('mouseleave', () => {
+            element.style.cursor = 'default';
+        });
+
+        // Handle click on chocolate
+        element.addEventListener('click', (e) => {
+            if (!isClickOnChocolate(e.clientX, e.clientY)) {
+                return;
+            }
 
             // Play bite sound
-            const biteSound = new Audio('choco_bite_2.mp3');
+            const biteSound = new Audio('choc_bite.mp3');
             biteSound.volume = 0.6;
             biteSound.play().catch(err => console.log('Audio play prevented:', err));
 
-            if (element && choc) {
-                const currentState = element.getAttribute('data-state');
+            const currentState = element.getAttribute('data-state');
 
-                if (currentState === 'closed') {
-                    element.src = choc.openSrc;
-                    element.setAttribute('data-state', 'open');
-                } else {
-                    element.src = choc.closedSrc;
-                    element.setAttribute('data-state', 'closed');
-                }
+            if (currentState === 'closed') {
+                element.src = choc.openSrc;
+                element.setAttribute('data-state', 'open');
+                // Reload canvas with new image
+                element.onload = () => {
+                    canvas.width = element.naturalWidth;
+                    canvas.height = element.naturalHeight;
+                    ctx.drawImage(element, 0, 0);
+                };
+            } else {
+                element.src = choc.closedSrc;
+                element.setAttribute('data-state', 'closed');
+                // Reload canvas with new image
+                element.onload = () => {
+                    canvas.width = element.naturalWidth;
+                    canvas.height = element.naturalHeight;
+                    ctx.drawImage(element, 0, 0);
+                };
             }
         });
     });
