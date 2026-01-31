@@ -664,6 +664,7 @@ body.video-playing {
     box-shadow: 0 -30px 60px rgba(0, 0, 0, 0.3), 0 30px 60px rgba(0, 0, 0, 0.5);
     overflow: hidden;
     z-index: 5;
+    cursor: url('cursor_bird.webp') 2 2, auto;
 }
 
 .chocolate-background {
