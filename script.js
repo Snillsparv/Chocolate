@@ -1139,7 +1139,7 @@ document.addEventListener('DOMContentLoaded', () => {
             }
 
             // Play bite sound
-            const biteSound = new Audio('choc_bite.mp3');
+            const biteSound = new Audio('choco_bite_2.mp3');
             biteSound.volume = 0.6;
             biteSound.play().catch(err => console.log('Audio play prevented:', err));
 
