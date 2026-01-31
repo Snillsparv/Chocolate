@@ -58,34 +58,6 @@ document.addEventListener('DOMContentLoaded', () => {
         if (prevBtn) prevBtn.addEventListener('click', () => goToSlide(currentIndex - 1));
         if (nextBtn) nextBtn.addEventListener('click', () => goToSlide(currentIndex + 1));
 
-        // Make timeline clickable - detect which symbol was clicked based on position
-        const timelineViewport = document.querySelector('.timeline-viewport');
-        if (timelineViewport) {
-            timelineViewport.addEventListener('click', (e) => {
-                // Get click position relative to the track
-                const trackRect = timelineTrack.getBoundingClientRect();
-                const clickX = e.clientX - trackRect.left;
-
-                // Scale to original image coordinates
-                const displayWidth = timelineBg.offsetWidth;
-                const originalX = (clickX / displayWidth) * imageWidth;
-
-                // Find which symbol is closest to the click
-                let closestIndex = 0;
-                let closestDistance = Infinity;
-
-                centerPositions.forEach((pos, index) => {
-                    const distance = Math.abs(originalX - pos);
-                    if (distance < closestDistance) {
-                        closestDistance = distance;
-                        closestIndex = index;
-                    }
-                });
-
-                goToSlide(closestIndex);
-            });
-        }
-
         // Keyboard navigation
         document.addEventListener('keydown', (e) => {
             const section = document.querySelector('.timeline-section');
@@ -492,7 +464,7 @@ function createChocolateRain() {
                 top: ${scrollY - 50}px;
                 left: ${Math.random() * 100}vw;
                 font-size: ${Math.random() * 30 + 20}px;
-                z-index: 9999;
+                z-index: 50;
                 pointer-events: none;
                 animation: candyFall ${duration}s linear forwards;
             `;

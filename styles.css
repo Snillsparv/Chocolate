@@ -228,7 +228,7 @@ body {
 }
 
 .timeline-viewport {
-    cursor: url('cursor_3.webp') 2 2, pointer;
+    cursor: default;
 }
 
 .timeline-element.active {
