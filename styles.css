@@ -228,7 +228,7 @@ body {
 }
 
 .timeline-viewport {
-    cursor: default;
+    cursor: inherit;
 }
 
 .timeline-element.active {
