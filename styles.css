@@ -681,7 +681,7 @@ body.video-playing {
     left: 0;
     width: 100%;
     height: auto;
-    pointer-events: auto;
+    pointer-events: none;
     transition: opacity 0.3s ease;
     animation: floatChocolate 4s ease-in-out infinite;
 }
