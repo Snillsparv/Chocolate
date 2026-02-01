@@ -58,9 +58,9 @@ document.addEventListener('DOMContentLoaded', () => {
                 text.style.display = i === index ? 'block' : 'none';
             });
 
-            // Update arrow visibility
-            if (prevBtn) prevBtn.style.display = index === 0 ? 'none' : 'flex';
-            if (nextBtn) nextBtn.style.display = index === totalSlides - 1 ? 'none' : 'flex';
+            // Update arrow visibility (use visibility to maintain layout)
+            if (prevBtn) prevBtn.style.visibility = index === 0 ? 'hidden' : 'visible';
+            if (nextBtn) nextBtn.style.visibility = index === totalSlides - 1 ? 'hidden' : 'visible';
         }
 
         // Arrow click handlers
