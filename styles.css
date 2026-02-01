@@ -1649,12 +1649,14 @@ body.video-playing {
         min-height: 100vh;
         overflow: hidden;
         -webkit-tap-highlight-color: transparent;
+        background: #1a0a05; /* Dark brown to match c_bg.webp */
     }
 
     .chocolate-section-title {
         font-size: 1.8rem;
         letter-spacing: 0.15em;
         white-space: nowrap;
+        top: 4rem; /* Lower the title on mobile */
     }
 
     /* Hide desktop scroll wrapper on mobile */
@@ -1895,5 +1897,10 @@ body.video-playing {
         padding: 0 1rem;
         width: 100%;
         box-sizing: border-box;
+    }
+
+    /* 9. Gold line above footer */
+    .footer {
+        border-top: 3px solid var(--gold);
     }
 }

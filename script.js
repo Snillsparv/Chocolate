@@ -1552,6 +1552,10 @@ function startSparrowBouncing(container) {
     });
 
     // Touch events for mobile dragging
+    let touchStartX = 0;
+    let touchStartY = 0;
+    const dragThreshold = 10; // Pixels - movement less than this counts as a tap
+
     container.addEventListener('touchstart', (e) => {
         isDragging = true;
         wasDragged = false;
@@ -1566,6 +1570,10 @@ function startSparrowBouncing(container) {
         dragOffsetX = touch.clientX - rect.left;
         dragOffsetY = touch.clientY - rect.top;
 
+        // Store start position for threshold check
+        touchStartX = touch.clientX;
+        touchStartY = touch.clientY;
+
         lastDragX = x;
         lastDragY = y;
         dragVelocityX = 0;
@@ -1576,9 +1584,15 @@ function startSparrowBouncing(container) {
 
     container.addEventListener('touchmove', (e) => {
         if (isDragging) {
-            wasDragged = true;
-
             const touch = e.touches[0];
+
+            // Only count as drag if moved more than threshold
+            const deltaX = Math.abs(touch.clientX - touchStartX);
+            const deltaY = Math.abs(touch.clientY - touchStartY);
+            if (deltaX > dragThreshold || deltaY > dragThreshold) {
+                wasDragged = true;
+            }
+
             const prevX = x;
             const prevY = y;
 
