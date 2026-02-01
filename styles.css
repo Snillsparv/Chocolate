@@ -35,6 +35,12 @@ body {
     -ms-overflow-style: none; /* IE */
 }
 
+/* Performance: Prevent image reloading during scroll */
+img {
+    content-visibility: auto;
+    contain-intrinsic-size: auto 300px;
+}
+
 /* NEW LAYERED TIMELINE - Brand New Section */
 .layered-timeline-wrapper {
     width: 100vw;
@@ -1401,11 +1407,21 @@ body.video-playing {
         -webkit-touch-callout: none;
     }
 
-    /* Mobile background image - optimized for portrait */
+    /* Mobile background image - fit exactly to screen width */
     .hero {
         background-image: url('bg_mobil.webp');
-        background-size: cover;
-        background-position: center;
+        background-size: 100% auto;
+        background-position: center top;
+        background-repeat: no-repeat;
+    }
+
+    /* Mobile intro video - fit exactly to screen width */
+    .intro-video {
+        object-fit: contain;
+        object-position: center top;
+        width: 100%;
+        height: auto;
+        min-height: 100%;
     }
 
     .hero-text-overlay {
@@ -1448,6 +1464,10 @@ body.video-playing {
     z-index: 9998;
     pointer-events: none;
     opacity: 0;
+    /* Performance optimizations */
+    will-change: transform, left, top;
+    backface-visibility: hidden;
+    -webkit-backface-visibility: hidden;
 }
 
 #sparrow-container.visible {
@@ -1618,8 +1638,9 @@ body.video-playing {
     }
 
     .chocolate-section-title {
-        font-size: 1.5rem;
-        letter-spacing: 0.15em;
+        font-size: 1.3rem;
+        letter-spacing: 0.1em;
+        white-space: nowrap;
     }
 
     .chocolate-scroll-wrapper {
@@ -1711,23 +1732,26 @@ body.video-playing {
         display: none !important;
     }
 
-    /* 4. Timeline section - large image area, text below with gold border between */
+    /* 4. Timeline section - text overlaps symbol area */
     .timeline-section {
         min-height: auto;
         padding-bottom: 0;
     }
 
     .timeline-viewport {
-        height: 60vh;
-        min-height: 280px;
+        height: 55vh;
+        min-height: 250px;
     }
 
     .timeline-text-section {
-        margin-top: 0;
-        padding: 1.5rem 0.5rem;
-        min-height: 200px;
+        position: relative;
+        margin-top: -80px;
+        padding: 1.5rem 0.5rem 2rem;
+        min-height: 280px;
         height: auto;
         border-top: 3px solid var(--gold);
+        background: var(--chocolate-dark);
+        z-index: 10;
     }
 
     .timeline-text-arrow {

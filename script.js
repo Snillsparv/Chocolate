@@ -1180,11 +1180,16 @@ document.addEventListener('DOMContentLoaded', () => {
     const scrollWrapper = document.querySelector('.chocolate-scroll-wrapper');
     const prevBtn = document.getElementById('choc-prev');
     const nextBtn = document.getElementById('choc-next');
-    let currentIndex = 0;
+    const chocolatePieces = document.querySelectorAll('.chocolate-piece');
+    let currentIndex = 1; // Start with middle chocolate
 
-    // Scroll positions for each chocolate (percentage of scroll width)
-    // Adjusted to center each chocolate in viewport (not at edges)
-    const scrollPositions = [0.15, 0.5, 0.85];
+    // Scroll positions - adjusted to center the non-transparent part of each chocolate
+    // Left needs more offset, right needs less (based on chocolate positions in image)
+    const scrollPositions = [0.08, 0.5, 0.92];
+
+    // Closed and open image sources
+    const closedSrcs = ['choklad_1_stängd.webp', 'choklad_2_stängd.webp', 'choklad_3_stängd.webp'];
+    const openSrcs = ['choklad_1_öppen.webp', 'choklad_2_öppen_2.webp', 'choklad_3_öppen.webp'];
 
     function scrollToChocolate(index) {
         if (!scrollWrapper) return;
@@ -1198,10 +1203,21 @@ document.addEventListener('DOMContentLoaded', () => {
         const maxScroll = scrollWrapper.scrollWidth - scrollWrapper.clientWidth;
         const targetScroll = maxScroll * scrollPositions[index];
         scrollWrapper.scrollTo({ left: targetScroll, behavior: 'smooth' });
+
+        // Open selected chocolate, close others
+        chocolatePieces.forEach((piece, i) => {
+            if (i === currentIndex) {
+                piece.src = openSrcs[i];
+                piece.setAttribute('data-state', 'open');
+            } else {
+                piece.src = closedSrcs[i];
+                piece.setAttribute('data-state', 'closed');
+            }
+        });
     }
 
-    // Initialize - scroll to first chocolate
-    scrollToChocolate(0);
+    // Initialize - scroll to middle chocolate (index 1)
+    scrollToChocolate(1);
 
     // Button click handlers
     if (prevBtn) {
