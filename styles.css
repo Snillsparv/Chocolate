@@ -1733,9 +1733,10 @@ body.video-playing {
         padding: 0 0.5rem;
     }
 
-    /* 5. Sparrow king texture fix */
+    /* 5. Sparrow king texture fix + brightness boost for mobile */
     #sparrow-container model-viewer {
         --poster-color: transparent;
+        filter: brightness(1.2) saturate(1.1);
     }
 
     /* 6. Enable touch dragging on sparrow */

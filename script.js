@@ -1299,6 +1299,19 @@ function summonSparrow() {
     // Listen for model load events
     sparrowModel.addEventListener('load', () => {
         console.log('👑🐦 Sparvkungen is here!');
+
+        // Device-specific exposure adjustment for better mobile colors
+        const isMobile = /iPhone|iPad|iPod|Android/i.test(navigator.userAgent);
+        if (isMobile) {
+            // Mobile devices need adjusted exposure with commerce tone-mapping
+            if (/iPhone|iPad|iPod/.test(navigator.userAgent)) {
+                sparrowModel.exposure = 1.3;
+                console.log('📱 iOS detected - exposure set to 1.3');
+            } else if (/Android/.test(navigator.userAgent)) {
+                sparrowModel.exposure = 1.5;
+                console.log('📱 Android detected - exposure set to 1.5');
+            }
+        }
     });
 
     sparrowModel.addEventListener('error', (event) => {
