@@ -725,6 +725,12 @@ body.video-playing {
     background: radial-gradient(circle at center, rgba(212, 175, 55, 0.15) 0%, transparent 60%);
 }
 
+/* Mobile chocolate navigation - hidden on desktop */
+.chocolate-nav,
+.chocolate-dots {
+    display: none;
+}
+
 /* Timeline Section */
 .timeline-section {
     width: 100%;
@@ -1579,5 +1585,164 @@ body.video-playing {
     50% {
         opacity: 1;
         transform: scale(1);
+    }
+}
+
+/* ====== MOBILE STYLES ====== */
+@media (max-width: 768px) {
+    /* 1. Smaller loading text */
+    .loading-text {
+        font-size: 1rem;
+        letter-spacing: 0.1em;
+    }
+
+    /* 2. Full-height chocolate section with horizontal scroll */
+    .chocolate-interactive-section {
+        min-height: 100vh;
+        height: 100vh;
+        overflow: hidden;
+    }
+
+    .chocolate-background {
+        display: none;
+    }
+
+    .chocolate-piece {
+        position: absolute;
+        top: 50%;
+        left: 50%;
+        transform: translate(-50%, -50%);
+        width: auto;
+        height: 70%;
+        max-width: 90%;
+        object-fit: contain;
+        opacity: 0;
+        transition: opacity 0.4s ease, transform 0.4s ease;
+    }
+
+    .chocolate-piece.mobile-active {
+        opacity: 1;
+        pointer-events: auto;
+    }
+
+    .chocolate-nav {
+        position: absolute;
+        bottom: 15%;
+        left: 50%;
+        transform: translateX(-50%);
+        display: flex;
+        gap: 1rem;
+        z-index: 20;
+    }
+
+    .chocolate-nav-btn {
+        width: 50px;
+        height: 50px;
+        border-radius: 50%;
+        background: var(--gold);
+        border: 2px solid var(--chocolate-dark);
+        color: var(--chocolate-dark);
+        font-size: 1.5rem;
+        font-weight: bold;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        box-shadow: 0 4px 15px rgba(0, 0, 0, 0.4);
+    }
+
+    .chocolate-nav-btn:active {
+        transform: scale(0.95);
+        background: var(--gold-light);
+    }
+
+    .chocolate-dots {
+        position: absolute;
+        bottom: 8%;
+        left: 50%;
+        transform: translateX(-50%);
+        display: flex;
+        gap: 0.8rem;
+        z-index: 20;
+    }
+
+    .chocolate-dot {
+        width: 12px;
+        height: 12px;
+        border-radius: 50%;
+        background: rgba(212, 175, 55, 0.4);
+        border: 2px solid var(--gold);
+        transition: all 0.3s ease;
+    }
+
+    .chocolate-dot.active {
+        background: var(--gold);
+        transform: scale(1.2);
+    }
+
+    /* 3. Hide glitter particles */
+    .gold-sparkles,
+    .sparkle {
+        display: none !important;
+    }
+
+    /* 4. Timeline section - taller and smaller buttons */
+    .timeline-section {
+        min-height: 70vh;
+        padding-bottom: 2rem;
+    }
+
+    .timeline-text-section {
+        margin-top: 1rem;
+        padding: 0 0.5rem;
+        min-height: 200px;
+    }
+
+    .timeline-text-arrow {
+        width: 35px;
+        height: 35px;
+        font-size: 1.2rem;
+        flex-shrink: 0;
+    }
+
+    .timeline-text h3 {
+        font-size: 1.2rem;
+        margin-bottom: 0.5rem;
+    }
+
+    .timeline-text p {
+        font-size: 0.9rem;
+        line-height: 1.4;
+    }
+
+    .timeline-text-content {
+        padding: 0 0.5rem;
+    }
+
+    /* 5. Sparrow king texture fix */
+    #sparrow-container model-viewer {
+        --poster-color: transparent;
+    }
+
+    /* 6. Enable touch dragging on sparrow */
+    #sparrow-container {
+        touch-action: none;
+        pointer-events: auto !important;
+    }
+
+    /* 7. Egg cup section - crop to center and make taller */
+    .guldagg-section {
+        height: 80vh;
+        min-height: 500px;
+        overflow: hidden;
+    }
+
+    .guldagg-bg,
+    .guldagg-egg,
+    .guldagg-video,
+    .guldagg-bg-final {
+        width: 300%;
+        left: -100%;
+        object-fit: cover;
+        object-position: center;
     }
 }

@@ -1159,6 +1159,97 @@ document.addEventListener('DOMContentLoaded', () => {
     });
 });
 
+// ====== MOBILE CHOCOLATE NAVIGATION ======
+document.addEventListener('DOMContentLoaded', () => {
+    const isMobile = window.innerWidth <= 768;
+    if (!isMobile) return;
+
+    const chocolatePieces = document.querySelectorAll('.chocolate-piece');
+    const dots = document.querySelectorAll('.chocolate-dot');
+    const prevBtn = document.getElementById('choc-prev');
+    const nextBtn = document.getElementById('choc-next');
+    let currentIndex = 0;
+
+    function showChocolate(index) {
+        // Wrap around
+        if (index < 0) index = chocolatePieces.length - 1;
+        if (index >= chocolatePieces.length) index = 0;
+        currentIndex = index;
+
+        // Update chocolates
+        chocolatePieces.forEach((piece, i) => {
+            piece.classList.toggle('mobile-active', i === currentIndex);
+        });
+
+        // Update dots
+        dots.forEach((dot, i) => {
+            dot.classList.toggle('active', i === currentIndex);
+        });
+    }
+
+    // Initialize first chocolate
+    showChocolate(0);
+
+    // Button click handlers
+    if (prevBtn) {
+        prevBtn.addEventListener('click', () => showChocolate(currentIndex - 1));
+    }
+    if (nextBtn) {
+        nextBtn.addEventListener('click', () => showChocolate(currentIndex + 1));
+    }
+
+    // Dot click handlers
+    dots.forEach((dot, i) => {
+        dot.addEventListener('click', () => showChocolate(i));
+    });
+
+    // Swipe support
+    let touchStartX = 0;
+    let touchEndX = 0;
+    const section = document.querySelector('.chocolate-interactive-section');
+
+    if (section) {
+        section.addEventListener('touchstart', (e) => {
+            touchStartX = e.changedTouches[0].screenX;
+        }, { passive: true });
+
+        section.addEventListener('touchend', (e) => {
+            touchEndX = e.changedTouches[0].screenX;
+            const diff = touchStartX - touchEndX;
+            if (Math.abs(diff) > 50) {
+                if (diff > 0) {
+                    showChocolate(currentIndex + 1); // Swipe left -> next
+                } else {
+                    showChocolate(currentIndex - 1); // Swipe right -> prev
+                }
+            }
+        }, { passive: true });
+    }
+
+    // Handle chocolate clicks on mobile
+    chocolatePieces.forEach((piece, i) => {
+        piece.addEventListener('click', () => {
+            if (!piece.classList.contains('mobile-active')) return;
+
+            const biteSound = new Audio('choco_bite_2.mp3');
+            biteSound.volume = 0.6;
+            biteSound.play().catch(err => console.log('Audio play prevented:', err));
+
+            const currentState = piece.getAttribute('data-state');
+            const closedSrcs = ['choklad_1_stängd.webp', 'choklad_2_stängd.webp', 'choklad_3_stängd.webp'];
+            const openSrcs = ['choklad_1_öppen.webp', 'choklad_2_öppen_2.webp', 'choklad_3_öppen.webp'];
+
+            if (currentState === 'closed') {
+                piece.src = openSrcs[i];
+                piece.setAttribute('data-state', 'open');
+            } else {
+                piece.src = closedSrcs[i];
+                piece.setAttribute('data-state', 'closed');
+            }
+        });
+    });
+});
+
 // ====== 3D SPARROW KING MASCOT ======
 let sparrowActive = false;
 
@@ -1367,6 +1458,76 @@ function startSparrowBouncing(container) {
                 if (Math.abs(velocityY) < 0.5) velocityY = velocityY < 0 ? -1 : 1;
 
                 console.log(`🎯 Thrown with velocity: ${velocityX.toFixed(2)}, ${velocityY.toFixed(2)}`);
+            }
+        }
+    });
+
+    // Touch events for mobile dragging
+    container.addEventListener('touchstart', (e) => {
+        isDragging = true;
+        wasDragged = false;
+
+        // Play scream sound when touching Sparvkungen
+        const screamSound = new Audio('sparrow_scream.mp3');
+        screamSound.volume = 0.5;
+        screamSound.play().catch(err => console.log('Audio play prevented:', err));
+
+        const touch = e.touches[0];
+        const rect = container.getBoundingClientRect();
+        dragOffsetX = touch.clientX - rect.left;
+        dragOffsetY = touch.clientY - rect.top;
+
+        lastDragX = x;
+        lastDragY = y;
+        dragVelocityX = 0;
+        dragVelocityY = 0;
+
+        e.preventDefault();
+    }, { passive: false });
+
+    container.addEventListener('touchmove', (e) => {
+        if (isDragging) {
+            wasDragged = true;
+
+            const touch = e.touches[0];
+            const prevX = x;
+            const prevY = y;
+
+            x = touch.clientX - dragOffsetX;
+            y = touch.clientY + window.scrollY - dragOffsetY;
+
+            const pageWidth = document.documentElement.clientWidth;
+            const pageHeight = document.body.scrollHeight;
+            const maxX = pageWidth - size - margin;
+            const maxY = pageHeight - size - margin;
+
+            x = Math.max(margin, Math.min(x, maxX));
+            y = Math.max(margin, Math.min(y, maxY));
+
+            dragVelocityX = x - prevX;
+            dragVelocityY = y - prevY;
+
+            container.style.left = `${x}px`;
+            container.style.top = `${y}px`;
+
+            e.preventDefault();
+        }
+    }, { passive: false });
+
+    container.addEventListener('touchend', () => {
+        if (isDragging) {
+            isDragging = false;
+
+            if (!wasDragged) {
+                currentYawSpeed = baseYawSpeed * 5;
+                currentPitchSpeed = basePitchSpeed * 5;
+                currentRollSpeed = baseRollSpeed * 5;
+            } else {
+                velocityX = dragVelocityX * 0.8;
+                velocityY = dragVelocityY * 0.8;
+
+                if (Math.abs(velocityX) < 0.5) velocityX = velocityX < 0 ? -1 : 1;
+                if (Math.abs(velocityY) < 0.5) velocityY = velocityY < 0 ? -1 : 1;
             }
         }
     });
