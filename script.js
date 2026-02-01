@@ -20,9 +20,6 @@ document.addEventListener('DOMContentLoaded', () => {
 
     // Wait for background image to load to get dimensions
     const initTimeline = () => {
-        const bgWidth = timelineBg.naturalWidth || imageWidth;
-        const scale = bgWidth / imageWidth; // Scale factor if image renders differently
-
         function goToSlide(index) {
             // Clamp index
             index = Math.max(0, Math.min(index, totalSlides - 1));
@@ -30,7 +27,12 @@ document.addEventListener('DOMContentLoaded', () => {
 
             const viewportWidth = window.innerWidth;
 
-            // Get the specific center position for this slide
+            // Get the actual rendered width of the background image
+            const renderedWidth = timelineBg.getBoundingClientRect().width;
+            // Calculate scale based on rendered vs original size
+            const scale = renderedWidth / imageWidth;
+
+            // Get the specific center position for this slide, scaled to rendered size
             const symbolCenter = centerPositions[index] * scale;
 
             // Calculate translateX to put symbol center at viewport center
@@ -1177,77 +1179,40 @@ document.addEventListener('DOMContentLoaded', () => {
     const isMobile = window.innerWidth <= 768;
     if (!isMobile) return;
 
-    const slider = document.querySelector('.chocolate-mobile-slider');
-    const chocolateImg = document.getElementById('choc-mobile-img');
+    const track = document.querySelector('.chocolate-mobile-track');
+    const chocolates = document.querySelectorAll('.chocolate-mobile-item');
     const prevBtn = document.getElementById('choc-prev');
     const nextBtn = document.getElementById('choc-next');
 
-    if (!chocolateImg || !slider) return;
+    if (!track || chocolates.length === 0) return;
 
     let currentIndex = 1; // Start with middle chocolate (c_2)
-    let isAnimating = false;
 
-    // Image sources for the new cutout chocolates
+    // Image sources for the chocolates
     const closedSrcs = ['c_1.webp', 'c_2.webp', 'c_3.webp'];
     const openSrcs = ['c_1_o.webp', 'c_2_o.webp', 'c_3_o.webp'];
 
-    function showChocolate(newIndex, direction) {
-        if (isAnimating) return;
-        if (newIndex < 0) newIndex = 2;
-        if (newIndex > 2) newIndex = 0;
-        if (newIndex === currentIndex) return;
-
-        isAnimating = true;
-
-        // Current chocolate slides out
-        const slideOutClass = direction === 'left' ? 'slide-out-left' : 'slide-out-right';
-        // New chocolate slides in from opposite side
-        const slideInFromClass = direction === 'left' ? 'enter-from-right' : 'enter-from-left';
-
-        // Get current state to determine which src array to use for new chocolate
-        const currentState = chocolateImg.getAttribute('data-state');
-        const srcArray = currentState === 'open' ? openSrcs : closedSrcs;
-
-        // Create new chocolate element that will slide in
-        const newChocolate = document.createElement('img');
-        newChocolate.src = srcArray[newIndex];
-        newChocolate.alt = 'Choklad';
-        newChocolate.className = 'chocolate-mobile-item ' + slideInFromClass;
-        newChocolate.id = 'choc-mobile-img';
-        newChocolate.setAttribute('data-state', currentState);
-        newChocolate.setAttribute('data-index', newIndex);
-
-        // Add click handler to new element
-        newChocolate.addEventListener('click', toggleChocolate);
-
-        // Add new element to slider
-        slider.appendChild(newChocolate);
-
-        // Slide out current chocolate
-        chocolateImg.classList.add(slideOutClass);
-        chocolateImg.removeAttribute('id');
-
-        // Force reflow then slide in new chocolate
-        newChocolate.offsetHeight;
-        newChocolate.classList.remove(slideInFromClass);
-
-        // After animation completes
-        setTimeout(() => {
-            // Remove old chocolate
-            if (chocolateImg.parentNode) {
-                chocolateImg.parentNode.removeChild(chocolateImg);
-            }
-            currentIndex = newIndex;
-            isAnimating = false;
-        }, 400);
+    function updateTrackPosition() {
+        // Each chocolate is 33.333% of the track
+        // To center chocolate 0: translateX(33.333%)
+        // To center chocolate 1: translateX(0%)
+        // To center chocolate 2: translateX(-33.333%)
+        const offset = (1 - currentIndex) * 33.333;
+        track.style.transform = `translateX(${offset}%)`;
     }
 
-    function toggleChocolate() {
-        const img = document.getElementById('choc-mobile-img');
-        if (!img) return;
+    function goToChocolate(newIndex) {
+        if (newIndex < 0 || newIndex > 2) return;
+        if (newIndex === currentIndex) return;
 
-        const state = img.getAttribute('data-state');
+        currentIndex = newIndex;
+        updateTrackPosition();
+    }
+
+    function toggleChocolate(e) {
+        const img = e.target;
         const idx = parseInt(img.getAttribute('data-index'));
+        const state = img.getAttribute('data-state');
 
         // Play bite sound
         const biteSound = new Audio('choco_bite_2.mp3');
@@ -1263,19 +1228,20 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     }
 
-    // Initialize - show middle chocolate (closed)
-    chocolateImg.src = closedSrcs[currentIndex];
-    chocolateImg.setAttribute('data-state', 'closed');
+    // Initialize position (centered on middle chocolate)
+    updateTrackPosition();
 
-    // Add click handler for toggle
-    chocolateImg.addEventListener('click', toggleChocolate);
+    // Add click handlers for toggle on each chocolate
+    chocolates.forEach(choc => {
+        choc.addEventListener('click', toggleChocolate);
+    });
 
     // Button click handlers
     if (prevBtn) {
-        prevBtn.addEventListener('click', () => showChocolate(currentIndex - 1, 'right'));
+        prevBtn.addEventListener('click', () => goToChocolate(currentIndex - 1));
     }
     if (nextBtn) {
-        nextBtn.addEventListener('click', () => showChocolate(currentIndex + 1, 'left'));
+        nextBtn.addEventListener('click', () => goToChocolate(currentIndex + 1));
     }
 });
 
@@ -1641,6 +1607,9 @@ function startSparrowBouncing(container) {
         }
     }, { passive: false });
 
+    // Track 2D rotation direction (for mobile)
+    let spin2DClockwise = true;
+
     container.addEventListener('touchend', () => {
         if (isDragging) {
             isDragging = false;
@@ -1649,9 +1618,26 @@ function startSparrowBouncing(container) {
                 // Reverse rotation direction on tap
                 rotationDirection *= -1;
 
+                // For 3D model
                 currentYawSpeed = baseYawSpeed * 5;
                 currentPitchSpeed = basePitchSpeed * 5;
                 currentRollSpeed = baseRollSpeed * 5;
+
+                // For 2D sparrow (mobile) - update CSS animation
+                const sparrow2D = document.getElementById('sparrow-2d-image');
+                if (sparrow2D) {
+                    spin2DClockwise = !spin2DClockwise;
+                    const fastAnim = spin2DClockwise ? 'sparrowSpinFastCW' : 'sparrowSpinFastCCW';
+                    const normalAnim = spin2DClockwise ? 'sparrowSpinCW' : 'sparrowSpinCCW';
+
+                    sparrow2D.style.animation = 'none';
+                    sparrow2D.offsetHeight; // Force reflow
+                    sparrow2D.style.animation = `${fastAnim} 0.8s ease-out forwards`;
+
+                    setTimeout(() => {
+                        sparrow2D.style.animation = `${normalAnim} 2s linear infinite`;
+                    }, 800);
+                }
 
                 console.log('🌀 Reversed rotation! Direction:', rotationDirection);
             } else {

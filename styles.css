@@ -1652,8 +1652,8 @@ body.video-playing {
     }
 
     .chocolate-section-title {
-        font-size: 1.3rem;
-        letter-spacing: 0.1em;
+        font-size: 1.8rem;
+        letter-spacing: 0.15em;
         white-space: nowrap;
     }
 
@@ -1670,6 +1670,7 @@ body.video-playing {
         height: 100%;
         align-items: center;
         justify-content: center;
+        overflow: hidden;
     }
 
     .chocolate-mobile-bg {
@@ -1682,40 +1683,31 @@ body.video-playing {
         z-index: 1;
     }
 
-    .chocolate-mobile-slider {
+    .chocolate-mobile-track {
         position: relative;
         z-index: 10;
         display: flex;
         align-items: center;
         justify-content: center;
-        width: 100%;
+        width: 300%; /* 3 chocolates */
         height: 100%;
+        transition: transform 0.4s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+        transform: translateX(0); /* Start centered on middle chocolate */
     }
 
     .chocolate-mobile-item {
-        max-width: 70%;
+        flex: 0 0 33.333%;
         max-height: 60%;
         object-fit: contain;
-        transition: transform 0.35s ease-out;
+        display: flex;
+        align-items: center;
+        justify-content: center;
         animation: floatChocolate 4s ease-in-out infinite;
     }
 
-    .chocolate-mobile-item.slide-out-left {
-        transform: translateX(-120%);
-    }
-
-    .chocolate-mobile-item.slide-out-right {
-        transform: translateX(120%);
-    }
-
-    /* Entry positions for new chocolates sliding in */
-    .chocolate-mobile-item.enter-from-left {
-        transform: translateX(-120%);
-    }
-
-    .chocolate-mobile-item.enter-from-right {
-        transform: translateX(120%);
-    }
+    .chocolate-mobile-item:nth-child(1) { animation-delay: 0s; }
+    .chocolate-mobile-item:nth-child(2) { animation-delay: 1.3s; }
+    .chocolate-mobile-item:nth-child(3) { animation-delay: 2.6s; }
 
     .chocolate-nav {
         position: absolute;
@@ -1798,6 +1790,8 @@ body.video-playing {
         color: var(--gold);
         text-shadow: 0 2px 10px rgba(212, 175, 55, 0.5);
         margin: 0;
+        text-align: center;
+        width: 100%;
     }
 
     /* Hide original title on mobile */
