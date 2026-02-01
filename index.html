@@ -10,7 +10,8 @@
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@300;400;600;700&family=Montserrat:wght@200;300;400;600&family=Great+Vibes&display=swap" rel="stylesheet">
 
-    <!-- Preload mobile chocolate images with high priority -->
+    <!-- Preload chocolate background images with high priority -->
+    <link rel="preload" href="choklad_bakgrund.webp" as="image" fetchpriority="high">
     <link rel="preload" href="c_bg.webp" as="image" fetchpriority="high">
     <link rel="preload" href="c_1.webp" as="image">
     <link rel="preload" href="c_2.webp" as="image">
@@ -28,9 +29,9 @@
             alt="Sparvkungen Mascot"
             camera-orbit="0deg 75deg 2.5m"
             style="width: 100%; height: 100%;"
-            exposure="2"
+            exposure="1"
             shadow-intensity="0"
-            skybox-image="neutral"
+            environment-image="neutral"
             tone-mapping="commerce"
             disable-pan
             disable-zoom
@@ -51,6 +52,7 @@
                 <p class="keyhole-text">Välkommen till dina drömmar</p>
             </div>
             <!-- Preload chocolate images during loading screen -->
+            <img src="choklad_bakgrund.webp" alt="" style="display:none;" class="preload-img">
             <img src="c_bg.webp" alt="" style="display:none;" class="preload-img">
             <img src="c_1.webp" alt="" style="display:none;" class="preload-img">
             <img src="c_2.webp" alt="" style="display:none;" class="preload-img">

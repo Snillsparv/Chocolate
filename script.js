@@ -18,8 +18,11 @@ document.addEventListener('DOMContentLoaded', () => {
     const centerPositions = [1264, 1784, 2280, 2923, 3457, 3959];
     const imageWidth = 5272;
 
-    // Set initial position immediately to avoid flash
-    timelineTrack.style.transform = `translateX(0px)`;
+    // Calculate and set initial position immediately (approximate for first symbol)
+    // This prevents showing wrong position before image loads
+    const initialViewport = window.innerWidth;
+    const approxInitialTranslate = (initialViewport / 2) - centerPositions[0];
+    timelineTrack.style.transform = `translateX(${approxInitialTranslate}px)`;
 
     // Wait for background image to load to get dimensions
     const initTimeline = () => {
