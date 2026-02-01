@@ -1395,9 +1395,9 @@ body.video-playing {
 
 /* Responsive */
 @media (max-width: 768px) {
-    /* Mobile background image */
+    /* Mobile background image - optimized for portrait */
     .hero {
-        background-image: url('bg_med_text.webp');
+        background-image: url('bg_mobil.webp');
         background-size: cover;
         background-position: center;
     }

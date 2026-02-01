@@ -98,6 +98,16 @@ document.addEventListener('DOMContentLoaded', () => {
     const introVideoContainer = document.querySelector('.intro-video-container');
     const introVideo = document.querySelector('.intro-video');
 
+    // Use mobile-optimized video on mobile devices
+    const isMobile = /iPhone|iPad|iPod|Android/i.test(navigator.userAgent);
+    if (isMobile && introVideo) {
+        const source = introVideo.querySelector('source');
+        if (source) {
+            source.src = 'bg_mobil.mp4';
+            introVideo.load();
+        }
+    }
+
     let videoReady = false;
     let clicked = false;
     let minimumLoadTimeReached = false;
