@@ -1395,6 +1395,12 @@ body.video-playing {
 
 /* Responsive */
 @media (max-width: 768px) {
+    /* Remove blue tap highlight globally on mobile */
+    * {
+        -webkit-tap-highlight-color: transparent;
+        -webkit-touch-callout: none;
+    }
+
     /* Mobile background image - optimized for portrait */
     .hero {
         background-image: url('bg_mobil.webp');
@@ -1607,6 +1613,13 @@ body.video-playing {
         height: 100vh;
         min-height: 100vh;
         overflow: hidden;
+        /* Remove blue tap highlight on all clickable elements */
+        -webkit-tap-highlight-color: transparent;
+    }
+
+    .chocolate-section-title {
+        font-size: 1.5rem;
+        letter-spacing: 0.15em;
     }
 
     .chocolate-scroll-wrapper {
@@ -1698,22 +1711,23 @@ body.video-playing {
         display: none !important;
     }
 
-    /* 4. Timeline section - large image area, compact text below */
+    /* 4. Timeline section - large image area, text below with gold border between */
     .timeline-section {
         min-height: auto;
-        padding-bottom: 0.5rem;
+        padding-bottom: 0;
     }
 
     .timeline-viewport {
-        height: 65vh;
-        min-height: 300px;
+        height: 60vh;
+        min-height: 280px;
     }
 
     .timeline-text-section {
-        margin-top: 0.5rem;
-        padding: 1rem 0.5rem;
-        min-height: auto;
+        margin-top: 0;
+        padding: 1.5rem 0.5rem;
+        min-height: 200px;
         height: auto;
+        border-top: 3px solid var(--gold);
     }
 
     .timeline-text-arrow {

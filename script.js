@@ -1183,7 +1183,8 @@ document.addEventListener('DOMContentLoaded', () => {
     let currentIndex = 0;
 
     // Scroll positions for each chocolate (percentage of scroll width)
-    const scrollPositions = [0, 0.5, 1];
+    // Adjusted to center each chocolate in viewport (not at edges)
+    const scrollPositions = [0.15, 0.5, 0.85];
 
     function scrollToChocolate(index) {
         if (!scrollWrapper) return;
@@ -1238,17 +1239,28 @@ function summonSparrow() {
             const style = document.createElement('style');
             style.id = 'sparrow-2d-animation';
             style.textContent = `
-                @keyframes sparrowSpin {
+                @keyframes sparrowSpinCW {
                     0% { transform: rotate(0deg); }
                     100% { transform: rotate(360deg); }
                 }
-                @keyframes sparrowSpinFast {
+                @keyframes sparrowSpinCCW {
+                    0% { transform: rotate(0deg); }
+                    100% { transform: rotate(-360deg); }
+                }
+                @keyframes sparrowSpinFastCW {
                     0% { transform: rotate(0deg); }
                     100% { transform: rotate(1080deg); }
+                }
+                @keyframes sparrowSpinFastCCW {
+                    0% { transform: rotate(0deg); }
+                    100% { transform: rotate(-1080deg); }
                 }
             `;
             document.head.appendChild(style);
         }
+
+        // Track rotation direction
+        let spinClockwise = true;
 
         // Create 2D sparrow image with continuous rotation
         const sparrowImage = document.createElement('img');
@@ -1259,17 +1271,21 @@ function summonSparrow() {
             width: 100%;
             height: 100%;
             object-fit: contain;
-            animation: sparrowSpin 2s linear infinite;
+            animation: sparrowSpinCW 2s linear infinite;
         `;
 
-        // Spin faster when clicked
+        // Click to reverse direction with fast spin
         sparrowImage.addEventListener('click', () => {
+            spinClockwise = !spinClockwise;
+            const fastAnim = spinClockwise ? 'sparrowSpinFastCW' : 'sparrowSpinFastCCW';
+            const normalAnim = spinClockwise ? 'sparrowSpinCW' : 'sparrowSpinCCW';
+
             sparrowImage.style.animation = 'none';
-            // Force reflow
-            sparrowImage.offsetHeight;
-            sparrowImage.style.animation = 'sparrowSpinFast 0.8s ease-out forwards';
+            sparrowImage.offsetHeight; // Force reflow
+            sparrowImage.style.animation = `${fastAnim} 0.8s ease-out forwards`;
+
             setTimeout(() => {
-                sparrowImage.style.animation = 'sparrowSpin 2s linear infinite';
+                sparrowImage.style.animation = `${normalAnim} 2s linear infinite`;
             }, 800);
         });
 
