@@ -1263,6 +1263,13 @@ function summonSparrow() {
         return;
     }
 
+    // Use mobile-optimized model on mobile devices (has unlit materials for better colors)
+    const isMobile = /iPhone|iPad|iPod|Android/i.test(navigator.userAgent);
+    if (isMobile) {
+        sparrowModel.src = 'sparvkungen_mobil.glb';
+        console.log('📱 Using mobile-optimized 3D model');
+    }
+
     // Play crazy sound
     const crazySound = new Audio('crazy.mp3');
     crazySound.volume = 0.6;
