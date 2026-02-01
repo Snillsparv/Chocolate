@@ -86,6 +86,14 @@ document.addEventListener('DOMContentLoaded', () => {
         // Initialize first slide
         goToSlide(0);
 
+        // Workaround: Force recalculation by going to slide 1 then back to 0
+        setTimeout(() => {
+            goToSlide(1);
+            setTimeout(() => {
+                goToSlide(0);
+            }, 50);
+        }, 100);
+
         // Handle resize
         window.addEventListener('resize', () => goToSlide(currentIndex));
     };
@@ -125,6 +133,17 @@ document.addEventListener('DOMContentLoaded', () => {
             introVideo.load();
         }
     }
+
+    // Force preload chocolate backgrounds during loading screen
+    const preloadImages = [
+        'choklad_bakgrund.webp',
+        'c_bg.webp',
+        'tidslinje_3++++.webp'
+    ];
+    preloadImages.forEach(src => {
+        const img = new Image();
+        img.src = src;
+    });
 
     let videoReady = false;
     let clicked = false;
