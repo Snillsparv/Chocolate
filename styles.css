@@ -412,6 +412,10 @@ body {
     filter: drop-shadow(0 0 20px rgba(212, 175, 55, 0.5));
     transform-style: preserve-3d;
     perspective: 1000px;
+    /* Remove blue tap highlight on mobile */
+    -webkit-tap-highlight-color: transparent;
+    -webkit-touch-callout: none;
+    user-select: none;
 }
 
 .keyhole-image:hover {
