@@ -1177,55 +1177,79 @@ document.addEventListener('DOMContentLoaded', () => {
     const isMobile = window.innerWidth <= 768;
     if (!isMobile) return;
 
-    const scrollWrapper = document.querySelector('.chocolate-scroll-wrapper');
+    const chocolateImg = document.getElementById('choc-mobile-img');
     const prevBtn = document.getElementById('choc-prev');
     const nextBtn = document.getElementById('choc-next');
-    const chocolatePieces = document.querySelectorAll('.chocolate-piece');
-    let currentIndex = 1; // Start with middle chocolate
 
-    // Scroll positions - adjusted to center the non-transparent part of each chocolate
-    // Left needs more offset, right needs less (based on chocolate positions in image)
-    const scrollPositions = [0.08, 0.5, 0.92];
+    if (!chocolateImg) return;
 
-    // Closed and open image sources
-    const closedSrcs = ['choklad_1_stängd.webp', 'choklad_2_stängd.webp', 'choklad_3_stängd.webp'];
-    const openSrcs = ['choklad_1_öppen.webp', 'choklad_2_öppen_2.webp', 'choklad_3_öppen.webp'];
+    let currentIndex = 1; // Start with middle chocolate (c_2)
+    let isAnimating = false;
 
-    function scrollToChocolate(index) {
-        if (!scrollWrapper) return;
+    // Image sources for the new cutout chocolates
+    const closedSrcs = ['c_1.webp', 'c_2.webp', 'c_3.webp'];
+    const openSrcs = ['c_1_o.webp', 'c_2_o.webp', 'c_3_o.webp'];
 
-        // Wrap around
-        if (index < 0) index = 2;
-        if (index > 2) index = 0;
-        currentIndex = index;
+    function showChocolate(newIndex, direction) {
+        if (isAnimating) return;
+        if (newIndex < 0) newIndex = 2;
+        if (newIndex > 2) newIndex = 0;
+        if (newIndex === currentIndex) return;
 
-        // Calculate scroll position
-        const maxScroll = scrollWrapper.scrollWidth - scrollWrapper.clientWidth;
-        const targetScroll = maxScroll * scrollPositions[index];
-        scrollWrapper.scrollTo({ left: targetScroll, behavior: 'smooth' });
+        isAnimating = true;
+        const slideOutClass = direction === 'left' ? 'slide-out-left' : 'slide-out-right';
+        const slideInClass = direction === 'left' ? 'slide-in-right' : 'slide-in-left';
 
-        // Open selected chocolate, close others
-        chocolatePieces.forEach((piece, i) => {
-            if (i === currentIndex) {
-                piece.src = openSrcs[i];
-                piece.setAttribute('data-state', 'open');
-            } else {
-                piece.src = closedSrcs[i];
-                piece.setAttribute('data-state', 'closed');
-            }
-        });
+        // Slide out current chocolate
+        chocolateImg.classList.add(slideOutClass);
+
+        setTimeout(() => {
+            // Change image source (show open state for new chocolate)
+            chocolateImg.src = openSrcs[newIndex];
+            chocolateImg.setAttribute('data-index', newIndex);
+            chocolateImg.setAttribute('data-state', 'open');
+            currentIndex = newIndex;
+
+            // Position for slide in
+            chocolateImg.classList.remove(slideOutClass);
+            chocolateImg.classList.add(slideInClass);
+
+            // Force reflow
+            chocolateImg.offsetHeight;
+
+            // Slide in
+            chocolateImg.classList.remove(slideInClass);
+
+            setTimeout(() => {
+                isAnimating = false;
+            }, 400);
+        }, 300);
     }
 
-    // Initialize - scroll to middle chocolate (index 1)
-    scrollToChocolate(1);
+    // Initialize - show middle chocolate (open)
+    chocolateImg.src = openSrcs[currentIndex];
+    chocolateImg.setAttribute('data-state', 'open');
 
     // Button click handlers
     if (prevBtn) {
-        prevBtn.addEventListener('click', () => scrollToChocolate(currentIndex - 1));
+        prevBtn.addEventListener('click', () => showChocolate(currentIndex - 1, 'right'));
     }
     if (nextBtn) {
-        nextBtn.addEventListener('click', () => scrollToChocolate(currentIndex + 1));
+        nextBtn.addEventListener('click', () => showChocolate(currentIndex + 1, 'left'));
     }
+
+    // Click on chocolate to toggle open/closed
+    chocolateImg.addEventListener('click', () => {
+        const state = chocolateImg.getAttribute('data-state');
+        const idx = parseInt(chocolateImg.getAttribute('data-index'));
+        if (state === 'open') {
+            chocolateImg.src = closedSrcs[idx];
+            chocolateImg.setAttribute('data-state', 'closed');
+        } else {
+            chocolateImg.src = openSrcs[idx];
+            chocolateImg.setAttribute('data-state', 'open');
+        }
+    });
 });
 
 // ====== 3D SPARROW KING MASCOT ======
@@ -1366,16 +1390,25 @@ function summonSparrow() {
 }
 
 function startSparrowBouncing(container) {
-    const size = window.innerWidth <= 768 ? 400 : 650; // Even bigger to fill edges!
+    const isMobile = window.innerWidth <= 768;
+    const size = isMobile ? 400 : 650;
     // Negative margin to compensate for empty space around model in GLB file
     const margin = -50;
 
     // Get model-viewer element for 3D rotation
     const modelViewer = container.querySelector('#sparrow-model');
 
-    // Start from center of current view (accounting for scroll)
+    // On mobile: use fixed position and bounce within viewport only
+    if (isMobile) {
+        container.style.position = 'fixed';
+    }
+
+    // Start from center of current view
     let x = (document.documentElement.clientWidth - size) / 2;
-    let y = window.scrollY + (document.documentElement.clientHeight - size) / 2;
+    // On mobile, don't add scrollY since we're using fixed position
+    let y = isMobile
+        ? (window.innerHeight - size) / 2
+        : window.scrollY + (document.documentElement.clientHeight - size) / 2;
 
     // Random initial velocity - faster!
     let velocityX = (Math.random() - 0.5) * 12 + (Math.random() > 0.5 ? 4 : -4);
@@ -1598,7 +1631,9 @@ function startSparrowBouncing(container) {
 
         // Get current page dimensions (full page, not just viewport)
         const pageWidth = document.documentElement.clientWidth;
-        const pageHeight = document.body.scrollHeight;
+        // On mobile, bounce within viewport only (fixed position)
+        const isMobileBounce = window.innerWidth <= 768;
+        const pageHeight = isMobileBounce ? window.innerHeight : document.body.scrollHeight;
         const maxX = pageWidth - size - margin;
         const maxY = pageHeight - size - margin;
 

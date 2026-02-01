@@ -735,9 +735,10 @@ body.video-playing {
     background: radial-gradient(circle at center, rgba(212, 175, 55, 0.15) 0%, transparent 60%);
 }
 
-/* Mobile chocolate navigation - hidden on desktop */
+/* Mobile chocolate elements - hidden on desktop */
 .chocolate-nav,
-.chocolate-dots {
+.chocolate-dots,
+.chocolate-mobile-container {
     display: none;
 }
 
@@ -1407,21 +1408,23 @@ body.video-playing {
         -webkit-touch-callout: none;
     }
 
-    /* Mobile background image - fit exactly to screen width */
+    /* Mobile background image - cover screen */
     .hero {
         background-image: url('bg_mobil.webp');
-        background-size: 100% auto;
-        background-position: center top;
+        background-size: cover;
+        background-position: center center;
         background-repeat: no-repeat;
     }
 
-    /* Mobile intro video - fit exactly to screen width */
+    /* Mobile intro video - cover screen */
     .intro-video {
-        object-fit: contain;
-        object-position: center top;
-        width: 100%;
-        height: auto;
-        min-height: 100%;
+        object-fit: cover;
+        object-position: center center;
+    }
+
+    /* Remove gap between hero and chocolate section */
+    .gold-divider {
+        display: none;
     }
 
     .hero-text-overlay {
@@ -1627,13 +1630,12 @@ body.video-playing {
         letter-spacing: 0.1em;
     }
 
-    /* 2. Chocolate section with horizontal scroll - same height as hero */
+    /* 2. Chocolate section - static background with sliding chocolates */
     .chocolate-interactive-section {
         position: relative;
         height: 100vh;
         min-height: 100vh;
         overflow: hidden;
-        /* Remove blue tap highlight on all clickable elements */
         -webkit-tap-highlight-color: transparent;
     }
 
@@ -1643,35 +1645,67 @@ body.video-playing {
         white-space: nowrap;
     }
 
+    /* Hide desktop scroll wrapper on mobile */
     .chocolate-scroll-wrapper {
-        position: relative;
-        width: 100%;
-        height: 100%;
-        overflow-x: auto;
-        overflow-y: hidden;
-        scroll-behavior: smooth;
-        -webkit-overflow-scrolling: touch;
-        scrollbar-width: none;
-        -ms-overflow-style: none;
-    }
-
-    .chocolate-scroll-wrapper::-webkit-scrollbar {
         display: none;
     }
 
-    .chocolate-background {
-        display: block;
-        width: auto;
+    /* Mobile chocolate container */
+    .chocolate-mobile-container {
+        display: flex;
+        position: relative;
+        width: 100%;
         height: 100%;
-        max-width: none;
+        align-items: center;
+        justify-content: center;
     }
 
-    .chocolate-piece {
+    .chocolate-mobile-bg {
         position: absolute;
-        height: 100% !important;
-        width: auto !important;
+        top: 0;
+        left: 50%;
+        transform: translateX(-50%);
+        height: 100%;
+        width: auto;
+        z-index: 1;
+    }
+
+    .chocolate-mobile-slider {
+        position: relative;
+        z-index: 10;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        width: 100%;
+        height: 100%;
+    }
+
+    .chocolate-mobile-item {
+        max-width: 70%;
+        max-height: 60%;
+        object-fit: contain;
+        transition: transform 0.4s ease, opacity 0.3s ease;
         animation: floatChocolate 4s ease-in-out infinite;
-        opacity: 1;
+    }
+
+    .chocolate-mobile-item.slide-out-left {
+        transform: translateX(-150%);
+        opacity: 0;
+    }
+
+    .chocolate-mobile-item.slide-out-right {
+        transform: translateX(150%);
+        opacity: 0;
+    }
+
+    .chocolate-mobile-item.slide-in-left {
+        transform: translateX(-150%);
+        opacity: 0;
+    }
+
+    .chocolate-mobile-item.slide-in-right {
+        transform: translateX(150%);
+        opacity: 0;
     }
 
     .chocolate-nav {
@@ -1732,26 +1766,28 @@ body.video-playing {
         display: none !important;
     }
 
-    /* 4. Timeline section - text overlaps symbol area */
+    /* 4. Timeline section - symbols visible, text below */
     .timeline-section {
         min-height: auto;
         padding-bottom: 0;
     }
 
     .timeline-viewport {
-        height: 55vh;
-        min-height: 250px;
+        height: 50vh;
+        min-height: 220px;
+        position: relative;
+        z-index: 1;
     }
 
     .timeline-text-section {
         position: relative;
-        margin-top: -80px;
+        margin-top: 0;
         padding: 1.5rem 0.5rem 2rem;
-        min-height: 280px;
+        min-height: 250px;
         height: auto;
         border-top: 3px solid var(--gold);
         background: var(--chocolate-dark);
-        z-index: 10;
+        z-index: 5;
     }
 
     .timeline-text-arrow {

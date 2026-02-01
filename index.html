@@ -66,7 +66,7 @@
     <section class="chocolate-interactive-section">
         <h2 class="chocolate-section-title">SÄSONGENS SMAKER</h2>
 
-        <!-- Scrollable content wrapper -->
+        <!-- Desktop: Scrollable content wrapper -->
         <div class="chocolate-scroll-wrapper">
             <img src="choklad_bakgrund.webp" alt="Choklad bakgrund" class="chocolate-background">
 
@@ -75,7 +75,15 @@
             <img src="choklad_3_stängd.webp" alt="Choklad 3" class="chocolate-piece" id="chocolate-3" data-state="closed">
         </div>
 
-        <!-- Mobile navigation (outside scroll wrapper so it stays fixed) -->
+        <!-- Mobile: Static background with sliding chocolates -->
+        <div class="chocolate-mobile-container">
+            <img src="choklad_bakgrund.webp" alt="Choklad bakgrund" class="chocolate-mobile-bg">
+            <div class="chocolate-mobile-slider">
+                <img src="c_2.webp" alt="Choklad" class="chocolate-mobile-item" id="choc-mobile-img" data-state="closed" data-index="1">
+            </div>
+        </div>
+
+        <!-- Mobile navigation -->
         <div class="chocolate-nav">
             <button class="chocolate-nav-btn" id="choc-prev">‹</button>
             <button class="chocolate-nav-btn" id="choc-next">›</button>
