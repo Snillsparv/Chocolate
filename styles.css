@@ -1601,51 +1601,67 @@ body.video-playing {
         letter-spacing: 0.1em;
     }
 
-    /* 2. Full-height chocolate section with horizontal scroll */
+    /* 2. Chocolate section with horizontal scroll - same as desktop but scrollable */
     .chocolate-interactive-section {
-        min-height: 100vh;
-        height: 100vh;
-        overflow: hidden;
+        min-height: auto;
+        height: auto;
+        overflow-x: auto;
+        overflow-y: hidden;
+        scroll-behavior: smooth;
+        -webkit-overflow-scrolling: touch;
+        /* Hide scrollbar but keep functionality */
+        scrollbar-width: none;
+        -ms-overflow-style: none;
     }
 
-    .chocolate-background {
+    .chocolate-interactive-section::-webkit-scrollbar {
         display: none;
     }
 
+    .chocolate-background {
+        display: block;
+        width: auto;
+        height: 70vh;
+        max-width: none;
+    }
+
     .chocolate-piece {
+        /* Keep original positioning from desktop */
         position: absolute;
-        top: 50% !important;
-        left: 50% !important;
-        transform: translate(-50%, -50%);
-        width: 80vw !important;
-        height: auto !important;
-        max-height: 60vh;
-        object-fit: contain;
-        opacity: 0;
-        transition: opacity 0.4s ease;
-        animation: none !important;
+        height: 70vh !important;
+        width: auto !important;
+        animation: floatChocolate 4s ease-in-out infinite;
+        opacity: 1;
     }
 
     .chocolate-piece.mobile-active {
-        opacity: 1;
-        pointer-events: auto !important;
+        /* No special styling needed - all visible */
     }
 
     .chocolate-nav {
-        position: absolute;
-        bottom: 15%;
-        left: 50%;
-        transform: translateX(-50%);
+        position: fixed;
+        top: 50%;
+        left: 0;
+        right: 0;
+        transform: translateY(-50%);
         display: flex;
-        gap: 1rem;
+        justify-content: space-between;
+        padding: 0 10px;
         z-index: 20;
+        pointer-events: none;
+        opacity: 0;
+        transition: opacity 0.3s ease;
+    }
+
+    .chocolate-nav.visible {
+        opacity: 1;
     }
 
     .chocolate-nav-btn {
-        width: 50px;
-        height: 50px;
+        width: 44px;
+        height: 44px;
         border-radius: 50%;
-        background: var(--gold);
+        background: rgba(212, 175, 55, 0.9);
         border: 2px solid var(--chocolate-dark);
         color: var(--chocolate-dark);
         font-size: 1.5rem;
@@ -1654,6 +1670,7 @@ body.video-playing {
         align-items: center;
         justify-content: center;
         box-shadow: 0 4px 15px rgba(0, 0, 0, 0.4);
+        pointer-events: auto;
     }
 
     .chocolate-nav-btn:active {
@@ -1662,13 +1679,19 @@ body.video-playing {
     }
 
     .chocolate-dots {
-        position: absolute;
-        bottom: 8%;
+        position: fixed;
+        bottom: calc(50% - 35vh - 30px);
         left: 50%;
         transform: translateX(-50%);
         display: flex;
         gap: 0.8rem;
         z-index: 20;
+        opacity: 0;
+        transition: opacity 0.3s ease;
+    }
+
+    .chocolate-dots.visible {
+        opacity: 1;
     }
 
     .chocolate-dot {
@@ -1703,7 +1726,7 @@ body.video-playing {
     }
 
     .timeline-text-section {
-        margin-top: 0;
+        margin-top: 2rem;
         padding: 1.5rem 0.5rem;
         min-height: 280px;
         height: auto;

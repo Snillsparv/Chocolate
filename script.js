@@ -1167,22 +1167,28 @@ document.addEventListener('DOMContentLoaded', () => {
     const isMobile = window.innerWidth <= 768;
     if (!isMobile) return;
 
-    const chocolatePieces = document.querySelectorAll('.chocolate-piece');
+    const section = document.querySelector('.chocolate-interactive-section');
+    const nav = document.querySelector('.chocolate-nav');
+    const dotsContainer = document.querySelector('.chocolate-dots');
     const dots = document.querySelectorAll('.chocolate-dot');
     const prevBtn = document.getElementById('choc-prev');
     const nextBtn = document.getElementById('choc-next');
     let currentIndex = 0;
 
-    function showChocolate(index) {
+    // Scroll positions for each chocolate (percentage of scroll width)
+    // Left chocolate = 0%, Middle = 50%, Right = 100%
+    const scrollPositions = [0, 0.5, 1];
+
+    function scrollToChocolate(index) {
         // Wrap around
-        if (index < 0) index = chocolatePieces.length - 1;
-        if (index >= chocolatePieces.length) index = 0;
+        if (index < 0) index = 2;
+        if (index > 2) index = 0;
         currentIndex = index;
 
-        // Update chocolates
-        chocolatePieces.forEach((piece, i) => {
-            piece.classList.toggle('mobile-active', i === currentIndex);
-        });
+        // Calculate scroll position
+        const maxScroll = section.scrollWidth - section.clientWidth;
+        const targetScroll = maxScroll * scrollPositions[index];
+        section.scrollTo({ left: targetScroll, behavior: 'smooth' });
 
         // Update dots
         dots.forEach((dot, i) => {
@@ -1190,67 +1196,58 @@ document.addEventListener('DOMContentLoaded', () => {
         });
     }
 
-    // Initialize first chocolate
-    showChocolate(0);
+    // Initialize - scroll to first chocolate
+    scrollToChocolate(0);
 
     // Button click handlers
     if (prevBtn) {
-        prevBtn.addEventListener('click', () => showChocolate(currentIndex - 1));
+        prevBtn.addEventListener('click', () => scrollToChocolate(currentIndex - 1));
     }
     if (nextBtn) {
-        nextBtn.addEventListener('click', () => showChocolate(currentIndex + 1));
+        nextBtn.addEventListener('click', () => scrollToChocolate(currentIndex + 1));
     }
 
     // Dot click handlers
     dots.forEach((dot, i) => {
-        dot.addEventListener('click', () => showChocolate(i));
+        dot.addEventListener('click', () => scrollToChocolate(i));
     });
 
-    // Swipe support
-    let touchStartX = 0;
-    let touchEndX = 0;
-    const section = document.querySelector('.chocolate-interactive-section');
+    // Show/hide navigation based on section visibility
+    const observer = new IntersectionObserver((entries) => {
+        entries.forEach(entry => {
+            if (entry.isIntersecting) {
+                nav?.classList.add('visible');
+                dotsContainer?.classList.add('visible');
+            } else {
+                nav?.classList.remove('visible');
+                dotsContainer?.classList.remove('visible');
+            }
+        });
+    }, { threshold: 0.3 });
 
     if (section) {
-        section.addEventListener('touchstart', (e) => {
-            touchStartX = e.changedTouches[0].screenX;
-        }, { passive: true });
+        observer.observe(section);
+    }
 
-        section.addEventListener('touchend', (e) => {
-            touchEndX = e.changedTouches[0].screenX;
-            const diff = touchStartX - touchEndX;
-            if (Math.abs(diff) > 50) {
-                if (diff > 0) {
-                    showChocolate(currentIndex + 1); // Swipe left -> next
-                } else {
-                    showChocolate(currentIndex - 1); // Swipe right -> prev
-                }
+    // Update dots based on scroll position
+    if (section) {
+        section.addEventListener('scroll', () => {
+            const maxScroll = section.scrollWidth - section.clientWidth;
+            if (maxScroll <= 0) return;
+
+            const scrollPercent = section.scrollLeft / maxScroll;
+            let newIndex = 0;
+            if (scrollPercent > 0.75) newIndex = 2;
+            else if (scrollPercent > 0.25) newIndex = 1;
+
+            if (newIndex !== currentIndex) {
+                currentIndex = newIndex;
+                dots.forEach((dot, i) => {
+                    dot.classList.toggle('active', i === currentIndex);
+                });
             }
         }, { passive: true });
     }
-
-    // Handle chocolate clicks on mobile
-    chocolatePieces.forEach((piece, i) => {
-        piece.addEventListener('click', () => {
-            if (!piece.classList.contains('mobile-active')) return;
-
-            const biteSound = new Audio('choco_bite_2.mp3');
-            biteSound.volume = 0.6;
-            biteSound.play().catch(err => console.log('Audio play prevented:', err));
-
-            const currentState = piece.getAttribute('data-state');
-            const closedSrcs = ['choklad_1_stängd.webp', 'choklad_2_stängd.webp', 'choklad_3_stängd.webp'];
-            const openSrcs = ['choklad_1_öppen.webp', 'choklad_2_öppen_2.webp', 'choklad_3_öppen.webp'];
-
-            if (currentState === 'closed') {
-                piece.src = openSrcs[i];
-                piece.setAttribute('data-state', 'open');
-            } else {
-                piece.src = closedSrcs[i];
-                piece.setAttribute('data-state', 'closed');
-            }
-        });
-    });
 });
 
 // ====== 3D SPARROW KING MASCOT ======
