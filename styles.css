@@ -1591,7 +1591,8 @@ body.video-playing {
 /* ====== MOBILE STYLES ====== */
 @media (max-width: 768px) {
     /* 1. Smaller loading text */
-    .loading-text {
+    .loading-text,
+    .keyhole-text {
         font-size: 1rem;
         letter-spacing: 0.1em;
     }
@@ -1609,20 +1610,21 @@ body.video-playing {
 
     .chocolate-piece {
         position: absolute;
-        top: 50%;
-        left: 50%;
+        top: 50% !important;
+        left: 50% !important;
         transform: translate(-50%, -50%);
-        width: auto;
-        height: 70%;
-        max-width: 90%;
+        width: 80vw !important;
+        height: auto !important;
+        max-height: 60vh;
         object-fit: contain;
         opacity: 0;
-        transition: opacity 0.4s ease, transform 0.4s ease;
+        transition: opacity 0.4s ease;
+        animation: none !important;
     }
 
     .chocolate-piece.mobile-active {
         opacity: 1;
-        pointer-events: auto;
+        pointer-events: auto !important;
     }
 
     .chocolate-nav {
@@ -1685,33 +1687,46 @@ body.video-playing {
         display: none !important;
     }
 
-    /* 4. Timeline section - taller and smaller buttons */
+    /* 4. Timeline section - taller text area, smaller image area */
     .timeline-section {
-        min-height: 70vh;
-        padding-bottom: 2rem;
+        min-height: auto;
+        padding-bottom: 1rem;
+    }
+
+    .timeline-viewport {
+        height: 30vh;
+        min-height: 150px;
     }
 
     .timeline-text-section {
-        margin-top: 1rem;
-        padding: 0 0.5rem;
-        min-height: 200px;
+        margin-top: 0;
+        padding: 1.5rem 0.5rem;
+        min-height: 280px;
+        height: auto;
     }
 
     .timeline-text-arrow {
-        width: 35px;
-        height: 35px;
-        font-size: 1.2rem;
+        width: 40px;
+        height: 40px;
+        font-size: 1.3rem;
         flex-shrink: 0;
+        margin: 0 0.3rem;
+    }
+
+    /* Always show arrows to keep consistent centering */
+    .timeline-text-arrow[style*="display: none"] {
+        display: flex !important;
+        visibility: hidden;
     }
 
     .timeline-text h3 {
-        font-size: 1.2rem;
-        margin-bottom: 0.5rem;
+        font-size: 1.3rem;
+        margin-bottom: 0.8rem;
     }
 
     .timeline-text p {
-        font-size: 0.9rem;
-        line-height: 1.4;
+        font-size: 1rem;
+        line-height: 1.5;
     }
 
     .timeline-text-content {
@@ -1744,5 +1759,14 @@ body.video-playing {
         left: -100%;
         object-fit: cover;
         object-position: center;
+    }
+
+    /* 8. Larger "Sparv-Kungen har blivit kallad!" text */
+    .sparv-kungen-text {
+        font-size: 12vw;
+        line-height: 1.2;
+        padding: 0 1rem;
+        width: 100%;
+        box-sizing: border-box;
     }
 }
