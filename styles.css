@@ -1427,9 +1427,11 @@ body.video-playing {
         object-position: center center;
     }
 
-    /* Remove gap between hero and chocolate section */
+    /* Gold divider between sections */
     .gold-divider {
-        display: none;
+        display: block;
+        height: 3px;
+        background: var(--gold);
     }
 
     .hero-text-overlay {
@@ -1826,11 +1828,11 @@ body.video-playing {
         position: relative;
         margin-top: 0;
         padding: 1.5rem 0.5rem 2rem;
-        min-height: 220px;
-        height: auto;
+        height: 250px; /* Fixed height to prevent layout shifts */
         border-top: 3px solid var(--gold);
         background: var(--chocolate-dark);
         z-index: 5;
+        overflow: hidden;
     }
 
     .timeline-text-arrow {
@@ -1902,5 +1904,7 @@ body.video-playing {
     /* 9. Gold line above footer */
     .footer {
         border-top: 3px solid var(--gold);
+        margin-top: 0;
+        padding-top: 2rem;
     }
 }

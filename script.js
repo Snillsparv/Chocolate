@@ -18,6 +18,9 @@ document.addEventListener('DOMContentLoaded', () => {
     const centerPositions = [1264, 1784, 2280, 2923, 3457, 3959];
     const imageWidth = 5272;
 
+    // Set initial position immediately to avoid flash
+    timelineTrack.style.transform = `translateX(0px)`;
+
     // Wait for background image to load to get dimensions
     const initTimeline = () => {
         function goToSlide(index) {
@@ -30,7 +33,8 @@ document.addEventListener('DOMContentLoaded', () => {
             // Get the actual rendered width of the background image
             const renderedWidth = timelineBg.getBoundingClientRect().width;
             // Calculate scale based on rendered vs original size
-            const scale = renderedWidth / imageWidth;
+            // Use fallback if width is 0 (not yet rendered)
+            const scale = renderedWidth > 0 ? renderedWidth / imageWidth : 1;
 
             // Get the specific center position for this slide, scaled to rendered size
             const symbolCenter = centerPositions[index] * scale;
@@ -83,11 +87,20 @@ document.addEventListener('DOMContentLoaded', () => {
         window.addEventListener('resize', () => goToSlide(currentIndex));
     };
 
-    // Wait for image load
+    // Wait for image load and layout to complete
+    const startTimeline = () => {
+        // Use requestAnimationFrame to ensure layout is complete
+        requestAnimationFrame(() => {
+            requestAnimationFrame(() => {
+                initTimeline();
+            });
+        });
+    };
+
     if (timelineBg.complete && timelineBg.naturalWidth > 0) {
-        initTimeline();
+        startTimeline();
     } else {
-        timelineBg.addEventListener('load', initTimeline);
+        timelineBg.addEventListener('load', startTimeline);
     }
 });
 
