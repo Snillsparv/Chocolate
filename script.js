@@ -1585,11 +1585,15 @@ function startSparrowBouncing(container) {
             const prevX = x;
             const prevY = y;
 
+            // On mobile (fixed position), don't add scrollY - use clientY directly
             x = touch.clientX - dragOffsetX;
-            y = touch.clientY + window.scrollY - dragOffsetY;
+            y = isMobile
+                ? touch.clientY - dragOffsetY
+                : touch.clientY + window.scrollY - dragOffsetY;
 
             const pageWidth = document.documentElement.clientWidth;
-            const pageHeight = document.body.scrollHeight;
+            // On mobile (fixed position), use viewport height, not full page height
+            const pageHeight = isMobile ? window.innerHeight : document.body.scrollHeight;
             const maxX = pageWidth - size - margin;
             const maxY = pageHeight - size - margin;
 
