@@ -1258,49 +1258,33 @@ function summonSparrow() {
     const container = document.getElementById('sparrow-container');
     const sparrowModel = document.getElementById('sparrow-model');
 
-    if (!container || !sparrowModel) {
-        console.error('Sparrow container or model not found');
+    if (!container) {
+        console.error('Sparrow container not found');
         return;
     }
 
-    // Use mobile-optimized model on mobile devices (has unlit materials for better colors)
+    // Use 2D image on mobile (3D has color rendering issues on mobile WebGL)
     const isMobile = /iPhone|iPad|iPod|Android/i.test(navigator.userAgent);
-    const modelFile = isMobile ? 'sparvkungen_mobil.glb' : 'sparvkungen.glb';
 
     if (isMobile) {
-        sparrowModel.src = modelFile;
-        console.log('📱 Using mobile-optimized 3D model');
+        // Hide 3D model and use 2D image instead
+        if (sparrowModel) {
+            sparrowModel.style.display = 'none';
+        }
+
+        // Create 2D sparrow image
+        const sparrowImage = document.createElement('img');
+        sparrowImage.src = 'sparvkungen_backup.webp';
+        sparrowImage.alt = 'Sparvkungen';
+        sparrowImage.style.cssText = `
+            width: 100%;
+            height: 100%;
+            object-fit: contain;
+            pointer-events: none;
+        `;
+        container.appendChild(sparrowImage);
+        console.log('📱 Using 2D image for mobile');
     }
-
-    // DEBUG: Show which model is being loaded (temporary)
-    const debugIndicator = document.createElement('div');
-    debugIndicator.id = 'model-debug-indicator';
-    debugIndicator.style.cssText = `
-        position: fixed;
-        top: 10px;
-        left: 10px;
-        background: ${isMobile ? '#4CAF50' : '#2196F3'};
-        color: white;
-        padding: 10px 15px;
-        border-radius: 5px;
-        font-family: monospace;
-        font-size: 12px;
-        z-index: 99999;
-        box-shadow: 0 2px 10px rgba(0,0,0,0.3);
-    `;
-    debugIndicator.innerHTML = `
-        <strong>3D Model Debug:</strong><br>
-        Device: ${isMobile ? 'MOBILE' : 'DESKTOP'}<br>
-        File: ${modelFile}
-    `;
-    document.body.appendChild(debugIndicator);
-
-    // Remove debug indicator after 10 seconds
-    setTimeout(() => {
-        debugIndicator.style.transition = 'opacity 0.5s';
-        debugIndicator.style.opacity = '0';
-        setTimeout(() => debugIndicator.remove(), 500);
-    }, 10000);
 
     // Play crazy sound
     const crazySound = new Audio('crazy.mp3');
