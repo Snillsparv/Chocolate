@@ -717,11 +717,14 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 });
 
-// Initialize gold particles on load
+// Initialize gold particles on load (desktop only)
 window.addEventListener('load', () => {
-    setTimeout(() => {
-        createGoldParticles();
-    }, 2000); // Start after page has loaded
+    const isMobile = /iPhone|iPad|iPod|Android/i.test(navigator.userAgent);
+    if (!isMobile) {
+        setTimeout(() => {
+            createGoldParticles();
+        }, 2000); // Start after page has loaded
+    }
 
     // Don't auto-initialize Sparrow - wait for "S" key press
 });
@@ -1272,7 +1275,21 @@ function summonSparrow() {
             sparrowModel.style.display = 'none';
         }
 
-        // Create 2D sparrow image
+        // Add rotation animation CSS if not already added
+        if (!document.getElementById('sparrow-2d-animation')) {
+            const style = document.createElement('style');
+            style.id = 'sparrow-2d-animation';
+            style.textContent = `
+                @keyframes sparrowRotate {
+                    0% { transform: rotate(-8deg); }
+                    50% { transform: rotate(8deg); }
+                    100% { transform: rotate(-8deg); }
+                }
+            `;
+            document.head.appendChild(style);
+        }
+
+        // Create 2D sparrow image with rotation
         const sparrowImage = document.createElement('img');
         sparrowImage.src = 'sparvkungen_backup.webp';
         sparrowImage.alt = 'Sparvkungen';
@@ -1281,6 +1298,7 @@ function summonSparrow() {
             height: 100%;
             object-fit: contain;
             pointer-events: none;
+            animation: sparrowRotate 0.5s ease-in-out infinite;
         `;
         container.appendChild(sparrowImage);
         console.log('📱 Using 2D image for mobile');
