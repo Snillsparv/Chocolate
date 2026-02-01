@@ -1114,12 +1114,12 @@ document.addEventListener('DOMContentLoaded', () => {
         if (chocId) {
             section.style.cursor = 'url("cursor_3.webp") 2 2, pointer';
         } else {
-            section.style.cursor = 'default';
+            section.style.cursor = 'url("cursor_bird.webp") 2 2, auto';
         }
     });
 
     section.addEventListener('mouseleave', () => {
-        section.style.cursor = 'default';
+        section.style.cursor = 'url("cursor_bird.webp") 2 2, auto';
     });
 
     // Handle clicks on section level
