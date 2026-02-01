@@ -1167,33 +1167,26 @@ document.addEventListener('DOMContentLoaded', () => {
     const isMobile = window.innerWidth <= 768;
     if (!isMobile) return;
 
-    const section = document.querySelector('.chocolate-interactive-section');
-    const nav = document.querySelector('.chocolate-nav');
-    const dotsContainer = document.querySelector('.chocolate-dots');
-    const dots = document.querySelectorAll('.chocolate-dot');
+    const scrollWrapper = document.querySelector('.chocolate-scroll-wrapper');
     const prevBtn = document.getElementById('choc-prev');
     const nextBtn = document.getElementById('choc-next');
     let currentIndex = 0;
 
     // Scroll positions for each chocolate (percentage of scroll width)
-    // Left chocolate = 0%, Middle = 50%, Right = 100%
     const scrollPositions = [0, 0.5, 1];
 
     function scrollToChocolate(index) {
+        if (!scrollWrapper) return;
+
         // Wrap around
         if (index < 0) index = 2;
         if (index > 2) index = 0;
         currentIndex = index;
 
         // Calculate scroll position
-        const maxScroll = section.scrollWidth - section.clientWidth;
+        const maxScroll = scrollWrapper.scrollWidth - scrollWrapper.clientWidth;
         const targetScroll = maxScroll * scrollPositions[index];
-        section.scrollTo({ left: targetScroll, behavior: 'smooth' });
-
-        // Update dots
-        dots.forEach((dot, i) => {
-            dot.classList.toggle('active', i === currentIndex);
-        });
+        scrollWrapper.scrollTo({ left: targetScroll, behavior: 'smooth' });
     }
 
     // Initialize - scroll to first chocolate
@@ -1205,48 +1198,6 @@ document.addEventListener('DOMContentLoaded', () => {
     }
     if (nextBtn) {
         nextBtn.addEventListener('click', () => scrollToChocolate(currentIndex + 1));
-    }
-
-    // Dot click handlers
-    dots.forEach((dot, i) => {
-        dot.addEventListener('click', () => scrollToChocolate(i));
-    });
-
-    // Show/hide navigation based on section visibility
-    const observer = new IntersectionObserver((entries) => {
-        entries.forEach(entry => {
-            if (entry.isIntersecting) {
-                nav?.classList.add('visible');
-                dotsContainer?.classList.add('visible');
-            } else {
-                nav?.classList.remove('visible');
-                dotsContainer?.classList.remove('visible');
-            }
-        });
-    }, { threshold: 0.3 });
-
-    if (section) {
-        observer.observe(section);
-    }
-
-    // Update dots based on scroll position
-    if (section) {
-        section.addEventListener('scroll', () => {
-            const maxScroll = section.scrollWidth - section.clientWidth;
-            if (maxScroll <= 0) return;
-
-            const scrollPercent = section.scrollLeft / maxScroll;
-            let newIndex = 0;
-            if (scrollPercent > 0.75) newIndex = 2;
-            else if (scrollPercent > 0.25) newIndex = 1;
-
-            if (newIndex !== currentIndex) {
-                currentIndex = newIndex;
-                dots.forEach((dot, i) => {
-                    dot.classList.toggle('active', i === currentIndex);
-                });
-            }
-        }, { passive: true });
     }
 });
 
@@ -1277,26 +1228,41 @@ function summonSparrow() {
             const style = document.createElement('style');
             style.id = 'sparrow-2d-animation';
             style.textContent = `
-                @keyframes sparrowRotate {
-                    0% { transform: rotate(-8deg); }
-                    50% { transform: rotate(8deg); }
-                    100% { transform: rotate(-8deg); }
+                @keyframes sparrowSpin {
+                    0% { transform: rotate(0deg); }
+                    100% { transform: rotate(360deg); }
+                }
+                @keyframes sparrowSpinFast {
+                    0% { transform: rotate(0deg); }
+                    100% { transform: rotate(1080deg); }
                 }
             `;
             document.head.appendChild(style);
         }
 
-        // Create 2D sparrow image with rotation
+        // Create 2D sparrow image with continuous rotation
         const sparrowImage = document.createElement('img');
         sparrowImage.src = 'sparvkungen_backup.webp';
         sparrowImage.alt = 'Sparvkungen';
+        sparrowImage.id = 'sparrow-2d-image';
         sparrowImage.style.cssText = `
             width: 100%;
             height: 100%;
             object-fit: contain;
-            pointer-events: none;
-            animation: sparrowRotate 0.5s ease-in-out infinite;
+            animation: sparrowSpin 2s linear infinite;
         `;
+
+        // Spin faster when clicked
+        sparrowImage.addEventListener('click', () => {
+            sparrowImage.style.animation = 'none';
+            // Force reflow
+            sparrowImage.offsetHeight;
+            sparrowImage.style.animation = 'sparrowSpinFast 0.8s ease-out forwards';
+            setTimeout(() => {
+                sparrowImage.style.animation = 'sparrowSpin 2s linear infinite';
+            }, 800);
+        });
+
         container.appendChild(sparrowImage);
         console.log('📱 Using 2D image for mobile');
     }

@@ -65,21 +65,20 @@
     <!-- Interactive Chocolate Section -->
     <section class="chocolate-interactive-section">
         <h2 class="chocolate-section-title">SÄSONGENS SMAKER</h2>
-        <img src="choklad_bakgrund.webp" alt="Choklad bakgrund" class="chocolate-background">
 
-        <img src="choklad_1_stängd.webp" alt="Choklad 1" class="chocolate-piece" id="chocolate-1" data-state="closed">
-        <img src="choklad_2_stängd.webp" alt="Choklad 2" class="chocolate-piece" id="chocolate-2" data-state="closed">
-        <img src="choklad_3_stängd.webp" alt="Choklad 3" class="chocolate-piece" id="chocolate-3" data-state="closed">
+        <!-- Scrollable content wrapper -->
+        <div class="chocolate-scroll-wrapper">
+            <img src="choklad_bakgrund.webp" alt="Choklad bakgrund" class="chocolate-background">
 
-        <!-- Mobile navigation -->
+            <img src="choklad_1_stängd.webp" alt="Choklad 1" class="chocolate-piece" id="chocolate-1" data-state="closed">
+            <img src="choklad_2_stängd.webp" alt="Choklad 2" class="chocolate-piece" id="chocolate-2" data-state="closed">
+            <img src="choklad_3_stängd.webp" alt="Choklad 3" class="chocolate-piece" id="chocolate-3" data-state="closed">
+        </div>
+
+        <!-- Mobile navigation (outside scroll wrapper so it stays fixed) -->
         <div class="chocolate-nav">
             <button class="chocolate-nav-btn" id="choc-prev">‹</button>
             <button class="chocolate-nav-btn" id="choc-next">›</button>
-        </div>
-        <div class="chocolate-dots">
-            <div class="chocolate-dot active" data-index="0"></div>
-            <div class="chocolate-dot" data-index="1"></div>
-            <div class="chocolate-dot" data-index="2"></div>
         </div>
     </section>
 

@@ -1601,60 +1601,56 @@ body.video-playing {
         letter-spacing: 0.1em;
     }
 
-    /* 2. Chocolate section with horizontal scroll - same as desktop but scrollable */
+    /* 2. Chocolate section with horizontal scroll - same height as hero */
     .chocolate-interactive-section {
-        min-height: auto;
-        height: auto;
+        position: relative;
+        height: 100vh;
+        min-height: 100vh;
+        overflow: hidden;
+    }
+
+    .chocolate-scroll-wrapper {
+        position: relative;
+        width: 100%;
+        height: 100%;
         overflow-x: auto;
         overflow-y: hidden;
         scroll-behavior: smooth;
         -webkit-overflow-scrolling: touch;
-        /* Hide scrollbar but keep functionality */
         scrollbar-width: none;
         -ms-overflow-style: none;
     }
 
-    .chocolate-interactive-section::-webkit-scrollbar {
+    .chocolate-scroll-wrapper::-webkit-scrollbar {
         display: none;
     }
 
     .chocolate-background {
         display: block;
         width: auto;
-        height: 70vh;
+        height: 100%;
         max-width: none;
     }
 
     .chocolate-piece {
-        /* Keep original positioning from desktop */
         position: absolute;
-        height: 70vh !important;
+        height: 100% !important;
         width: auto !important;
         animation: floatChocolate 4s ease-in-out infinite;
         opacity: 1;
     }
 
-    .chocolate-piece.mobile-active {
-        /* No special styling needed - all visible */
-    }
-
     .chocolate-nav {
-        position: fixed;
+        position: absolute;
         top: 50%;
         left: 0;
         right: 0;
         transform: translateY(-50%);
         display: flex;
         justify-content: space-between;
-        padding: 0 10px;
+        padding: 0 15px;
         z-index: 20;
         pointer-events: none;
-        opacity: 0;
-        transition: opacity 0.3s ease;
-    }
-
-    .chocolate-nav.visible {
-        opacity: 1;
     }
 
     .chocolate-nav-btn {
@@ -1679,19 +1675,7 @@ body.video-playing {
     }
 
     .chocolate-dots {
-        position: fixed;
-        bottom: calc(50% - 35vh - 30px);
-        left: 50%;
-        transform: translateX(-50%);
-        display: flex;
-        gap: 0.8rem;
-        z-index: 20;
-        opacity: 0;
-        transition: opacity 0.3s ease;
-    }
-
-    .chocolate-dots.visible {
-        opacity: 1;
+        display: none;
     }
 
     .chocolate-dot {
@@ -1714,21 +1698,21 @@ body.video-playing {
         display: none !important;
     }
 
-    /* 4. Timeline section - taller text area, smaller image area */
+    /* 4. Timeline section - large image area, compact text below */
     .timeline-section {
         min-height: auto;
-        padding-bottom: 1rem;
+        padding-bottom: 0.5rem;
     }
 
     .timeline-viewport {
-        height: 30vh;
-        min-height: 150px;
+        height: 65vh;
+        min-height: 300px;
     }
 
     .timeline-text-section {
-        margin-top: 2rem;
-        padding: 1.5rem 0.5rem;
-        min-height: 280px;
+        margin-top: 0.5rem;
+        padding: 1rem 0.5rem;
+        min-height: auto;
         height: auto;
     }
 
@@ -1760,9 +1744,10 @@ body.video-playing {
         padding: 0 0.5rem;
     }
 
-    /* 5. Sparrow king - using 2D image on mobile instead of 3D */
+    /* 5. Sparrow king - using 2D image on mobile, clickable for spin */
     #sparrow-container img {
-        pointer-events: none;
+        pointer-events: auto;
+        cursor: pointer;
     }
 
     /* 6. Enable touch dragging on sparrow */
