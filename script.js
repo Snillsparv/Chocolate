@@ -1265,10 +1265,42 @@ function summonSparrow() {
 
     // Use mobile-optimized model on mobile devices (has unlit materials for better colors)
     const isMobile = /iPhone|iPad|iPod|Android/i.test(navigator.userAgent);
+    const modelFile = isMobile ? 'sparvkungen_mobil.glb' : 'sparvkungen.glb';
+
     if (isMobile) {
-        sparrowModel.src = 'sparvkungen_mobil.glb';
+        sparrowModel.src = modelFile;
         console.log('📱 Using mobile-optimized 3D model');
     }
+
+    // DEBUG: Show which model is being loaded (temporary)
+    const debugIndicator = document.createElement('div');
+    debugIndicator.id = 'model-debug-indicator';
+    debugIndicator.style.cssText = `
+        position: fixed;
+        top: 10px;
+        left: 10px;
+        background: ${isMobile ? '#4CAF50' : '#2196F3'};
+        color: white;
+        padding: 10px 15px;
+        border-radius: 5px;
+        font-family: monospace;
+        font-size: 12px;
+        z-index: 99999;
+        box-shadow: 0 2px 10px rgba(0,0,0,0.3);
+    `;
+    debugIndicator.innerHTML = `
+        <strong>3D Model Debug:</strong><br>
+        Device: ${isMobile ? 'MOBILE' : 'DESKTOP'}<br>
+        File: ${modelFile}
+    `;
+    document.body.appendChild(debugIndicator);
+
+    // Remove debug indicator after 10 seconds
+    setTimeout(() => {
+        debugIndicator.style.transition = 'opacity 0.5s';
+        debugIndicator.style.opacity = '0';
+        setTimeout(() => debugIndicator.remove(), 500);
+    }, 10000);
 
     // Play crazy sound
     const crazySound = new Audio('crazy.mp3');
