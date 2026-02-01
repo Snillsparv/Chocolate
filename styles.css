@@ -329,8 +329,9 @@ img {
     color: var(--gold);
     font-size: 3rem;
     width: 60px;
+    min-width: 60px;
     height: 80px;
-    display: flex;
+    display: flex !important;
     align-items: center;
     justify-content: center;
     cursor: pointer;
@@ -1837,16 +1838,12 @@ body.video-playing {
 
     .timeline-text-arrow {
         width: 40px;
+        min-width: 40px;
         height: 40px;
         font-size: 1.3rem;
         flex-shrink: 0;
         margin: 0 0.3rem;
-    }
-
-    /* Always show arrows to keep consistent centering */
-    .timeline-text-arrow[style*="display: none"] {
         display: flex !important;
-        visibility: hidden;
     }
 
     .timeline-text h3 {
