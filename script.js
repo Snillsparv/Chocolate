@@ -1177,11 +1177,12 @@ document.addEventListener('DOMContentLoaded', () => {
     const isMobile = window.innerWidth <= 768;
     if (!isMobile) return;
 
+    const slider = document.querySelector('.chocolate-mobile-slider');
     const chocolateImg = document.getElementById('choc-mobile-img');
     const prevBtn = document.getElementById('choc-prev');
     const nextBtn = document.getElementById('choc-next');
 
-    if (!chocolateImg) return;
+    if (!chocolateImg || !slider) return;
 
     let currentIndex = 1; // Start with middle chocolate (c_2)
     let isAnimating = false;
@@ -1197,38 +1198,77 @@ document.addEventListener('DOMContentLoaded', () => {
         if (newIndex === currentIndex) return;
 
         isAnimating = true;
+
+        // Current chocolate slides out
         const slideOutClass = direction === 'left' ? 'slide-out-left' : 'slide-out-right';
-        const slideInClass = direction === 'left' ? 'slide-in-right' : 'slide-in-left';
+        // New chocolate slides in from opposite side
+        const slideInFromClass = direction === 'left' ? 'enter-from-right' : 'enter-from-left';
+
+        // Get current state to determine which src array to use for new chocolate
+        const currentState = chocolateImg.getAttribute('data-state');
+        const srcArray = currentState === 'open' ? openSrcs : closedSrcs;
+
+        // Create new chocolate element that will slide in
+        const newChocolate = document.createElement('img');
+        newChocolate.src = srcArray[newIndex];
+        newChocolate.alt = 'Choklad';
+        newChocolate.className = 'chocolate-mobile-item ' + slideInFromClass;
+        newChocolate.id = 'choc-mobile-img';
+        newChocolate.setAttribute('data-state', currentState);
+        newChocolate.setAttribute('data-index', newIndex);
+
+        // Add click handler to new element
+        newChocolate.addEventListener('click', toggleChocolate);
+
+        // Add new element to slider
+        slider.appendChild(newChocolate);
 
         // Slide out current chocolate
         chocolateImg.classList.add(slideOutClass);
+        chocolateImg.removeAttribute('id');
 
+        // Force reflow then slide in new chocolate
+        newChocolate.offsetHeight;
+        newChocolate.classList.remove(slideInFromClass);
+
+        // After animation completes
         setTimeout(() => {
-            // Change image source (show open state for new chocolate)
-            chocolateImg.src = openSrcs[newIndex];
-            chocolateImg.setAttribute('data-index', newIndex);
-            chocolateImg.setAttribute('data-state', 'open');
+            // Remove old chocolate
+            if (chocolateImg.parentNode) {
+                chocolateImg.parentNode.removeChild(chocolateImg);
+            }
             currentIndex = newIndex;
-
-            // Position for slide in
-            chocolateImg.classList.remove(slideOutClass);
-            chocolateImg.classList.add(slideInClass);
-
-            // Force reflow
-            chocolateImg.offsetHeight;
-
-            // Slide in
-            chocolateImg.classList.remove(slideInClass);
-
-            setTimeout(() => {
-                isAnimating = false;
-            }, 400);
-        }, 300);
+            isAnimating = false;
+        }, 400);
     }
 
-    // Initialize - show middle chocolate (open)
-    chocolateImg.src = openSrcs[currentIndex];
-    chocolateImg.setAttribute('data-state', 'open');
+    function toggleChocolate() {
+        const img = document.getElementById('choc-mobile-img');
+        if (!img) return;
+
+        const state = img.getAttribute('data-state');
+        const idx = parseInt(img.getAttribute('data-index'));
+
+        // Play bite sound
+        const biteSound = new Audio('choco_bite_2.mp3');
+        biteSound.volume = 0.6;
+        biteSound.play().catch(err => console.log('Audio play prevented:', err));
+
+        if (state === 'open') {
+            img.src = closedSrcs[idx];
+            img.setAttribute('data-state', 'closed');
+        } else {
+            img.src = openSrcs[idx];
+            img.setAttribute('data-state', 'open');
+        }
+    }
+
+    // Initialize - show middle chocolate (closed)
+    chocolateImg.src = closedSrcs[currentIndex];
+    chocolateImg.setAttribute('data-state', 'closed');
+
+    // Add click handler for toggle
+    chocolateImg.addEventListener('click', toggleChocolate);
 
     // Button click handlers
     if (prevBtn) {
@@ -1237,19 +1277,6 @@ document.addEventListener('DOMContentLoaded', () => {
     if (nextBtn) {
         nextBtn.addEventListener('click', () => showChocolate(currentIndex + 1, 'left'));
     }
-
-    // Click on chocolate to toggle open/closed
-    chocolateImg.addEventListener('click', () => {
-        const state = chocolateImg.getAttribute('data-state');
-        const idx = parseInt(chocolateImg.getAttribute('data-index'));
-        if (state === 'open') {
-            chocolateImg.src = closedSrcs[idx];
-            chocolateImg.setAttribute('data-state', 'closed');
-        } else {
-            chocolateImg.src = openSrcs[idx];
-            chocolateImg.setAttribute('data-state', 'open');
-        }
-    });
 });
 
 // ====== 3D SPARROW KING MASCOT ======
@@ -1435,6 +1462,7 @@ function startSparrowBouncing(container) {
     let currentPitchSpeed = basePitchSpeed;
     let currentRollSpeed = baseRollSpeed;
     const rotationDamping = 0.05; // How fast rotation returns to base (5% per frame)
+    let rotationDirection = 1; // 1 = normal, -1 = reversed
     let frameCount = 0;
 
     // Update container size
@@ -1532,14 +1560,17 @@ function startSparrowBouncing(container) {
             isDragging = false;
             container.style.cursor = 'grab';
 
-            // If it was just a click (not dragged), trigger spin boost
+            // If it was just a click (not dragged), reverse rotation direction
             if (!wasDragged) {
+                // Reverse rotation direction
+                rotationDirection *= -1;
+
                 // Boost rotation speed, will gradually return to base via damping
                 currentYawSpeed = baseYawSpeed * 5;
                 currentPitchSpeed = basePitchSpeed * 5;
                 currentRollSpeed = baseRollSpeed * 5;
 
-                console.log('🌀 Extra spin!');
+                console.log('🌀 Reversed rotation! Direction:', rotationDirection);
             } else {
                 // Apply throw velocity from drag
                 velocityX = dragVelocityX * 0.8; // Dampen slightly
@@ -1615,9 +1646,14 @@ function startSparrowBouncing(container) {
             isDragging = false;
 
             if (!wasDragged) {
+                // Reverse rotation direction on tap
+                rotationDirection *= -1;
+
                 currentYawSpeed = baseYawSpeed * 5;
                 currentPitchSpeed = basePitchSpeed * 5;
                 currentRollSpeed = baseRollSpeed * 5;
+
+                console.log('🌀 Reversed rotation! Direction:', rotationDirection);
             } else {
                 velocityX = dragVelocityX * 0.8;
                 velocityY = dragVelocityY * 0.8;
@@ -1707,9 +1743,9 @@ function startSparrowBouncing(container) {
         currentRollSpeed += (baseRollSpeed - currentRollSpeed) * rotationDamping;
 
         // Update 3D rotation (always, even when dragging)
-        yaw += currentYawSpeed;
-        pitch += currentPitchSpeed;
-        roll += currentRollSpeed;
+        yaw += currentYawSpeed * rotationDirection;
+        pitch += currentPitchSpeed * rotationDirection;
+        roll += currentRollSpeed * rotationDirection;
 
         // Apply 3D rotation to the model itself using model-viewer's orientation
         if (modelViewer) {

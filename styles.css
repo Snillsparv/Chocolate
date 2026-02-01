@@ -204,6 +204,11 @@ img {
     margin: 0;
 }
 
+/* Mobile-only header section - hidden on desktop */
+.timeline-header-section {
+    display: none;
+}
+
 .timeline-viewport {
     width: 100%;
     overflow: hidden;
@@ -1703,11 +1708,12 @@ body.video-playing {
         transform: translateX(120%);
     }
 
-    .chocolate-mobile-item.slide-in-left {
+    /* Entry positions for new chocolates sliding in */
+    .chocolate-mobile-item.enter-from-left {
         transform: translateX(-120%);
     }
 
-    .chocolate-mobile-item.slide-in-right {
+    .chocolate-mobile-item.enter-from-right {
         transform: translateX(120%);
     }
 
@@ -1773,6 +1779,30 @@ body.video-playing {
     .timeline-section {
         min-height: auto;
         padding-bottom: 0;
+    }
+
+    /* Timeline header section - "Vår Historia" title */
+    .timeline-header-section {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        min-height: 220px;
+        background: var(--chocolate-dark);
+        border-bottom: 3px solid var(--gold);
+        padding: 1.5rem;
+    }
+
+    .timeline-header-title {
+        font-family: 'Great Vibes', cursive;
+        font-size: 3rem;
+        color: var(--gold);
+        text-shadow: 0 2px 10px rgba(212, 175, 55, 0.5);
+        margin: 0;
+    }
+
+    /* Hide original title on mobile */
+    .timeline-section-title {
+        display: none !important;
     }
 
     .timeline-viewport {

@@ -10,6 +10,9 @@
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@300;400;600;700&family=Montserrat:wght@200;300;400;600&family=Great+Vibes&display=swap" rel="stylesheet">
 
+    <!-- Preload mobile chocolate background -->
+    <link rel="preload" href="c_bg.webp" as="image">
+
     <!-- Model Viewer for 3D Model -->
     <script type="module" src="https://unpkg.com/@google/model-viewer@3.3.0/dist/model-viewer.min.js"></script>
 </head>
@@ -79,7 +82,7 @@
         <div class="chocolate-mobile-container">
             <img src="c_bg.webp" alt="Choklad bakgrund" class="chocolate-mobile-bg">
             <div class="chocolate-mobile-slider">
-                <img src="c_2_o.webp" alt="Choklad" class="chocolate-mobile-item" id="choc-mobile-img" data-state="open" data-index="1">
+                <img src="c_2.webp" alt="Choklad" class="chocolate-mobile-item" id="choc-mobile-img" data-state="closed" data-index="1">
             </div>
         </div>
 
@@ -95,6 +98,11 @@
 
     <!-- Timeline Section (Horizontal Scroll) -->
     <section class="timeline-section">
+        <!-- Mobile: Header section above timeline -->
+        <div class="timeline-header-section">
+            <h2 class="timeline-header-title">VÅR HISTORIA</h2>
+        </div>
+
         <h2 class="timeline-section-title">VÅR HISTORIA</h2>
 
         <!-- Scrollable timeline container -->
