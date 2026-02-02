@@ -12,17 +12,16 @@ document.addEventListener('DOMContentLoaded', () => {
 
     let currentIndex = 0;
     const totalSlides = 6; // t_0 to t_5
+    let goToSlideRef = null; // Store reference to goToSlide for use in observer
 
     // Specific center positions for each timeline point (from image specifications)
     // Image is 5272px wide
     const centerPositions = [1264, 1784, 2280, 2923, 3457, 3959];
     const imageWidth = 5272;
 
-    // Calculate and set initial position immediately (approximate for first symbol)
-    // This prevents showing wrong position before image loads
-    const initialViewport = window.innerWidth;
-    const approxInitialTranslate = (initialViewport / 2) - centerPositions[0];
-    timelineTrack.style.transform = `translateX(${approxInitialTranslate}px)`;
+    // Hide timeline initially to prevent showing wrong position
+    timelineTrack.style.opacity = '0';
+    timelineTrack.style.transition = 'opacity 0.3s ease';
 
     // Wait for background image to load to get dimensions
     const initTimeline = () => {
@@ -83,16 +82,22 @@ document.addEventListener('DOMContentLoaded', () => {
             }
         });
 
-        // Initialize first slide
-        goToSlide(0);
+        // Store reference for observer use
+        goToSlideRef = goToSlide;
 
-        // Workaround: Force recalculation by going to slide 1 then back to 0
-        setTimeout(() => {
-            goToSlide(1);
-            setTimeout(() => {
+        // Wait until we get valid dimensions before showing
+        const initializePosition = () => {
+            const renderedWidth = timelineBg.getBoundingClientRect().width;
+            if (renderedWidth > 0) {
                 goToSlide(0);
-            }, 50);
-        }, 100);
+                // Show timeline after positioning
+                timelineTrack.style.opacity = '1';
+            } else {
+                // Retry if dimensions not ready
+                requestAnimationFrame(initializePosition);
+            }
+        };
+        initializePosition();
 
         // Handle resize
         window.addEventListener('resize', () => goToSlide(currentIndex));
@@ -108,10 +113,32 @@ document.addEventListener('DOMContentLoaded', () => {
         });
     };
 
+    // Reinitialize when timeline section becomes visible (backup fix)
+    const reinitOnVisible = () => {
+        const section = document.querySelector('.timeline-section');
+        if (!section) return;
+
+        const observer = new IntersectionObserver((entries) => {
+            entries.forEach(entry => {
+                if (entry.isIntersecting && goToSlideRef) {
+                    // Force recalculation when section becomes visible
+                    goToSlideRef(currentIndex);
+                }
+            });
+        }, { threshold: 0.1 });
+
+        observer.observe(section);
+    };
+
+    // Start initialization when image is loaded
     if (timelineBg.complete && timelineBg.naturalWidth > 0) {
         startTimeline();
+        reinitOnVisible();
     } else {
-        timelineBg.addEventListener('load', startTimeline);
+        timelineBg.addEventListener('load', () => {
+            startTimeline();
+            reinitOnVisible();
+        });
     }
 });
 
@@ -135,15 +162,23 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 
     // Force preload chocolate backgrounds during loading screen
-    const preloadImages = [
-        'choklad_bakgrund.webp',
-        'c_bg.webp',
-        'tidslinje_3++++.webp'
-    ];
-    preloadImages.forEach(src => {
-        const img = new Image();
-        img.src = src;
-    });
+    // These will be used to show section 2 only after background is ready
+    const chocolateSection = document.querySelector('.chocolate-interactive-section');
+
+    // Hide chocolate section initially to prevent brown flash
+    if (chocolateSection) {
+        chocolateSection.style.opacity = '0';
+        chocolateSection.style.transition = 'opacity 0.3s ease';
+    }
+
+    const bgImage = new Image();
+    bgImage.onload = () => {
+        // Background is ready, show the section
+        if (chocolateSection) {
+            chocolateSection.style.opacity = '1';
+        }
+    };
+    bgImage.src = 'choklad_bakgrund.webp';
 
     let videoReady = false;
     let clicked = false;
