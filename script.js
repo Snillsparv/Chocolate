@@ -12,6 +12,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
     let currentIndex = 0;
     const totalSlides = 6; // t_0 to t_5
+    let goToSlideRef = null; // Store reference to goToSlide for use in observer
 
     // Specific center positions for each timeline point (from image specifications)
     // Image is 5272px wide
@@ -83,6 +84,9 @@ document.addEventListener('DOMContentLoaded', () => {
             }
         });
 
+        // Store reference for observer use
+        goToSlideRef = goToSlide;
+
         // Initialize first slide
         goToSlide(0);
 
@@ -108,10 +112,35 @@ document.addEventListener('DOMContentLoaded', () => {
         });
     };
 
+    // Also reinitialize when timeline section becomes visible
+    // This handles cases where the initial calculation was wrong
+    const reinitOnVisible = () => {
+        const section = document.querySelector('.timeline-section');
+        if (!section) return;
+
+        const observer = new IntersectionObserver((entries) => {
+            entries.forEach(entry => {
+                if (entry.isIntersecting && goToSlideRef) {
+                    // Force recalculation when section becomes visible
+                    const renderedWidth = timelineBg.getBoundingClientRect().width;
+                    if (renderedWidth > 0) {
+                        goToSlideRef(currentIndex);
+                    }
+                }
+            });
+        }, { threshold: 0.1 });
+
+        observer.observe(section);
+    };
+
     if (timelineBg.complete && timelineBg.naturalWidth > 0) {
         startTimeline();
+        reinitOnVisible();
     } else {
-        timelineBg.addEventListener('load', startTimeline);
+        timelineBg.addEventListener('load', () => {
+            startTimeline();
+            reinitOnVisible();
+        });
     }
 });
 
@@ -135,19 +164,40 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 
     // Force preload chocolate backgrounds during loading screen
+    // Wait for them to actually load before allowing interaction
+    let imagesLoaded = 0;
     const preloadImages = [
         'choklad_bakgrund.webp',
         'c_bg.webp',
         'tidslinje_3++++.webp'
     ];
+    const totalImagesToLoad = preloadImages.length;
+
     preloadImages.forEach(src => {
         const img = new Image();
+        img.onload = () => {
+            imagesLoaded++;
+            console.log(`Preloaded ${src} (${imagesLoaded}/${totalImagesToLoad})`);
+        };
+        img.onerror = () => {
+            imagesLoaded++; // Count errors too so we don't block forever
+        };
         img.src = src;
     });
 
     let videoReady = false;
     let clicked = false;
     let minimumLoadTimeReached = false;
+    let backgroundsReady = false;
+
+    // Check if backgrounds are loaded
+    const checkBackgrounds = setInterval(() => {
+        if (imagesLoaded >= totalImagesToLoad) {
+            backgroundsReady = true;
+            clearInterval(checkBackgrounds);
+            checkIfReadyToShow();
+        }
+    }, 100);
 
     // Minimum 5 seconds loading screen
     setTimeout(() => {
@@ -156,7 +206,7 @@ document.addEventListener('DOMContentLoaded', () => {
     }, 5000);
 
     function checkIfReadyToShow() {
-        if (videoReady && minimumLoadTimeReached) {
+        if (videoReady && minimumLoadTimeReached && backgroundsReady) {
             // Stop text rotation
             clearInterval(textRotationInterval);
             loadingText.style.display = 'none';
