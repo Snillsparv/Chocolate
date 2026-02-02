@@ -161,21 +161,12 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     }
 
-    // Force preload chocolate backgrounds during loading screen
-    // These will be used to show section 2 only after background is ready
+    // Preload chocolate background and show section when ready
     const chocolateSection = document.querySelector('.chocolate-interactive-section');
-
-    // Hide chocolate section initially to prevent brown flash
-    if (chocolateSection) {
-        chocolateSection.style.opacity = '0';
-        chocolateSection.style.transition = 'opacity 0.3s ease';
-    }
-
     const bgImage = new Image();
     bgImage.onload = () => {
-        // Background is ready, show the section
         if (chocolateSection) {
-            chocolateSection.style.opacity = '1';
+            chocolateSection.classList.add('loaded');
         }
     };
     bgImage.src = 'choklad_bakgrund.webp';

@@ -683,6 +683,13 @@ body.video-playing {
     overflow: hidden;
     z-index: 5;
     cursor: url('cursor_bird.webp') 2 2, auto;
+    /* Hide until background is loaded */
+    opacity: 0;
+    transition: opacity 0.3s ease;
+}
+
+.chocolate-interactive-section.loaded {
+    opacity: 1;
 }
 
 .chocolate-background {
