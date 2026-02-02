@@ -228,7 +228,20 @@ document.addEventListener('DOMContentLoaded', () => {
         "Rostar hasselnötterna...",
         "Tillber Sparvkungen...",
         "Väljer de fetaste larverna...",
-        "Flyger hejvilt fram och tillbaka..."
+        "Flyger hejvilt fram och tillbaka...",
+        "Seglar till Amazonas...",
+        "Brottas med braxnar...",
+        "Löser uråldriga gåtor...",
+        "Smälter tryffel...",
+        "Spinner kadayiftrådar...",
+        "Förhandlar med lokala stammar...",
+        "Badar i chokladfondue...",
+        "Står på huvudet...",
+        "Övar på minnestekniker...",
+        "Skummar pecannötsmjölk...",
+        "Kraxar osammanhängande...",
+        "Tar en tupplur...",
+        "Frossar i godis..."
     ];
     let textIndex = 0;
     let textRotationInterval;
