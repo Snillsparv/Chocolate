@@ -1,0 +1,22 @@
+name: Deploy to Loopia
+
+on:
+  push:
+    branches:
+      - claude/chocolate-maker-website-OhUbr  # Här lyssnar vi på din huvudbranch
+
+jobs:
+  web-deploy:
+    name: Deploy
+    runs-on: ubuntu-latest
+    steps:
+    - name: Get latest code
+      uses: actions/checkout@v3
+
+    - name: Sync files to Loopia
+      uses: SamKirkland/FTP-Deploy-Action@v4.3.4
+      with:
+        server: ${{ secrets.FTP_SERVER }}
+        username: ${{ secrets.FTP_USERNAME }}
+        password: ${{ secrets.FTP_PASSWORD }}
+        server-dir: afsparfven.se/public_html/
